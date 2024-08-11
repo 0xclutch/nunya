@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "gov-id-replace",
+    "slug": "gov-id",
+    "owner": "marcusxmoo",
+    "version": "1.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "ba45f20d-9bde-4932-a13a-efc695125a2e"
+      }
+    }
+  }
+}
