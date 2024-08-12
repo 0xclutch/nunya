@@ -6,9 +6,9 @@ import { supabase } from './supabaseClient';
 
 import { createClient } from '@supabase/supabase-js'
 
-const PinScreen = () => {
+const PinScreen = ({ route, navigation }) => {
     const [pin, setPin] = useState('');
-    const rnBiometrics = new ReactNativeBiometrics();
+    const { userKey } = route.params;  // Access the passed argument
 
 
     // constantly listen if the pin.lenght is > 6
@@ -32,12 +32,27 @@ const PinScreen = () => {
         const { data, error } = await supabase
             .from('users')
             .select('pin')
-            .eq('pin', holdTemp)
-        
-        if(error) {
-            Alert.alert("Incorrect Pin");
+            .eq('uuid', userKey)
+            .single()
+          
+        if (error || !data) {
+          Alert.alert("Error fetching PIN", error.message);
+          console.log("ERROR FETCHING!", error.message);
+          setPin("");  // Reset PIN input
+          return;
+        }
+  
+        const savedPin = data.pin;  // Get the saved PIN from the fetched data
+  
+        // Check if the entered PIN matches the saved PIN
+        if (holdTemp === savedPin) {
+          Alert.alert("Correct Pin");
+          console.log("CORRECT! ", data.pin)
+          // Navigate to the next screen or do something else
+          navigation.navigate('HomePage');  // Replace 'NextScreen' with your actual screen name
         } else {
-            Alert.alert("Correct Pin", data);
+          Alert.alert("Incorrect Pin");
+          setPin("");  // Reset PIN input
         }
 
         setPin("");
