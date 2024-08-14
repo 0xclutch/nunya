@@ -16,6 +16,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomePage from './components/HomePage';
 import Settings from './components/pages/Settings';
 import ScanQR from './components/pages/ScanQR';
+import GovID from './components/pages/GovID';
 
 
 
@@ -30,6 +31,7 @@ const App = () => {
         <Stack.Screen name="HomePage" component={HomePage} options={{ headerShown: false }} />
         <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
         <Stack.Screen name="Scan" component={ScanQR} options={{ headerShown: false }} />
+        <Stack.Screen name='GovID' component={GovID} options={{ headerShown: true, headerTitle: "Back"}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

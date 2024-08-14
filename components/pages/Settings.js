@@ -1,10 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Switch, Button, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Switch, Button, SafeAreaView, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'; // Ensure you have installed react-native-vector-icons
+
+
 
 const Settings = () => {
   const [isEnabled, setIsEnabled] = React.useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  const qldGovLogo = require('./images/qldgov.png');
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -50,6 +54,8 @@ const Settings = () => {
         <TouchableOpacity style={styles.logout}>
           <Text style={styles.logoutText}>LOGOUT</Text>
         </TouchableOpacity>
+        <Image source={qldGovLogo} style={styles.logo} />
+          <Text style={styles.details}>Digital License App {'\n'}Copyright© State of Queensland 2024{'\n'}Version No: 2.19.0 (6636)</Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -105,6 +111,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  logo: {
+    width: 150, // Adjust width as needed
+    height: 150, // Adjust height as needed
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    marginVertical: 20,
+  },
+  details: {
+    textAlign: "center",
+
+  }
 });
 
 export default Settings;

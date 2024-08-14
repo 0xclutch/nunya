@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/Ionicons'; // Import icons
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Separate component for the home page content
-const HomePageContent = () => {
+const HomePageContent = ({ navigation }) => {    
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -62,6 +62,10 @@ const HomePageContent = () => {
     fetchUser();
   }, []); // Only run on mount
 
+  const redirectToId = () => {
+    navigation.navigate('GovID');
+  }
+
   if (loading) {
     return <Text>Loading...</Text>;
   }
@@ -85,24 +89,47 @@ const HomePageContent = () => {
       fontSize: "24px",
       fontWeight: '400',
       marginTop: "20px",
-      marginBottom: "20px"
-    }
+      marginBottom: "20px",
+    },
+    nameContainer: {
+        paddingBottom: '5.6vh',
+    },
+    safetyPadding: {
+        padding: '3vh',
+    },
+    button: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#fff', // White background for buttons
+        borderBottomColor: '#ccc', // Light grey border color
+        borderBottomWidth: 1,
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+    },
+    buttonText: {
+        fontSize: 18,
+        color: '#333', // Dark text for button
+        flex: 1, // Take up available space between icons
+        paddingLeft: 10, // Space after the icon
+    },
+
   });
 
   return (
     <SafeAreaView>
-      <View>
+      <View style={styles.safetyPadding}>
         {profilePicture && (
           <Image style={styles.profilePicture} source={{ uri: profilePicture }} />
         )}
-        <Text style={styles.legalName}>{fName} {mName}</Text>
-        <Text style={styles.bold}>{lName}</Text>
+        <View style={styles.nameContainer}>
+            <Text style={styles.legalName}>{fName} {mName}</Text>
+            <Text style={styles.bold}>{lName}</Text>
+        </View>
         
         <Text style={styles.header}>Credentials</Text>
-        <TouchableOpacity style={styles.button}>
-          <Icon name="finger-print-outline" size={20} color="#000" />
-          <Text style={styles.buttonText}>Drivers License</Text>
-
+        <TouchableOpacity style={styles.button} onPress={redirectToId}>
+            <Text style={styles.buttonText}>Drivers License</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
