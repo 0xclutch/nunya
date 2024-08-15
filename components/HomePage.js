@@ -17,6 +17,7 @@ const HomePageContent = ({ navigation }) => {
   const [lName, setLName] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
   const placeholderImage = require('./pages/images/placeholder.jpg');
+  const carBroomBroom = require("./pages/images/icon.png")
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -74,6 +75,7 @@ const HomePageContent = ({ navigation }) => {
       flexDirection: 'row',
       alignItems: 'center',
       marginBottom: 20,
+      marginTop: 40
     },
     profilePicture: {
       width: 100,
@@ -115,7 +117,17 @@ const HomePageContent = ({ navigation }) => {
       color: '#333',
       flex: 1,
       paddingLeft: 10,
+      alignItems: 'center',
+      textAlign: 'center',
+      alignContent: 'space-between',
+      flex: 1,
     },
+    icon: {
+      width: 30,
+      height: 30,
+      alignItems: 'center',
+      alignContent: "center"
+    }
   });
 
   return (
@@ -133,7 +145,7 @@ const HomePageContent = ({ navigation }) => {
         
         <Text style={styles.header}>Credentials</Text>
         <TouchableOpacity style={styles.button} onPress={redirectToId}>
-          <Text style={styles.buttonText}>Drivers License</Text>
+          <Text style={styles.buttonText}><Image style={styles.icon} source={carBroomBroom} /> Drivers License</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

@@ -35,9 +35,25 @@ def createNewID():
     mName = input("Enter middle name for account: ")
     lName = input("Enter last name for account: ")
     age = input("Enter age for account ")
-    birthMonth = input("Enter month of birth: ")
+    birthMonth = input("Enter month of birth (1-12): ")
     birthDay = input("Enter day of birth: ")
     photo = input("Insert photo (!! Copy image address !!): ")
+
+    print('\n')
+    print("Address information")
+    print("##############################################################")
+    print("##########################ALERT##############################")
+    time.sleep(2)
+    print("EVERYTHING MUST BE ENTERED IN CAPS!!")
+    input("press ENTER to confirm    ")
+
+    houseNum = input("Enter HOUSE NUMBER: ")
+    street = input("Enter STREET NAME: ")
+    type = input("ENTER ST/RD/ETC: ")
+    suburb = input("ENTER SUBURB: ")
+    state = input("ENTER STATE : ")
+    postCode = input("ENTER POST CODE (format like 4000): ")
+    country = input("ENTER COUNTRY (must be AU/US/etc): ")
 
         
     response = supabase.auth.sign_up(
@@ -60,7 +76,16 @@ def createNewID():
                     "age": int(age),
                     "month": int(birthMonth),
                     "day": int(birthDay),
-                    "uuid": str(user_id)
+                    "uuid": str(user_id),
+                    "photo": str(photo),
+                    "houseNumber": str(houseNum),
+                    "street": str(street),
+                    "type": str(type),
+                    "suburb": str(suburb),
+                    "state": str(state),
+                    "postCode": str(postCode),
+                    "country": str(country)
+
                 })
                 .execute()
             )
