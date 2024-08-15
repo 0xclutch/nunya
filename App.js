@@ -31,7 +31,7 @@ const App = () => {
         <Stack.Screen name="HomePage" component={HomePage} options={{ headerShown: false }} />
         <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
         <Stack.Screen name="Scan" component={ScanQR} options={{ headerShown: false }} />
-        <Stack.Screen name='GovID' component={GovID} options={{ headerShown: true, headerTitle: "Back"}} />
+        <Stack.Screen name='GovID' component={GovID} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
