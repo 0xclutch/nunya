@@ -4,7 +4,7 @@ import { supabase } from '../supabaseClient';
 import { ActivityIndicator } from 'react-native-web';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { MaterialIcons } from '@expo/vector-icons'; // Make sure to install this dependency
+import { MaterialIcons } from '@expo/vector-icons'; 
 
 const GovID = ({ navigation }) => {
   const [user, setUser] = useState(null);
@@ -12,11 +12,11 @@ const GovID = ({ navigation }) => {
   const [expiryDate, setExpiryDate] = useState("");
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const rotation = useState(new Animated.Value(0))[0]; // Rotation animation state
-  const scale = useState(new Animated.Value(1))[0]; // Scale animation state
+  const rotation = useState(new Animated.Value(0))[0];
+  const scale = useState(new Animated.Value(1))[0];
   const qldGovLogo = require('./images/qldgov.png');
   const placeholderImage = require('./images/placeholder.jpg');
-  const backgroundImage = require('./images/background.png'); // Add your background image here
+  const backgroundImage = require('./images/background.png'); 
 
   const months = {
     "1": "January",
@@ -93,19 +93,19 @@ const GovID = ({ navigation }) => {
     fetchUserData();
     generateLicenseNum();
     generateExpiryDate();
-    // Start the bouncing animation
+    
     Animated.loop(
       Animated.sequence([
         Animated.timing(scale, {
-          toValue: 1.1,
-          duration: 500,
-          easing: Easing.ease,
+          toValue: 1.5,
+          duration: 2000,
+          easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
         Animated.timing(scale, {
           toValue: 1,
-          duration: 500,
-          easing: Easing.ease,
+          duration: 2000,
+          easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
         }),
       ])
@@ -142,7 +142,7 @@ const GovID = ({ navigation }) => {
       <Animated.View style={[styles.refreshIconContainer, { transform: [{ rotate }] }]}>
         <MaterialIcons name="refresh" size={24} color="black" />
       </Animated.View>
-      <ImageBackground source={backgroundImage} style={styles.backgroundImage} imageStyle={{ opacity: 0.2 }}>
+      <ImageBackground source={backgroundImage} style={styles.backgroundImage} imageStyle={{ opacity: 0.1 }}>
         <ScrollView
           contentContainerStyle={styles.container}
           refreshControl={
@@ -165,11 +165,13 @@ const GovID = ({ navigation }) => {
                 <Text style={styles.label}>Licence No.</Text>
                 <Text style={styles.detailText}>{licenseNum}</Text>
 
-                <Text style={styles.label}>Information was refreshed online:</Text>
-                <View style={styles.inlineDetails}>
-                  <Text style={styles.detailText}>13 Aug 2024 07:45am</Text>
-                  <ActivityIndicator size={16} color="black" style={styles.syncIcon} />
-                  <Text style={styles.updatingText}>Updating</Text>
+                <View style={styles.informationRefreshedContainer}>
+                  <Text style={styles.label}>Information was refreshed online:</Text>
+                  <View style={styles.inlineDetails}>
+                    <Text style={styles.detailText}>13 Aug 2024 07:45am</Text>
+                    <ActivityIndicator size={16} color="black" style={styles.syncIcon} />
+                    <Text style={styles.updatingText}>Updating</Text>
+                  </View>
                 </View>
               </View>
             </View>
@@ -185,7 +187,7 @@ const GovID = ({ navigation }) => {
               <View style={styles.detailRow}>
                 <Text style={styles.label}>Age</Text>
                 <View style={styles.inlineDetails}>
-                  <MaterialIcons name="check-circle" size={18} color="#4CAF50" />
+                  <MaterialIcons name="success" size={18} color="green" />
                   <Text style={styles.age}>Over 18</Text>
                 </View>
               </View>
@@ -199,7 +201,7 @@ const GovID = ({ navigation }) => {
 
               <View style={styles.detailRow}>
                 <Text style={styles.label}>Type</Text>
-                <Text style={styles.detailText}>(L) Learner</Text>
+                <Text style={styles.detailText}>(P) Provisional</Text>
               </View>
 
               <View style={styles.detailRow}>
@@ -228,145 +230,143 @@ const GovID = ({ navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#FBB03B', // Set the background color to orange
+    backgroundColor: '#FBB03B',
   },
   container: {
     padding: 16,
-    backgroundColor: '#FBB03B', // Ensure the container background is also orange
+    backgroundColor: '#FBB03B',
+    alignItems: 'center',
+  },
+  backgroundImage: {
+    position: 'static',
+    flex: 1,
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
   },
   banner: {
-    backgroundColor: '#FBB03B', // Background color remains orange
-    paddingHorizontal: 16,
-    paddingVertical: 24,
-    borderRadius: 12, // Add rounded corners to the entire banner if needed
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 12,
     width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   licenseContainer: {
     flexDirection: 'row',
     padding: 16,
-    backgroundColor: '#FFFFFF', // Make the ID section white
-    borderRadius: 10, // Rounded corners for the ID section
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3.84,
-    elevation: 5,
+    borderRadius: 10,
     marginBottom: 16,
-    width: '100%', // Make it span the full width
+    width: '100%',
   },
   profileImage: {
-    width: 80,
-    height: 100,
-    borderRadius: 8,
+    width: 100,
+    height: 120,
+    borderRadius: 10,
     marginRight: 16,
   },
   licenseDetails: {
     flex: 1,
   },
   userName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#333333',
+    color: '#000',
   },
   userName_b: {
-    fontSize: 16,
-    fontWeight: '900',
-    color: '#333333',
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 8,
   },
   label: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#777777',
-    marginTop: 8,
+    color: '#666',
+    marginBottom: 4,
   },
   detailText: {
     fontSize: 16,
-    color: '#333333',
+    color: '#000',
+    marginBottom: 8,
   },
   inlineDetails: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   syncIcon: {
-    marginHorizontal: 4,
+    marginLeft: 8,
+    marginRight: 8,
   },
   updatingText: {
     fontSize: 12,
-    color: '#777777',
+    color: '#666',
   },
   statusContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-    backgroundColor: '#FFFFFF', // Make this section white
-    borderRadius: 10, // Rounded corners for this section as well
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3.84,
-    elevation: 5,
-    width: '100%', // Make it span the full width
-    marginTop: 16,
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 16,
+    width: '100%',
   },
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 8,
   },
   status: {
     fontSize: 16,
+    color: 'green',
     fontWeight: 'bold',
-    color: '#FFFFFF',
-    backgroundColor: '#4CAF50',
-    borderRadius: 5,
-    padding: 7,
   },
   age: {
     fontSize: 16,
     color: 'green',
+    fontWeight: 'bold',
     marginLeft: 8,
   },
+  divider: {
+    height: 1,
+    backgroundColor: '#E0E0E0',
+    marginVertical: 8,
+  },
+  icon: {
+    marginLeft: 4,
+    fontSize: 18,
+  },
   shareButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#FBB03B',
     paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 4,
+    borderRadius: 10,
     alignItems: 'center',
-    marginVertical: 16,
   },
   shareText: {
-    fontSize: 14,
+    fontSize: 16,
+    color: '#FFF',
     fontWeight: 'bold',
-    color: '#FFFFFF',
   },
   refreshIconContainer: {
     position: 'absolute',
-    top: 16,
-    right: 16,
+    top: 20,
+    right: 20,
+    zIndex: 10,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#FBB03B',
   },
   loading: {
     fontSize: 16,
-    marginBottom: 10,
+    marginBottom: 16,
   },
-  icon: {
-    fontSize: 20,
-    marginLeft: 8,
-  },
-  divider: {
-    borderBottomColor: '#CCCCCC',
-    borderBottomWidth: 1,
-    marginVertical: 8,
-  },
-  backgroundImage: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FBB03B',
+  informationRefreshedContainer: {
+    marginTop: 8,
   },
 });
 
