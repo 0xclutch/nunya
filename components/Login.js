@@ -12,24 +12,30 @@ export default function Login({ navigation }) {
 
     useEffect(() => {
         const checkSession = async () => {
+            setLoading(true);  // Show loading while checking session
             const storedSession = await AsyncStorage.getItem('session');
             if (storedSession) {
                 const user = JSON.parse(storedSession);
                 setSession(user);
 
-                // Bug fix: Verify session with Supabase
                 try {
                     const { data: userSnapshot, error } = await supabase.auth.getUser();
                     if (error || !userSnapshot) {
-                        throw error;
+                        throw new Error('AuthSessionMissingError');
                     }
-                    navigateToPin(user.id);
+                    if (userSnapshot) {
+                        navigateToPin(user.id);
+                    }
                 } catch (error) {
-                    console.error("Session verification failed: ", error);
+                    console.log("Session verification failed: ", error);
                     await AsyncStorage.removeItem('session');
-                    navigation.navigate('Login'); // Redirect to refresh session
+                    navigateBackToLogin();
+                } finally {
                     setLoading(false);
                 }
+            } else {
+                navigateBackToLogin();
+                setLoading(false);
             }
         };
 
@@ -46,7 +52,6 @@ export default function Login({ navigation }) {
             setSession(user);
             await AsyncStorage.setItem('session', JSON.stringify(user));
 
-            // Verify user existence
             const { data: userSnapshot, error: fetchError } = await supabase.auth.getUser();
             if (fetchError || !userSnapshot) {
                 throw fetchError;
@@ -61,13 +66,16 @@ export default function Login({ navigation }) {
     };
 
     const navigateToPin = (userId) => {
-        setTimeout(() => {
-            navigation.navigate('Pin', { userKey: userId });
-        }, 1500);
+        navigation.navigate('Pin', { userKey: userId });
     };
 
+    const navigateBackToLogin = () => {
+        navigation.navigate('Login');
+        setSession(null);
+    }
+
     return (
-        <SafeAreaView>
+        <SafeAreaView style={styles.container}>
             <View>
                 {loading ? (
                     <View style={styles.loadingContainer}>
@@ -81,15 +89,15 @@ export default function Login({ navigation }) {
                         <ActivityIndicator size='large'/>
                     </View>
                 ) : (
-                    <SafeAreaView>
-                        <Text>Email</Text>
+                    <View>
+                        <Text style={styles.label}>Email</Text>
                         <TextInput style={styles.email} value={email} onChangeText={setEmail} />
 
                         <Text>Password</Text>
                         <TextInput style={styles.email} value={password} onChangeText={setPassword} secureTextEntry />
 
                         <Button style={styles.button} title="Sign In" onPress={signIn} />
-                    </SafeAreaView>
+                    </View>
                 )}
             </View>
         </SafeAreaView>
@@ -98,17 +106,24 @@ export default function Login({ navigation }) {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        textAlign: 'center'
     },
     email: {
         borderColor: 'black',
         borderWidth: 2,
         margin: 10,
         padding: 10,
+        width: '90%'
+    },
+    label: {
+        marginLeft: '50'
     },
     button: {
         width: 100,
-        marginLeft: 50
+        marginLeft: 50,
+        border: '2px black solid',
+        borderRadius: '5px',
+        backgroundColor: "black"
     },
     header: {
         fontSize: 20,

@@ -34,16 +34,12 @@ const App = () => {
         <Stack.Screen name="HomePage" component={HomePage} options={{ headerShown: false }} />
         <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
         <Stack.Screen name="Scan" component={ScanQR} options={{ headerShown: false }} />
+        <Stack.Screen name='Nav' component={CustomHeader} options={{ headerShown: false }} />
         <Stack.Screen 
           name="GovID" 
           component={GovID} 
           options={{
-            headerShown: true,
-            headerTitle: () => <CustomHeader />,
-            headerStyle: {
-              backgroundColor: '#F4A261', // Your desired background color
-            },
-            headerTitleAlign: 'left', // Align the title to the left
+            header: () => <CustomHeader />,
           }} 
         />
 

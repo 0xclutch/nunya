@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
-import { Text, View, StyleSheet, Image, TouchableOpacity, Switch } from "react-native";
+import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Settings from "./pages/Settings";
 import ScanQR from "./pages/ScanQR";
-import Icon from 'react-native-vector-icons/Ionicons'; // Import icons
+import Icon from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from "react-native-safe-area-context";
 
-// Separate component for the home page content
 const HomePageContent = ({ navigation }) => {    
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [fakeLoading, setFakeLoading] = useState(true);
 
   const [fName, setFName] = useState("");
   const [mName, setMName] = useState("");
   const [lName, setLName] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
+  const placeholderImage = require('./pages/images/placeholder.jpg');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -23,10 +24,9 @@ const HomePageContent = ({ navigation }) => {
         const { data, error } = await supabase.auth.getUser();
         if (error) throw error;
 
-        setUser(data.user); // Correctly set the user
+        setUser(data.user);
         console.log('User:', data.user);
 
-        // Move contactUserInfo here to ensure user is set
         const contactUserInfo = async () => {
           if (data.user && data.user.id) {
             console.log('Contacting DB - ' + data.user.id);
@@ -39,13 +39,12 @@ const HomePageContent = ({ navigation }) => {
               console.log('Error fetching user info:', userError);
             } else {
               console.log('User data:', userData);
-              // Assuming userData is an array and you want the first item
               if (userData.length > 0) {
                 const userInfo = userData[0];
                 setFName(userInfo.firstname || "");
                 setMName(userInfo.middlename || "");
                 setLName(userInfo.lastname || "");
-                setProfilePicture(userInfo.profile_picture);
+                setProfilePicture(placeholderImage);
               }
             }
           }
@@ -60,83 +59,87 @@ const HomePageContent = ({ navigation }) => {
     };
 
     fetchUser();
-  }, []); // Only run on mount
+  }, []);
 
   const redirectToId = () => {
     navigation.navigate('GovID');
-  }
+  };
 
   if (loading) {
     return <Text>Loading...</Text>;
   }
 
   const styles = StyleSheet.create({
-    bold: {
-      fontWeight: 'bold',
-      fontSize: 24, // Use a number for fontSize
-    },
-    legalName: {
-      fontSize: 24, // Use a number for fontSize
+    profileContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 20,
     },
     profilePicture: {
       width: 100,
       height: 100,
-      borderRadius: 50,
-      marginBottom: 10,
+      borderRadius: 5,
+      marginRight: 20, // Space between image and text
+    },
+    legalNameContainer: {
+      flexDirection: 'column',
+    },
+    legalName: {
+      fontSize: 24,
+    },
+    bold: {
+      fontWeight: 'bold',
+      fontSize: 24,
     },
     header: {
-      fontFamily: "Arial",
-      fontSize: "24px",
+      fontSize: 24,
       fontWeight: '400',
-      marginTop: "20px",
-      marginBottom: "20px",
-    },
-    nameContainer: {
-        paddingBottom: '5.6vh',
+      marginTop: 20,
+      marginBottom: 20,
     },
     safetyPadding: {
-        padding: '3vh',
+      padding: 20,
     },
     button: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: '#fff', // White background for buttons
-        borderBottomColor: '#ccc', // Light grey border color
-        borderBottomWidth: 1,
-        paddingVertical: 15,
-        paddingHorizontal: 20,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      backgroundColor: '#fff',
+      borderBottomColor: '#ccc',
+      borderBottomWidth: 1,
+      paddingVertical: 15,
+      paddingHorizontal: 20,
     },
     buttonText: {
-        fontSize: 18,
-        color: '#333', // Dark text for button
-        flex: 1, // Take up available space between icons
-        paddingLeft: 10, // Space after the icon
+      fontSize: 18,
+      color: '#333',
+      flex: 1,
+      paddingLeft: 10,
     },
-
   });
 
   return (
     <SafeAreaView>
       <View style={styles.safetyPadding}>
-        {profilePicture && (
-          <Image style={styles.profilePicture} source={{ uri: profilePicture }} />
-        )}
-        <View style={styles.nameContainer}>
+        <View style={styles.profileContainer}>
+          {profilePicture && (
+            <Image style={styles.profilePicture} source={placeholderImage} />
+          )}
+          <View style={styles.legalNameContainer}>
             <Text style={styles.legalName}>{fName} {mName}</Text>
             <Text style={styles.bold}>{lName}</Text>
+          </View>
         </View>
         
         <Text style={styles.header}>Credentials</Text>
         <TouchableOpacity style={styles.button} onPress={redirectToId}>
-            <Text style={styles.buttonText}>Drivers License</Text>
+          <Text style={styles.buttonText}>Drivers License</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 };
 
-// Main component with bottom tab navigation
 const HomePage = () => {
   const Tab = createBottomTabNavigator();
 
@@ -152,12 +155,11 @@ const HomePage = () => {
           } else if (route.name === 'Settings') {
             iconName = 'settings';
           }
-          // Return the icon component
           return <Icon name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#a14e61',
         tabBarInactiveTintColor: '#94737b',
-        headerShown: false, // Hide the header
+        headerShown: false,
       })}
     >
       <Tab.Screen name="Home" component={HomePageContent} />

@@ -1,62 +1,92 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, RefreshControl, Animated, Easing, TouchableOpacity, ImageBackground } from 'react-native';
+import { StyleSheet, View, Text, Image, SafeAreaView, TouchableOpacity } from 'react-native';
 import { supabase } from '../supabaseClient';
-import { ActivityIndicator } from 'react-native-web';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { MaterialIcons } from '@expo/vector-icons'; 
+import { CheckCircleFilled } from '@ant-design/icons';
 
-const GovID = ({ navigation }) => {
+const GovID = () => {
   const [user, setUser] = useState(null);
   const [licenseNum, setLicenseNum] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const rotation = useState(new Animated.Value(0))[0];
-  const scale = useState(new Animated.Value(1))[0];
   const qldGovLogo = require('./images/qldgov.png');
   const placeholderImage = require('./images/placeholder.jpg');
   const backgroundImage = require('./images/background.png'); 
 
+  const [lastRefreshed, setLastRefreshed] = useState(null);
+
   const months = {
-    "1": "January",
-    "2": "February",
-    "3": "March",
-    "4": "April",
+    "1": "Jan",
+    "2": "Feb",
+    "3": "Mar",
+    "4": "Apr",
     "5": "May",
-    "6": "June",
-    "7": "July",
-    "8": "August",
-    "9": "September",
-    "10": "October",
-    "11": "November",
-    "12": "December"
+    "6": "Jun",
+    "7": "Jul",
+    "8": "Aug",
+    "9": "Sept",
+    "10": "Oct",
+    "11": "Nov",
+    "12": "Dec"
   };
 
-  const fetchUserData = async () => {
-    const storedSession = await AsyncStorage.getItem('session');
-    
-    if (storedSession) {
-      const sessionObj = JSON.parse(storedSession);
-      setUser(sessionObj);
-
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('uuid', sessionObj.id)
-        .single();
-
-      if (error) {
-        console.log('error', error);
-      } else {
-        setUser(data);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const storedSession = await AsyncStorage.getItem('session');
+        
+        if (storedSession) {
+          const sessionObj = JSON.parse(storedSession);
+          setUser(sessionObj);
+  
+          const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('uuid', sessionObj.id)
+            .single();
+  
+          if (error) {
+            console.error('Error fetching user data:', error);
+          } else {
+            console.log('User data:', data);
+            setUser(data);
+          }
+        } else {
+          setUser(null);
+          console.error("Couldn't get session");
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
       }
-    } else {
-      setUser(null);
-    }
+    };
 
-    setLoading(false);
-  };
+    const generateRandomTime = () => {
+      // generate random time today, 3hrs previous
+      const today = new Date();
+      const threeHoursAgo = new Date(today.getTime() - 3 * 60 * 60 * 1000);
+      const randomTime = new Date(threeHoursAgo.getTime() + Math.random() * (today.getTime() - threeHoursAgo.getTime()));
+    
+      // Format date
+      const day = randomTime.getDate().toString().padStart(2, '0');
+      const month = randomTime.toLocaleString('en-US', { month: 'short' });
+      const year = randomTime.getFullYear();
+      const hours = randomTime.getHours();
+      const minutes = randomTime.getMinutes().toString().padStart(2, '0');
+      const ampm = hours >= 12 ? 'pm' : 'am';
+      const formattedHours = hours % 12 || 12; // Convert 24-hour format to 12-hour format
+    
+      const formattedTime = `${day} ${month} ${year} ${formattedHours}:${minutes}${ampm}`;
+    
+      setLastRefreshed(formattedTime);
+    }
+  
+    fetchUserData();
+    generateLicenseNum();
+    generateExpiryDate();
+    generateRandomTime();
+  }, []); // Empty dependency array to run only on mount
 
   const generateLicenseNum = () => {
     let license_num = '';
@@ -65,6 +95,12 @@ const GovID = ({ navigation }) => {
     }
     setLicenseNum(license_num);
   };
+
+  const calculate_year_birth = (age) => {
+    const current_year = new Date().getFullYear();
+    const year_birth = current_year - age;
+    return year_birth;
+  }
 
   const generateExpiryDate = () => {
     const currentYear = new Date().getFullYear();
@@ -75,299 +111,124 @@ const GovID = ({ navigation }) => {
     setExpiryDate(formattedExpiryDate);
   };
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    Animated.timing(rotation, {
-      toValue: 1,
-      duration: 1000,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start(() => {
-      rotation.setValue(0);
-    });
-    await fetchUserData();
-    setRefreshing(false);
-  };
-
-  useEffect(() => {
-    fetchUserData();
-    generateLicenseNum();
-    generateExpiryDate();
-    
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(scale, {
-          toValue: 1.5,
-          duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(scale, {
-          toValue: 1,
-          duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, []);
-
-  if (loading) {
-    return (
-      <SafeAreaView style={styles.loadingContainer}>
-        <Text style={styles.loading}>Fetching your digital wallet...</Text>
-        <ActivityIndicator style={styles.loading} size="large" />
-      </SafeAreaView>
-    );
-  }
-
-  if (!user) {
-    return (
-      <SafeAreaView style={styles.loadingContainer}>
-        <Text style={styles.loading}>No session found. Please log in.</Text>
-      </SafeAreaView>
-    );
-  }
-
-  const currentYear = new Date().getFullYear();
-  const birthYear = currentYear - user.age;
-
-  const rotate = rotation.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
+  const safeUpperCase = (text) => (text || "").toUpperCase();
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <Animated.View style={[styles.refreshIconContainer, { transform: [{ rotate }] }]}>
-        <MaterialIcons name="refresh" size={24} color="black" />
-      </Animated.View>
-      <ImageBackground source={backgroundImage} style={styles.backgroundImage} imageStyle={{ opacity: 0.1 }}>
-        <ScrollView
-          contentContainerStyle={styles.container}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              tintColor="#000"
-            />
-          }
-        >
-          <View style={styles.banner}>
-            <View style={styles.licenseContainer}>
-              <Image source={placeholderImage} style={styles.profileImage} />
-              <View style={styles.licenseDetails}>
-                <Text style={styles.userName}>{user.firstname.toUpperCase()} {user.middlename.toUpperCase()}</Text>
-                <Text style={styles.userName_b}>{user.lastname.toUpperCase()}</Text>
-                <Text style={styles.label}>DoB</Text>
-                <Text style={styles.detailText}>{user.day} {months[user.month]} {birthYear}</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.digitalID}>
+        <View style={styles.profileContainer}>
+          <Image style={styles.profilePicture} source={placeholderImage} />
+          <View style={styles.textContainer}>
+            {user && (
+              <>
+                <Text style={styles.unimportantNames}>
+                  {safeUpperCase(user.firstname)} {safeUpperCase(user.middlename)}
+                </Text>
+                <Text style={styles.importantLast}>
+                  {safeUpperCase(user.lastname)}
+                </Text>
 
-                <Text style={styles.label}>Licence No.</Text>
-                <Text style={styles.detailText}>{licenseNum}</Text>
-
-                <View style={styles.informationRefreshedContainer}>
-                  <Text style={styles.label}>Information was refreshed online:</Text>
-                  <View style={styles.inlineDetails}>
-                    <Text style={styles.detailText}>13 Aug 2024 07:45am</Text>
-                    <ActivityIndicator size={16} color="black" style={styles.syncIcon} />
-                    <Text style={styles.updatingText}>Updating</Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-
-            <View style={styles.statusContainer}>
-              <View style={styles.detailRow}>
-                <Text style={styles.label}>Status</Text>
-                <Text style={styles.status}>Current</Text>
-              </View>
-
-              <View style={styles.divider} />
-
-              <View style={styles.detailRow}>
-                <Text style={styles.label}>Age</Text>
-                <View style={styles.inlineDetails}>
-                  <MaterialIcons name="success" size={18} color="green" />
-                  <Text style={styles.age}>Over 18</Text>
-                </View>
-              </View>
-
-              <View style={styles.divider} />
-
-              <View style={styles.detailRow}>
-                <Text style={styles.label}>Class</Text>
-                <Text style={styles.detailText}>(C) Car <Text style={styles.icon}>🚗</Text></Text>
-              </View>
-
-              <View style={styles.detailRow}>
-                <Text style={styles.label}>Type</Text>
-                <Text style={styles.detailText}>(P) Provisional</Text>
-              </View>
-
-              <View style={styles.detailRow}>
-                <Text style={styles.label}>Expiry</Text>
-                <Text style={styles.detailText}>28 Feb 2027</Text>
-              </View>
-
-              <View style={styles.divider} />
-
-              <View style={styles.detailRow}>
-                <Text style={styles.label}>Conditions</Text>
-                <Text style={styles.detailText}>-</Text>
-              </View>
-            </View>
-
-            <TouchableOpacity style={styles.shareButton}>
-              <Text style={styles.shareText}>SHARE DRIVER LICENCE</Text>
-            </TouchableOpacity>
+                <Text>DoB</Text>
+                <Text style={styles.dateOfBirth}>
+                  {user.day} {months[user.month]} {calculate_year_birth(user.age)}
+                </Text>
+                <Text>Licence No.</Text>
+                <Text style={styles.licenceNum}>{licenseNum}</Text>
+              </>
+            )}
           </View>
-        </ScrollView>
-      </ImageBackground>
+        </View>
+        <View style={styles.refreshed}>
+          <Text style={styles.labelBasicGrey}>Information was refreshed online: </Text>
+          <Text style={styles.refreshTime}>{lastRefreshed}</Text>
+        </View>
+        <View style={styles.divider} />
+
+        <View style={styles.statusContainer}>
+          <Text style={styles.statusOutline}>Status ⓘ</Text>
+          <TouchableOpacity style={styles.statusButton}>
+            <Text style={{ color: "white"}}>Current</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.divider} />
+
+        <View style={styles.ageContainer}>
+          <Text style={styles.labelBasicGrey}>Age</Text>
+          <CheckCircleFilled />
+        </View>
+      </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#FBB03B',
-  },
   container: {
-    padding: 16,
-    backgroundColor: '#FBB03B',
-    alignItems: 'center',
-  },
-  backgroundImage: {
-    position: 'static',
-    flex: 1,
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-  },
-  banner: {
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderRadius: 12,
-    width: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  licenseContainer: {
-    flexDirection: 'row',
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 16,
-    width: '100%',
-  },
-  profileImage: {
-    width: 100,
-    height: 120,
-    borderRadius: 10,
-    marginRight: 16,
-  },
-  licenseDetails: {
     flex: 1,
   },
-  userName: {
-    fontSize: 18,
+  digitalID: {
+    paddingLeft: 20,
+  },
+  profileContainer: {
+    flexDirection: 'row', // Arrange items side by side
+    alignItems: 'flex-start', // Align items vertically at the top
+    marginBottom: 10, // Space below the profile container
+  },
+  profilePicture: {
+    width: 105,
+    height: 145,
+    marginRight: 15, // Space between the image and the text
+  },
+  textContainer: {
+    flex: 1, // Allow the text container to take remaining space
+  },
+  unimportantNames: {
+    fontSize: 19,
+  },
+  importantLast: {
+    fontSize: 19,
     fontWeight: 'bold',
-    color: '#000',
   },
-  userName_b: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
-    marginBottom: 8,
+  dateOfBirth: {
+    fontSize: 17,
+    fontWeight: 'bold'
   },
-  label: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
+  licenceNum: {
+    fontSize: 17,
+    fontWeight: 'bold'
   },
-  detailText: {
-    fontSize: 16,
-    color: '#000',
-    marginBottom: 8,
+  refreshed: {
+    marginTop: 3, // Space above the refreshed information
   },
-  inlineDetails: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  labelBasicGrey: {
+    color: 'grey'
   },
-  syncIcon: {
-    marginLeft: 8,
-    marginRight: 8,
-  },
-  updatingText: {
-    fontSize: 12,
-    color: '#666',
+  refreshTime: {
+    fontWeight: 'bold'
   },
   statusContainer: {
-    backgroundColor: '#FFFFFF',
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 16,
-    width: '100%',
+    flexDirection: 'row', // Arrange items side by side
+    alignItems: 'center', // Center align vertically
+    justifyContent: 'space-between', // Space between items
   },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  statusButton: {
+    width: 95,
+    height: 35,
+    backgroundColor: '#317d33',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    borderRadius: 10,
+    marginRight: 90
   },
-  status: {
-    fontSize: 16,
-    color: 'green',
-    fontWeight: 'bold',
-  },
-  age: {
-    fontSize: 16,
-    color: 'green',
-    fontWeight: 'bold',
-    marginLeft: 8,
+  statusOutline: {
+    textDecorationLine: 'underline',
   },
   divider: {
     height: 1,
-    backgroundColor: '#E0E0E0',
-    marginVertical: 8,
-  },
-  icon: {
-    marginLeft: 4,
-    fontSize: 18,
-  },
-  shareButton: {
-    backgroundColor: '#FBB03B',
-    paddingVertical: 12,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  shareText: {
-    fontSize: 16,
-    color: '#FFF',
-    fontWeight: 'bold',
-  },
-  refreshIconContainer: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
-    zIndex: 10,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FBB03B',
-  },
-  loading: {
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  informationRefreshedContainer: {
-    marginTop: 8,
-  },
+    backgroundColor: '#ccc',
+    marginVertical: 10,
+    borderRadius: 10
+  }
 });
 
 export default GovID;
