@@ -154,77 +154,71 @@ const GovID = ({ navigation }) => {
           }
         >
           <View style={styles.banner}>
-            <TouchableOpacity style={styles.backButton} >
-              <MaterialIcons name="arrow-back" size={24} color="black" />
+            <View style={styles.licenseContainer}>
+              <Image source={placeholderImage} style={styles.profileImage} />
+              <View style={styles.licenseDetails}>
+                <Text style={styles.userName}>{user.firstname.toUpperCase()} {user.middlename.toUpperCase()}</Text>
+                <Text style={styles.userName_b}>{user.lastname.toUpperCase()}</Text>
+                <Text style={styles.label}>DoB</Text>
+                <Text style={styles.detailText}>{user.day} {months[user.month]} {birthYear}</Text>
+
+                <Text style={styles.label}>Licence No.</Text>
+                <Text style={styles.detailText}>{licenseNum}</Text>
+
+                <Text style={styles.label}>Information was refreshed online:</Text>
+                <View style={styles.inlineDetails}>
+                  <Text style={styles.detailText}>13 Aug 2024 07:45am</Text>
+                  <ActivityIndicator size={16} color="black" style={styles.syncIcon} />
+                  <Text style={styles.updatingText}>Updating</Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.statusContainer}>
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Status</Text>
+                <Text style={styles.status}>Current</Text>
+              </View>
+
+              <View style={styles.divider} />
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Age</Text>
+                <View style={styles.inlineDetails}>
+                  <MaterialIcons name="check-circle" size={18} color="#4CAF50" />
+                  <Text style={styles.age}>Over 18</Text>
+                </View>
+              </View>
+
+              <View style={styles.divider} />
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Class</Text>
+                <Text style={styles.detailText}>(C) Car <Text style={styles.icon}>🚗</Text></Text>
+              </View>
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Type</Text>
+                <Text style={styles.detailText}>(L) Learner</Text>
+              </View>
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Expiry</Text>
+                <Text style={styles.detailText}>28 Feb 2027</Text>
+              </View>
+
+              <View style={styles.divider} />
+
+              <View style={styles.detailRow}>
+                <Text style={styles.label}>Conditions</Text>
+                <Text style={styles.detailText}>-</Text>
+              </View>
+            </View>
+
+            <TouchableOpacity style={styles.shareButton}>
+              <Text style={styles.shareText}>SHARE DRIVER LICENCE</Text>
             </TouchableOpacity>
-            <Text style={styles.bannerText}>Driver Licence</Text>
-            <Image source={qldGovLogo} style={styles.qldGovLogo} />
           </View>
-
-          <View style={styles.licenseContainer}>
-            <Image source={placeholderImage} style={styles.profileImage} />
-            <View style={styles.licenseDetails}>
-              <Text style={styles.userName}>{user.firstname.toUpperCase()} {user.middlename.toUpperCase()}</Text>
-              <Text style={styles.userName_b}>{user.lastname.toUpperCase()}</Text>
-              <Text style={styles.label}>DoB</Text>
-              <Text style={styles.detailText}>{user.day} {months[user.month]} {birthYear}</Text>
-
-              <Text style={styles.label}>Licence No.</Text>
-              <Text style={styles.detailText}>{licenseNum}</Text>
-
-              <Text style={styles.label}>Information was refreshed online:</Text>
-              <View style={styles.inlineDetails}>
-                <Text style={styles.detailText}>13 Aug 2024 07:45am</Text>
-                <ActivityIndicator size={16} color="black" style={styles.syncIcon} />
-                <Text style={styles.updatingText}>Updating</Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.statusContainer}>
-            <View style={styles.detailRow}>
-              <Text style={styles.label}>Status</Text>
-              <Text style={styles.status}>Current</Text>
-            </View>
-
-            <View style={styles.divider} />
-
-            <View style={styles.detailRow}>
-              <Text style={styles.label}>Age</Text>
-              <View style={styles.inlineDetails}>
-                <MaterialIcons name="check-circle" size={18} color="#4CAF50" />
-                <Text style={styles.age}>Over 18</Text>
-              </View>
-            </View>
-
-            <View style={styles.divider} />
-
-            <View style={styles.detailRow}>
-              <Text style={styles.label}>Class</Text>
-              <Text style={styles.detailText}>(C) Car <Text style={styles.icon}>🚗</Text></Text>
-            </View>
-
-            <View style={styles.detailRow}>
-              <Text style={styles.label}>Type</Text>
-              <Text style={styles.detailText}>(L) Learner</Text>
-            </View>
-
-            <View style={styles.detailRow}>
-              <Text style={styles.label}>Expiry</Text>
-              <Text style={styles.detailText}>28 Feb 2027</Text>
-            </View>
-
-            <View style={styles.divider} />
-
-            <View style={styles.detailRow}>
-              <Text style={styles.label}>Conditions</Text>
-              <Text style={styles.detailText}>-</Text>
-            </View>
-          </View>
-
-          <TouchableOpacity style={styles.shareButton}>
-            <Text style={styles.shareText}>SHARE DRIVER LICENCE</Text>
-          </TouchableOpacity>
         </ScrollView>
       </ImageBackground>
     </SafeAreaView>
@@ -234,46 +228,32 @@ const GovID = ({ navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FBB03B', // Set the background color to orange
   },
   container: {
-    padding: 0,
-    backgroundColor: '#FFFFFF',
-  },
-  banner: {
-    backgroundColor: '#FBB03B',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    padding: 16,
+    backgroundColor: '#FBB03B', // Ensure the container background is also orange
     alignItems: 'center',
   },
-  backButton: {
-    position: 'absolute',
-    left: 16,
-    zIndex: 10,
-  },
-  bannerText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333333',
-  },
-  qldGovLogo: {
-    width: 120,
-    height: 30,
-    resizeMode: 'contain',
+  banner: {
+    backgroundColor: '#FBB03B', // Background color remains orange
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+    borderRadius: 12, // Add rounded corners to the entire banner if needed
+    width: '100%',
   },
   licenseContainer: {
     flexDirection: 'row',
-    marginVertical: 16,
-    paddingHorizontal: 16,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
+    padding: 16,
+    backgroundColor: '#FFFFFF', // Make the ID section white
+    borderRadius: 10, // Rounded corners for the ID section
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3.84,
+    elevation: 5,
+    marginBottom: 16,
+    width: '100%', // Make it span the full width
   },
   profileImage: {
     width: 80,
@@ -314,11 +294,19 @@ const styles = StyleSheet.create({
   updatingText: {
     fontSize: 12,
     color: '#777777',
-    marginBottom: '10px'
   },
   statusContainer: {
     paddingHorizontal: 16,
     paddingBottom: 16,
+    backgroundColor: '#FFFFFF', // Make this section white
+    borderRadius: 10, // Rounded corners for this section as well
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3.84,
+    elevation: 5,
+    width: '100%', // Make it span the full width
+    marginTop: 16,
   },
   detailRow: {
     flexDirection: 'row',
@@ -328,10 +316,10 @@ const styles = StyleSheet.create({
   status: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: "#4CAF50",
-    borderRadius: '5px',
-    padding: '7px'
+    color: '#FFFFFF',
+    backgroundColor: '#4CAF50',
+    borderRadius: 5,
+    padding: 7,
   },
   age: {
     fontSize: 16,
@@ -378,9 +366,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  backgroundImageStyle: {
-    opacity: 0.2, // Adjust the opacity as needed
+    backgroundColor: '#FBB03B',
   },
 });
 

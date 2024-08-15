@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   FlatList,
+  Image,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -17,11 +18,13 @@ import HomePage from './components/HomePage';
 import Settings from './components/pages/Settings';
 import ScanQR from './components/pages/ScanQR';
 import GovID from './components/pages/GovID';
+import CustomHeader from './components/CustomHeader';
 
 
 
 const App = () => {
   const Stack = createStackNavigator();
+  const qldGovLogo = require('./components/pages/images/qldgov.png');
   
   return (
     <NavigationContainer>
@@ -31,7 +34,19 @@ const App = () => {
         <Stack.Screen name="HomePage" component={HomePage} options={{ headerShown: false }} />
         <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
         <Stack.Screen name="Scan" component={ScanQR} options={{ headerShown: false }} />
-        <Stack.Screen name='GovID' component={GovID} options={{ headerShown: false }} />
+        <Stack.Screen 
+          name="GovID" 
+          component={GovID} 
+          options={{
+            headerShown: true,
+            headerTitle: () => <CustomHeader />,
+            headerStyle: {
+              backgroundColor: '#F4A261', // Your desired background color
+            },
+            headerTitleAlign: 'left', // Align the title to the left
+          }} 
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -41,6 +56,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  bannerText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333333',
+  },
+  qldGovLogo: {
+    width: 120,
+    height: 30,
+    resizeMode: 'contain',
+  }
 });
 
 export default App;
