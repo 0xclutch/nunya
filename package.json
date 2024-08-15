@@ -29,6 +29,7 @@
     "eas-cli": "^10.2.3",
     "expo": "~51.0.26",
     "expo-camera": "~15.0.14",
+    "expo-dev-client": "~4.0.23",
     "expo-permissions": "^14.4.0",
     "expo-status-bar": "~1.12.1",
     "install": "^0.13.0",
