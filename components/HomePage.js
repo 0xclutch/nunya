@@ -16,7 +16,6 @@ const HomePageContent = ({ navigation }) => {
   const [mName, setMName] = useState("");
   const [lName, setLName] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
-  const placeholderImage = require('./pages/images/placeholder.jpg');
   const carBroomBroom = require("./pages/images/icon.png")
 
   useEffect(() => {
@@ -45,7 +44,7 @@ const HomePageContent = ({ navigation }) => {
                 setFName(userInfo.firstname || "");
                 setMName(userInfo.middlename || "");
                 setLName(userInfo.lastname || "");
-                setProfilePicture(placeholderImage);
+                setProfilePicture(userInfo.photo || "");
               }
             }
           }
@@ -135,7 +134,7 @@ const HomePageContent = ({ navigation }) => {
       <View style={styles.safetyPadding}>
         <View style={styles.profileContainer}>
           {profilePicture && (
-            <Image style={styles.profilePicture} source={placeholderImage} />
+            <Image style={styles.profilePicture} source={{uri: profilePicture}} />
           )}
           <View style={styles.legalNameContainer}>
             <Text style={styles.legalName}>{fName} {mName}</Text>

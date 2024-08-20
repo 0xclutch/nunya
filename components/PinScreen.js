@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, LayoutAnimation } from 'react-native';
 import { supabase } from './supabaseClient';
 
 const PinScreen = ({ route, navigation }) => {
     const [pin, setPin] = useState([]);
-    const { userKey } = route.params || {}; // Access the passed argument
+    const { userKey } = route.params || {}; 
 
     useEffect(() => {
         if (pin.length === 6) {
@@ -12,12 +12,12 @@ const PinScreen = ({ route, navigation }) => {
         }
     }, [pin]);
 
-    const handleInput = (num) => {
+    const handleInput = useCallback((num) => {
         if (pin.length < 6) {
             const newPin = [...pin, { value: num, visible: true }];
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
             setPin(newPin);
 
-            // Hide the character after 2 seconds
             setTimeout(() => {
                 setPin((prevPin) =>
                     prevPin.map((char, index) =>
@@ -26,7 +26,7 @@ const PinScreen = ({ route, navigation }) => {
                 );
             }, 250);
         }
-    };
+    }, [pin]);
 
     const attemptLogin = async () => {
         const enteredPin = pin.map((char) => char.value).join('');
@@ -58,11 +58,11 @@ const PinScreen = ({ route, navigation }) => {
         }
     };
 
-    const deleteLast = () => {
-        setPin(pin.slice(0, -1));
-    };
+    const deleteLast = useCallback(() => {
+        setPin((prevPin) => prevPin.slice(0, -1));
+    }, []);
 
-    const keys = [1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0];
+    const keys = useMemo(() => [1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0], []);
 
     return (
         <View style={styles.container}>
@@ -86,24 +86,28 @@ const PinScreen = ({ route, navigation }) => {
             </View>
             <View style={styles.keypad}>
                 {keys.map((key, index) => (
-                    <TouchableOpacity
-                        key={index}
-                        style={styles.key}
-                        onPress={() => handleInput(key.toString())}
-                    >
-                        <Text style={styles.keyText}>{key}</Text>
-                    </TouchableOpacity>
+                    <Key 
+                        key={index} 
+                        onPress={() => handleInput(key.toString())} 
+                        label={key} 
+                    />
                 ))}
-                <TouchableOpacity
-                    style={styles.key}
-                    onPress={deleteLast}
-                >
-                    <Text style={styles.keyText}>⌫</Text>
-                </TouchableOpacity>
+                <Key onPress={deleteLast} label="⌫" />
             </View>
         </View>
     );
 };
+
+const Key = React.memo(({ onPress, label }) => (
+    <TouchableOpacity
+        style={styles.key}
+        onPress={onPress}
+        disabled={label === ''}
+    >
+        <Text style={styles.keyText}>{label}</Text>
+    </TouchableOpacity>
+));
+
 
 const styles = StyleSheet.create({
     container: {

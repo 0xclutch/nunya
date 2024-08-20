@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from './supabaseClient';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, TextInput, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { debounce } from 'lodash';
 
 export default function Login({ navigation }) {
     const [email, setEmail] = useState('');
@@ -11,38 +12,37 @@ export default function Login({ navigation }) {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const checkSession = async () => {
-            setLoading(true);
+        checkSession();
+    }, []);
+
+    const checkSession = useCallback(async () => {
+        setLoading(true);
+        try {
             const storedSession = await AsyncStorage.getItem('session');
             if (storedSession) {
                 const user = JSON.parse(storedSession);
                 setSession(user);
 
-                try {
-                    const { data: userSnapshot, error } = await supabase.auth.getUser();
-                    if (error || !userSnapshot) {
-                        throw new Error('AuthSessionMissingError');
-                    }
-                    if (userSnapshot) {
-                        navigateToPin(user.id);
-                    }
-                } catch (error) {
-                    console.log("Session verification failed: ", error);
-                    await AsyncStorage.removeItem('session');
-                    navigateBackToLogin();
-                } finally {
-                    setLoading(false);
+                const { data: userSnapshot, error } = await supabase.auth.getUser();
+                if (error || !userSnapshot) {
+                    throw new Error('AuthSessionMissingError');
+                }
+                if (userSnapshot) {
+                    navigateToPin(user.id);
                 }
             } else {
                 navigateBackToLogin();
-                setLoading(false);
             }
-        };
+        } catch (error) {
+            console.log("Session verification failed: ", error);
+            await AsyncStorage.removeItem('session');
+            navigateBackToLogin();
+        } finally {
+            setLoading(false);
+        }
+    }, [navigation]);
 
-        checkSession();
-    }, []);
-
-    const signIn = async () => {
+    const signIn = useCallback(async () => {
         setLoading(true);
         try {
             const { data: userCredential, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -63,16 +63,19 @@ export default function Login({ navigation }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [email, password, navigation]);
 
-    const navigateToPin = (userId) => {
+    const navigateToPin = useCallback((userId) => {
         navigation.navigate('Pin', { userKey: userId });
-    };
+    }, [navigation]);
 
-    const navigateBackToLogin = () => {
+    const navigateBackToLogin = useCallback(() => {
         navigation.navigate('Login');
         setSession(null);
-    }
+    }, [navigation]);
+
+    const debouncedSetEmail = useCallback(debounce(setEmail, 0), []);
+    const debouncedSetPassword = useCallback(debounce(setPassword, 0), []);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -95,7 +98,7 @@ export default function Login({ navigation }) {
                         <TextInput 
                             style={styles.input} 
                             value={email} 
-                            onChangeText={setEmail} 
+                            onChangeText={debouncedSetEmail} 
                             placeholder="Enter your email" 
                             keyboardType="email-address" 
                             autoCapitalize="none"
@@ -107,7 +110,7 @@ export default function Login({ navigation }) {
                         <TextInput 
                             style={styles.input} 
                             value={password} 
-                            onChangeText={setPassword} 
+                            onChangeText={debouncedSetPassword} 
                             secureTextEntry 
                             placeholder="Enter your password" 
                         />

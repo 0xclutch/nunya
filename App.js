@@ -1,14 +1,4 @@
-import React, { useState } from 'react';
-import {
-  FlatList,
-  Image,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React from 'react';
 import PinScreen from './components/PinScreen';
 import Login from './components/Login';
 
@@ -24,7 +14,6 @@ import CustomHeader from './components/CustomHeader';
 
 const App = () => {
   const Stack = createStackNavigator();
-  const qldGovLogo = require('./components/pages/images/qldgov.png');
   
   return (
     <NavigationContainer>
@@ -48,20 +37,5 @@ const App = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  bannerText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333333',
-  },
-  qldGovLogo: {
-    width: 120,
-    height: 30,
-    resizeMode: 'contain',
-  }
-});
 
 export default App;

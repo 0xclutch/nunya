@@ -6,13 +6,13 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // Import the FontAwes
 
 const GovID = () => {
   const [user, setUser] = useState(null);
+  const [session, setSession] = useState(null);
   const [licenseNum, setLicenseNum] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [loading, setLoading] = useState(true);
   const [cardNumber, setCardNumber] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const qldGovLogo = require('./images/qldgov.png');
-  const placeholderImage = require('./images/placeholder.jpg');
   const backgroundImage = require('./images/background.png'); 
 
   // signatures
@@ -25,6 +25,7 @@ const GovID = () => {
 
   const [lastRefreshed, setLastRefreshed] = useState(null);
   const [scaleAnim] = useState(new Animated.Value(1));
+  const [profilePicture, setProfilePicture] = useState(null);
 
   const months = {
     "1": "Jan",
@@ -138,7 +139,7 @@ const GovID = () => {
       
       if (storedSession) {
         const sessionObj = JSON.parse(storedSession);
-        setUser(sessionObj);
+        setSession(sessionObj);
 
         const { data, error } = await supabase
           .from('users')
@@ -150,6 +151,8 @@ const GovID = () => {
           console.error('Error fetching user data:', error);
         } else {
           console.log('User data:', data);
+          setProfilePicture(data.photo || "");
+          console.log('FETCH NORM', data.photo, ' VS -> ', profilePicture);
           setUser(data);
         }
       } else {
@@ -199,7 +202,9 @@ const GovID = () => {
       >
         <View style={styles.digitalID}>
           <View style={styles.profileContainer}>
-            <Image style={styles.profilePicture} source={placeholderImage} />
+            {profilePicture && (
+              <Image style={styles.profilePicture} source={{ uri: profilePicture }} />
+            )}
             <View style={styles.textContainer}>
               {user && (
                 <>
@@ -209,7 +214,7 @@ const GovID = () => {
                   <Text style={styles.importantLast}>
                     {safeUpperCase(user.lastname)}
                   </Text>
-
+  
                   <Text style={styles.labelBasicGrey}>DoB</Text>
                   <Text style={styles.dateOfBirth}>
                     {user.day} {months[user.month]} {calculate_year_birth(user.age)}
@@ -225,9 +230,11 @@ const GovID = () => {
             <Text style={styles.refreshTime}>{lastRefreshed}</Text>
           </View>
           <View style={styles.divider} />
-
+  
           <View style={styles.statusContainer}>
-            <Text style={styles.statusOutline}>Status ⓘ</Text>
+            <View style={styles.statusTextContainer}>
+              <Text style={styles.statusOutline}>Status ⓘ</Text>
+            </View>
             <TouchableOpacity style={styles.statusButton}>
               <Text style={styles.statusButtonText}>Current</Text>
             </TouchableOpacity>
@@ -236,15 +243,19 @@ const GovID = () => {
           <View style={styles.divider} />
 
           <View style={styles.ageContainer}>
-            <Text style={styles.labelBasicGrey}>Age</Text>
-            <Text style={styles.age}><Icon name="check-circle" size={20} color="#317d33" /> Over 18</Text>
+            <Text style={styles.ageLabel}>Age</Text>
+            <View style={styles.ageStatusContainer}>
+              <Icon name="check-circle" size={20} color="#317d33" style={styles.ageIcon} />
+              <Text style={styles.ageText}>Over 18</Text>
+            </View>
           </View>
-          <View style={styles.divider} />
 
+          <View style={styles.divider} />
+  
           <View style={styles.vehicleInfo}>
             <View style={styles.vehicleClass}>
               <Text style={styles.labelBasicGrey}>Class</Text>
-              <Text style={styles.vehicleTextCentered}>(C) Car  <Icon name="car" size={20} color="#000000" /> </Text>
+              <Text style={styles.vehicleTextCentered}>(C) Car <Icon name="car" size={20} color="#000000" /> </Text>
             </View>
             <View style={styles.vehicleType}>
               <Text style={styles.labelBasicGrey}>Type</Text>
@@ -255,15 +266,14 @@ const GovID = () => {
               <Text style={styles.vehicleTextCentered}>{expiryDate}</Text>
             </View>
           </View>
-
-
+  
           <View style={styles.divider} />
-
+  
           <View style={styles.conditions}>
             <Text style={styles.labelBasicGrey}>Conditions</Text>
             <Text style={styles.labelBasicGrey}>-</Text>
           </View>
-          
+  
           <View style={styles.divider} />
           <View style={styles.addressContainer}>
             <View style={styles.addressTitleContainer}>
@@ -281,40 +291,41 @@ const GovID = () => {
               )}
             </View>
           </View>
-
+  
           <View style={styles.divider} />
           <View style={styles.signatureContainer}>
-              <Text style={styles.statusOutline}>Signature 🔍</Text>
-              <Image style={styles.signature} source={signature} />
+            <Text style={styles.statusOutline}>Signature 🔍</Text>
+            <Image style={styles.signature} source={signature} />
           </View>
-
+  
           <View style={styles.divider} />
-
+  
           <View style={styles.cardNumberContainer}>
-              <Text style={styles.labelBasicGrey}>Card number</Text>
-              <View style={styles.cardNumber}>
-                <Text style={styles.vehicleTextCentered}>{cardNumber}</Text>
-              </View>
+            <Text style={styles.labelBasicGrey}>Card number</Text>
+            <View style={styles.cardNumber}>
+              <Text style={styles.vehicleTextCentered}>{cardNumber}</Text>
+            </View>
           </View>
-          
+  
           <View style={styles.divider} />
-
+  
           <View style={styles.countryInfo}>
             <Text style={styles.labelBasicGrey}>Issuing Country</Text>
             <View style={styles.country}>
               <Text style={styles.vehicleTextCentered}>AU</Text>
             </View>
-
+  
             <Text style={styles.labelBasicGrey}>Issuing Authority</Text>
             <View style={styles.authority}>
               <Text style={styles.vehicleTextCentered}>Queensland Government{'\n'}Department of Transport{'\n'}and Main Roads</Text>
             </View>
           </View>
-
+  
         </View>
       </ScrollView>
     </SafeAreaView>
   );
+  
 };
 
 const styles = StyleSheet.create({
@@ -378,17 +389,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   statusContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center',  // Center the button horizontally
     marginVertical: 10,
+  },
+  statusTextContainer: {
+    alignSelf: 'flex-start',  // Align the text container to the left
+    position: 'absolute',     // Position it absolutely within the parent
+    left: 0,                  // Align the text to the left edge
   },
   statusButton: {
     width: 95,
     height: 35,
     backgroundColor: '#317d33',
     justifyContent: 'center',
-    alignItems: 'center',
     borderRadius: 10,
   },
   statusButtonText: {
@@ -398,23 +412,40 @@ const styles = StyleSheet.create({
   statusOutline: {
     textDecorationLine: 'underline',
     color: 'grey',
+    flex: 1, // Take up available space
+    textAlign: 'left', // Align text to the left
   },
   ageContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 10,
+    marginTop: 20,
   },
-  age: {
+  
+  ageLabel: {
+    color: 'grey',
+    fontSize: 16,
+    marginRight: 105, // Adjust this value to increase or decrease space between "Age" and "(tick) Over 18"
+  },
+  
+  ageStatusContainer: {
+    flexDirection: 'row',   // Keep the icon and text on the same line
+    alignItems: 'center',   // Vertically align the icon and text
+  },
+  
+  ageText: {
     fontSize: 17,
     color: 'green',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center', // Center the age text horizontally
+    textAlign: 'center',
   },
+  
+  ageIcon: {
+    marginRight: 5, // Space between the icon and the "Over 18" text
+  },
+  
+  
   checkIconContainer: {
     marginRight: 10,
-  },
+  },  
   vehicleTextCentered: {
     fontSize: 17,
     flex: 1,
