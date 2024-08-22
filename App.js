@@ -9,6 +9,9 @@ import Settings from './components/pages/Settings';
 import ScanQR from './components/pages/ScanQR';
 import GovID from './components/pages/GovID';
 import CustomHeader from './components/CustomHeader';
+import ShareID from './components/pages/ShareID';
+import CustomHeaderShare from './components/CustomHeaderShare';
+import FakeShareID from './components/pages/FakeShareID';
 
 
 
@@ -24,6 +27,9 @@ const App = () => {
         <Stack.Screen name="Settings" component={Settings} options={{ headerShown: false }} />
         <Stack.Screen name="Scan" component={ScanQR} options={{ headerShown: false }} />
         <Stack.Screen name='Nav' component={CustomHeader} options={{ headerShown: false }} />
+        <Stack.Screen name='NavShare' component={CustomHeaderShare} options={{ headerShown: false}} />
+        <Stack.Screen name='Share' component={ShareID} options={{ header: () => <CustomHeaderShare redirectTo={'GovID'} /> }} />
+        <Stack.Screen name='FakeDisplay' component={FakeShareID} options={{ header: () => <CustomHeaderShare redirectTo={'Share'}/>}} />
         <Stack.Screen 
           name="GovID" 
           component={GovID} 

@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Image, SafeAreaView, TouchableOpacity, ScrollView, RefreshControl, Animated, Easing } from 'react-native';
+import { StyleSheet, View, Text, Image, SafeAreaView, TouchableOpacity, ScrollView, RefreshControl, Animated, Easing, ActivityIndicator } from 'react-native';
 import { supabase } from '../supabaseClient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import the FontAwesome icon set
+import DriverLicenseCard from '../DriverLicenseCard';
+import { useNavigation } from '@react-navigation/native';
 
 const GovID = () => {
+  const navigation = useNavigation();
+
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [licenseNum, setLicenseNum] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [cardNumber, setCardNumber] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const qldGovLogo = require('./images/qldgov.png');
@@ -42,7 +47,7 @@ const GovID = () => {
     "12": "Dec"
   };
 
-  useEffect(() => {
+  useEffect(() => {    
     const animateBackground = () => {
       Animated.loop(
         Animated.sequence([
@@ -62,61 +67,35 @@ const GovID = () => {
       ).start();
     };
 
-    const generateRandomTime = () => {
-      // generate random time today, 3hrs previous
-      const today = new Date();
-      const threeHoursAgo = new Date(today.getTime() - 3 * 60 * 60 * 1000);
-      const randomTime = new Date(threeHoursAgo.getTime() + Math.random() * (today.getTime() - threeHoursAgo.getTime()));
-    
-      // Format date
-      const day = randomTime.getDate().toString().padStart(2, '0');
-      const month = randomTime.toLocaleString('en-US', { month: 'short' });
-      const year = randomTime.getFullYear();
-      const hours = randomTime.getHours();
-      const minutes = randomTime.getMinutes().toString().padStart(2, '0');
-      const ampm = hours >= 12 ? 'pm' : 'am';
-      const formattedHours = hours % 12 || 12; // Convert 24-hour format to 12-hour format
-    
-      const formattedTime = `${day} ${month} ${year} ${formattedHours}:${minutes}${ampm}`;
-    
-      setLastRefreshed(formattedTime);
-    }
 
     const cardnumbergenerator = () => {
       // 10 character alpha numeric random string
       const cardNumber = Math.random().toString(36).substr(2, 10);
       setCardNumber(cardNumber.toUpperCase());
-
     }
 
     
 
     const determine_signature = () => {
       // random num from 0 to 5 
-      const randomNum = Math.floor(Math.random() * 6);
-      // signature based on random num
-      if(randomNum === 0) {
-        setSignature(signature_1);
-      } else if(randomNum === 1) {
-        setSignature(signature_2);
-      } else if(randomNum === 2) {
-        setSignature(signature_3);
-      } else if(randomNum === 3) {
-        setSignature(signature_4);
-      } else if(randomNum === 4) {
-        setSignature(signature_5);
-      } else {
-        setSignature(signature_1);
-      }
+      // signature based on random num :d (lmfao nobody except ME (😩😩😩😩 goon time) can see this comment)
+      // time to spam racial slurs 
+      const signatures = [signature_1, signature_2, signature_3, signature_4, signature_5];
+      setSignature(signatures[Math.floor(Math.random() * signatures.length)]);      
     }
   
-    fetchUserData();
-    generateLicenseNum();
-    generateExpiryDate();
-    generateRandomTime();
-    determine_signature();
-    cardnumbergenerator();
-    animateBackground();
+    const loadData = async () => {
+      await fetchUserData(); // Fetch user data
+      generateLicenseNum(); // Generate license number
+      generateExpiryDate(); // Generate expiry date
+      setLastRefreshed(getCurrentTime()); // Generate random time
+      determine_signature(); // Determine signature
+      cardnumbergenerator(); // Generate card number
+      animateBackground(); // Start background animation
+      setIsLoading(false); // Set loading to false when everything is ready
+    };
+    
+    loadData(); // Execute the data loading
   }, []); // Empty dependency array to run only on mount
 
   const generateLicenseNum = () => {
@@ -125,6 +104,20 @@ const GovID = () => {
       license_num += Math.floor(Math.random() * 10).toString();
     }
     setLicenseNum(license_num);
+  };
+  const getCurrentTime = () => {
+    // Get current time
+    const now = new Date();
+    // Format date
+    const day = now.getDate().toString().padStart(2, '0');
+    const month = now.toLocaleString('en-US', { month: 'short' });
+    const year = now.getFullYear();
+    const hours = now.getHours();
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    const formattedHours = hours % 12 || 12; // Convert 24-hour format to 12-hour format
+  
+    return `${day} ${month} ${year} ${formattedHours}:${minutes}${ampm}`;
   };
 
   const calculate_year_birth = (age) => {
@@ -175,14 +168,17 @@ const GovID = () => {
     setExpiryDate(formattedExpiryDate);
   };
 
+
   const onRefresh = () => {
     setRefreshing(true);
     fetchUserData();
+    setLastRefreshed(getCurrentTime());
 
     setTimeout(() => {
       setRefreshing(false);
     }, 1200);
   };
+
 
   const safeUpperCase = (text) => (text || "").toUpperCase();
 
@@ -226,9 +222,19 @@ const GovID = () => {
             </View>
           </View>
           <View style={styles.refreshed}>
-            <Text style={styles.labelBasicGrey}>Information was refreshed online: </Text>
-            <Text style={styles.refreshTime}>{lastRefreshed}</Text>
+            <View style={styles.refreshTextContainer}>
+              <Text style={styles.refreshLabel}>Information was refreshed online: </Text>
+              <Text style={styles.refreshTime}>{lastRefreshed}</Text>
+            </View>
+            {refreshing && (
+              <View style={styles.loadingContainer}>
+                <Text style={styles.loadingText}>Loading...</Text>
+                <ActivityIndicator size="small" color="#000000" style={styles.loadingIcon} />
+              </View>
+            )}
           </View>
+
+
           <View style={styles.divider} />
   
           <View style={styles.statusContainer}>
@@ -245,7 +251,7 @@ const GovID = () => {
           <View style={styles.ageContainer}>
             <Text style={styles.ageLabel}>Age</Text>
             <View style={styles.ageStatusContainer}>
-              <Icon name="check-circle" size={20} color="#317d33" style={styles.ageIcon} />
+              <Icon name="check-circle" size={35} color="#38c634" style={styles.ageIcon} />
               <Text style={styles.ageText}>Over 18</Text>
             </View>
           </View>
@@ -255,11 +261,11 @@ const GovID = () => {
           <View style={styles.vehicleInfo}>
             <View style={styles.vehicleClass}>
               <Text style={styles.labelBasicGrey}>Class</Text>
-              <Text style={styles.vehicleTextCentered}>(C) Car <Icon name="car" size={20} color="#000000" /> </Text>
+              <Text style={styles.vehicleTextWithIcon}>(C) Car <Icon name="car" size={20} color="#000000" /></Text>
             </View>
             <View style={styles.vehicleType}>
               <Text style={styles.labelBasicGrey}>Type</Text>
-              <Text style={styles.vehicleTextCentered}>(P) Provisional</Text>
+              <Text style={styles.vehicleTextCentered}>(P1) Provisional</Text>
             </View>
             <View style={styles.idExpiry}>
               <Text style={styles.labelBasicGrey}>Expiry</Text>
@@ -271,7 +277,6 @@ const GovID = () => {
   
           <View style={styles.conditions}>
             <Text style={styles.labelBasicGrey}>Conditions</Text>
-            <Text style={styles.labelBasicGrey}>-</Text>
           </View>
   
           <View style={styles.divider} />
@@ -283,10 +288,10 @@ const GovID = () => {
             <View style={styles.addressInfo}>
               {user && (
                 <>
-                  <Text>{user.houseNumber} {user.street} {user.type}</Text>
-                  <Text>{user.suburb}</Text>
-                  <Text>{user.state} {user.postCode}</Text>
-                  <Text>{user.country}</Text>
+                  <Text>{safeUpperCase(user.houseNumber)} {safeUpperCase(user.street)} {safeUpperCase(user.type)}</Text>
+                  <Text>{safeUpperCase(user.suburb)}</Text>
+                  <Text>QLD {safeUpperCase(user.postCode)}</Text>
+                  <Text>AU</Text>
                 </>
               )}
             </View>
@@ -301,28 +306,32 @@ const GovID = () => {
           <View style={styles.divider} />
   
           <View style={styles.cardNumberContainer}>
-            <Text style={styles.labelBasicGrey}>Card number</Text>
+            <Text style={styles.label}>Card number</Text>
             <View style={styles.cardNumber}>
-              <Text style={styles.vehicleTextCentered}>{cardNumber}</Text>
+              <Text style={styles.value}>{cardNumber}</Text>
             </View>
           </View>
   
           <View style={styles.divider} />
   
           <View style={styles.countryInfo}>
-            <Text style={styles.labelBasicGrey}>Issuing Country</Text>
             <View style={styles.country}>
-              <Text style={styles.vehicleTextCentered}>AU</Text>
+              <Text style={styles.label}>Issuing Country</Text>
+              <Text style={styles.value}>AU</Text>
             </View>
-  
-            <Text style={styles.labelBasicGrey}>Issuing Authority</Text>
             <View style={styles.authority}>
-              <Text style={styles.vehicleTextCentered}>Queensland Government{'\n'}Department of Transport{'\n'}and Main Roads</Text>
+              <Text style={styles.label}>Issuing Authority</Text>
+              <View style={styles.space} />
+              <Text style={styles.value}>Queensland Government{'\n'}Department of Transport{'\n'}and Main Roads</Text>
             </View>
           </View>
   
         </View>
+        <View style={styles.bigSpace}>
+
+        </View>
       </ScrollView>
+      <DriverLicenseCard />
     </SafeAreaView>
   );
   
@@ -340,7 +349,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     opacity: 0.1,
     margin: '20%',
-    marginTop: '40%'
+    marginTop: '60%'
   },
   scrollViewContent: {
     paddingBottom: 20,
@@ -378,13 +387,40 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   refreshed: {
-    marginTop: 3,
+    marginTop: 1,
+    flexDirection: 'row',
+    alignItems: 'center', // Center items vertically
+    flexWrap: 'wrap', // Allow wrapping if necessary
   },
-  labelBasicGrey: {
-    color: 'grey',
+  refreshTextContainer: {
+    flexDirection: 'column',
+  },
+  refreshLabel: {
     fontSize: 16,
-    flex: 1,
+    color: 'grey',
   },
+  refreshTime: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginLeft: 5, // Space between label and time
+  },
+  loadingContainer: {
+    position: 'relative',
+    alignSelf: 'flex-start', // Align container to the left
+  },
+  loadingIcon: {
+    position: 'absolute',
+    left: 0, // Align icon to the left
+    zIndex: 1,
+    transform: [{ scale: 0.7 }],
+  },
+  loadingText: {
+    fontSize: 13,
+    color: '#000',
+    zIndex: 2,
+    paddingLeft: 30, // Add some padding to separate the text from the icon
+  },
+
   refreshTime: {
     fontWeight: 'bold',
   },
@@ -401,7 +437,7 @@ const styles = StyleSheet.create({
   statusButton: {
     width: 95,
     height: 35,
-    backgroundColor: '#317d33',
+    backgroundColor: '#2e9170',
     justifyContent: 'center',
     borderRadius: 10,
   },
@@ -434,7 +470,7 @@ const styles = StyleSheet.create({
   
   ageText: {
     fontSize: 17,
-    color: 'green',
+    color: '#65c1a9',
     textAlign: 'center',
   },
   
@@ -446,29 +482,71 @@ const styles = StyleSheet.create({
   checkIconContainer: {
     marginRight: 10,
   },  
-  vehicleTextCentered: {
-    fontSize: 17,
-    flex: 1,
-    textAlign: 'center',  // Center the value text
-  },
+
+  // VEHICLE INFORMATION CSS
   vehicleInfo: {
-    marginTop: 20,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   vehicleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',  // Distribute space between header and value
-    marginBottom: 10,  // Space between each row
+    marginBottom: 20,  // Space between each row
   },
-
+  vehicleClass: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },  
+  vehicleType: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+    
+  },
+  idExpiry: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  vehicleTextWithIcon: {
+    fontSize: 17,
+    flexDirection: 'row',
+    alignItems: 'center',
+    textAlign: 'center', // Center text horizontally
+    flex: 1, // Allow text to take up remaining space
+    marginLeft: -100, // Slightly shift text to the left
+  },
+  vehicleTextCentered: {
+    fontSize: 17,
+    textAlign: 'center', // Center text horizontally
+    flex: 1, // Allow text to take up remaining space
+    marginLeft: -75, // Slightly shift text to the left
+  },
+  // DIVIDER CSS
   divider: {
     height: 1,
     backgroundColor: '#ccc',
     marginVertical: 10,
   },
+
+  // MISC CSS
   conditions: {
     marginTop: 10,
   },
+  italicText: {
+    fontStyle: 'italic',
+    color: 'grey',
+    fontSize: 11,
+  },
+  labelBasicGrey: {
+    color: 'grey',
+    fontSize: 16,
+    width: 100, // Fixed width to keep labels aligned
+    textAlign: 'left', // Align text to the left
+  },
+
+  // ADDRESS CSS
   addressContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
@@ -481,11 +559,8 @@ const styles = StyleSheet.create({
     flex: 2,
     marginLeft: 20,
   },
-  italicText: {
-    fontStyle: 'italic',
-    color: 'grey',
-    fontSize: 11,
-  },
+
+  // SIGNATURE
   signatureContainer: {
     marginTop: 20,
   },
@@ -496,34 +571,55 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginLeft: 150
   },
+
+  // CARD NUMBER
   cardNumberContainer: {
     marginTop: 20,
   },
   cardNumber: {
-    marginTop: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5, // Space between country label and value
   },
   cardNumberText: {
     fontSize: 17,
     textAlign: 'center', // Center the card number text
   },
 
+  // COUNTRY & ISSUING AUTHORITY
   countryInfo: {
-    marginTop: 20,
+    marginBottom: 15,
+    paddingHorizontal: 10, // Adjust the horizontal padding as needed
   },
   country: {
-    marginTop: 5,
-  },
-  countryText: {
-    fontSize: 17,
-    textAlign: 'center', // Center the country text
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5, // Space between country label and value
   },
   authority: {
-    marginTop: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  authorityText: {
-    fontSize: 17,
-    textAlign: 'center', // Center the authority text
+  label: {
+    flex: 1,
   },
+  value: {
+    flex: 2,
+    textAlign: 'right', // Align value to the right
+  },
+  space: {
+    width: 60,
+  },
+  bigSpace: {
+    width: 120,
+  },
+
+
+
+  btn: {
+    position: 'sticky',
+    bottom: 0
+  }
 });
 
 export default GovID;

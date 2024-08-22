@@ -3,12 +3,12 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, SafeAreaView } from 'r
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const CustomHeader = () => {
+const CustomHeaderShare = ({ redirectTo }) => {
   const navigation = useNavigation();
   const qldGovLogo = require('./pages/images/qldgov.png');
 
   const warpToHome = () => {
-    navigation.navigate('Home');
+    navigation.navigate(redirectTo);
   };
 
   return (
@@ -18,9 +18,7 @@ const CustomHeader = () => {
           <MaterialIcons name="arrow-back" size={24} color="black" />
           <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
-        <Text style={styles.bannerText}>Driver Licence</Text>
-      </View>
-      <Image source={qldGovLogo} style={styles.qldGovLogo} />
+      </View>   
     </SafeAreaView>
   );
 };
@@ -63,4 +61,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomHeader;
+export default CustomHeaderShare;

@@ -34,7 +34,7 @@ export default function Login({ navigation }) {
                 navigateBackToLogin();
             }
         } catch (error) {
-            console.log("Session verification failed: ", error);
+            console.log("[Server] @ ./Login - Session verification failed: ", error);
             await AsyncStorage.removeItem('session');
             navigateBackToLogin();
         } finally {
@@ -74,8 +74,6 @@ export default function Login({ navigation }) {
         setSession(null);
     }, [navigation]);
 
-    const debouncedSetEmail = useCallback(debounce(setEmail, 0), []);
-    const debouncedSetPassword = useCallback(debounce(setPassword, 0), []);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -98,7 +96,7 @@ export default function Login({ navigation }) {
                         <TextInput 
                             style={styles.input} 
                             value={email} 
-                            onChangeText={debouncedSetEmail} 
+                            onChangeText={setEmail} 
                             placeholder="Enter your email" 
                             keyboardType="email-address" 
                             autoCapitalize="none"
@@ -110,7 +108,7 @@ export default function Login({ navigation }) {
                         <TextInput 
                             style={styles.input} 
                             value={password} 
-                            onChangeText={debouncedSetPassword} 
+                            onChangeText={setPassword} 
                             secureTextEntry 
                             placeholder="Enter your password" 
                         />
@@ -119,9 +117,6 @@ export default function Login({ navigation }) {
                             <Text style={styles.buttonText}>Sign In</Text>
                         </TouchableOpacity>
 
-                        <Text style={styles.disclaimer}>
-                            Input your received account details. Warning: There may be delays in fetching your login details, so it's YOUR RESPONSIBILITY to memorize and look after your credentials.
-                        </Text>
                     </View>
                 )}
             </View>
@@ -134,69 +129,75 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F0F0F0',
+        backgroundColor: '#F5F5F5', // Light gray background
     },
     innerContainer: {
         width: '90%',
         backgroundColor: '#FFFFFF',
-        padding: 20,
-        borderRadius: 10,
+        padding: 30,
+        borderRadius: 12,
         shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 6, // For Android shadow
     },
     input: {
-        borderColor: '#6200EE',
+        borderColor: '#CCCCCC', // Soft gray border
         borderWidth: 1,
-        borderRadius: 5,
-        padding: 10,
-        marginVertical: 10,
+        borderRadius: 8,
+        padding: 15,
+        marginVertical: 12,
         fontSize: 16,
         color: '#333333',
+        backgroundColor: '#FAFAFA', // Light background for inputs
     },
     label: {
-        fontWeight: 'bold',
+        fontWeight: '600',
         fontSize: 16,
-        color: '#333333',
+        color: '#444444',
+        marginBottom: 6,
     },
     gap: {
         height: 20,
     },
     button: {
-        backgroundColor: '#6200EE',
+        backgroundColor: '#007BFF', // Modern blue color
         paddingVertical: 15,
-        borderRadius: 5,
+        borderRadius: 8,
         alignItems: 'center',
-        marginTop: 20,
+        marginTop: 30,
+        shadowColor: '#007BFF',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 5, // Shadow effect for Android
     },
     buttonText: {
         color: '#FFFFFF',
-        fontSize: 16,
-        fontWeight: 'bold',
+        fontSize: 18,
+        fontWeight: '600',
     },
     disclaimer: {
         marginTop: 20,
         textAlign: 'center',
         color: '#888888',
         fontSize: 12,
+        lineHeight: 18,
     },
     header: {
         fontSize: 28,
         textAlign: 'center',
-        fontWeight: 'bold',
-        marginBottom: 20,
-        color: '#6200EE',
+        fontWeight: '700',
+        marginBottom: 25,
+        color: '#333333',
     },
     subheader: {
         fontSize: 16,
         textAlign: 'center',
         marginBottom: 40,
-        color: '#666666',
+        color: '#555555',
+        lineHeight: 22,
     },
     loadingContainer: {
         flex: 1,

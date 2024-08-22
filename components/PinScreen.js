@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, LayoutAnimation } from 'react-native';
+import * as LocalAuthentication from 'expo-local-authentication'; // Import Local Authentication module
 import { supabase } from './supabaseClient';
 
 const PinScreen = ({ route, navigation }) => {
     const [pin, setPin] = useState([]);
-    const { userKey } = route.params || {}; 
+    const { userKey } = route.params || {};
+
 
     useEffect(() => {
         if (pin.length === 6) {
             attemptLogin();
         }
-    }, [pin]);
+    }, [pin]);    
+    
 
     const handleInput = useCallback((num) => {
         if (pin.length < 6) {
@@ -28,8 +31,8 @@ const PinScreen = ({ route, navigation }) => {
         }
     }, [pin]);
 
-    const attemptLogin = async () => {
-        const enteredPin = pin.map((char) => char.value).join('');
+    const attemptLogin = async (useBiometrics = false) => {
+        const enteredPin = useBiometrics ? 'biometric-auth' : pin.map((char) => char.value).join('');
 
         if (!userKey) {
             Alert.alert("Error", "User key is missing.");
@@ -50,7 +53,7 @@ const PinScreen = ({ route, navigation }) => {
 
         const savedPin = data.pin;
 
-        if (enteredPin === savedPin) {
+        if (enteredPin === savedPin || useBiometrics) {
             navigation.navigate('HomePage');  // Navigate to the next screen
         } else {
             Alert.alert("Incorrect Pin");
