@@ -1,13 +1,23 @@
 {
   "expo": {
-    "name": "gov-id-replace",
-    "slug": "gov-id",
-    "owner": "marcusxmoo",
-    "version": "1.0.0",
-    "extra": {
-      "eas": {
-        "projectId": "ba45f20d-9bde-4932-a13a-efc695125a2e"
+    "name": "Digital License",
+    "slug": "Digital License",
+    "platforms": [
+      "ios",
+      "web"
+    ],
+    "web": {
+      "backgroundColor": "#ffffff",
+      "description": "This is a demo app",
+      "display": "standalone",
+      "themeColor": "#008080",
+      "splash": {
+        "image": "./assets/images/splash.png",
+        "resizeMode": "contain"
       }
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

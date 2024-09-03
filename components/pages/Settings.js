@@ -1,14 +1,35 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Switch, Button, SafeAreaView, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'; // Ensure you have installed react-native-vector-icons
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
 
 
 
 const Settings = () => {
   const [isEnabled, setIsEnabled] = React.useState(false);
+  const [allowNotifications, setAllowNotifications] = React.useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  const toggleNotifications = () => setAllowNotifications(previousState => !previousState);
+  
   const qldGovLogo = require('./images/qldgov.png');
 
+  React.useEffect(() => {
+  })
+
+  async function registerForPushNotificationsAsync() {
+    const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    if (status !== 'granted') {
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      if (status !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+    }
+    const token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log(token);
+    return token;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -32,6 +53,16 @@ const Settings = () => {
           <Icon name="shield-checkmark-outline" size={20} color="#000" />
           <Text style={styles.buttonText}>Securely reset Digital Licence</Text>
           <Icon name="chevron-forward-outline" size={20} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button}>
+          <Icon name="notifications-circle" size={20} color="#000" />
+          <Text style={styles.buttonText}>Enable push notifications</Text>
+          <Switch
+            trackColor={{ false: "#767577", true: "#81b0ff" }}
+            thumbColor={allowNotifications ? "#f5dd4b" : "#f4f3f4"}
+            onValueChange={toggleNotifications}
+            value={allowNotifications}
+          />
         </TouchableOpacity>
         <TouchableOpacity style={styles.button}>
           <Icon name="document-text-outline" size={20} color="#000" />

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
-import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Settings from "./pages/Settings";
 import ScanQR from "./pages/ScanQR";
@@ -19,6 +19,10 @@ const HomePageContent = ({ navigation }) => {
   const carBroomBroom = require("./pages/images/icon.png")
 
   useEffect(() => {
+    setTimeout(() => {
+      setFakeLoading(false);
+    }, 2500);
+
     const fetchUser = async () => {
       try {
         const { data, error } = await supabase.auth.getUser();
@@ -70,11 +74,15 @@ const HomePageContent = ({ navigation }) => {
   }
 
   const styles = StyleSheet.create({
+    background: {
+      flex: 1,
+      backgroundColor: '#e7e6ed', // Background color for the entire screen
+    },
     profileContainer: {
       flexDirection: 'row',
       alignItems: 'center',
       marginBottom: 20,
-      marginTop: 40
+      marginTop: 40,
     },
     profilePicture: {
       width: 100,
@@ -126,27 +134,52 @@ const HomePageContent = ({ navigation }) => {
       height: 30,
       alignItems: 'center',
       alignContent: "center"
+    },
+    bannerColour: {
+      backgroundColor: '#972541',
+      width: '110%',
+      height: 70
+    },
+
+    loadingScreen: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#e7e6ed', // Background color for loading screen
+    },
+    loadingFont: {
+      fontSize: 16,
+      fontFamily: ""
     }
   });
 
   return (
-    <SafeAreaView>
-      <View style={styles.safetyPadding}>
-        <View style={styles.profileContainer}>
-          {profilePicture && (
-            <Image style={styles.profilePicture} source={{uri: profilePicture}} />
-          )}
-          <View style={styles.legalNameContainer}>
-            <Text style={styles.legalName}>{fName} {mName}</Text>
-            <Text style={styles.bold}>{lName}</Text>
-          </View>
+    <SafeAreaView style={styles.background}>
+      <View style={styles.bannerColour}></View>
+      {fakeLoading && (
+        <View style={styles.loadingScreen}>
+          <Text style={styles.loadingFont}>Fetching your digital wallet</Text>
+          <ActivityIndicator size={50} color="#6a5964"/>
         </View>
-        
-        <Text style={styles.header}>Credentials</Text>
-        <TouchableOpacity style={styles.button} onPress={redirectToId}>
-          <Text style={styles.buttonText}><Image style={styles.icon} source={carBroomBroom} /> Drivers License</Text>
-        </TouchableOpacity>
-      </View>
+      )}
+      {!fakeLoading && (
+        <View style={styles.safetyPadding}>
+          <View style={styles.profileContainer}>
+            {profilePicture && (
+              <Image style={styles.profilePicture} source={{uri: profilePicture}} />
+            )}
+            <View style={styles.legalNameContainer}>
+              <Text style={styles.legalName}>{fName} {mName}</Text>
+              <Text style={styles.bold}>{lName}</Text>
+            </View>
+          </View>
+          
+          <Text style={styles.header}>Credentials</Text>
+          <TouchableOpacity style={styles.button} onPress={redirectToId}>
+            <Text style={styles.buttonText}><Image style={styles.icon} source={carBroomBroom} /> Drivers License</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
