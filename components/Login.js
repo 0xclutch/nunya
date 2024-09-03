@@ -15,6 +15,9 @@ export default function Login({ navigation }) {
         checkSession();
     }, []);
 
+
+      
+
     const checkSession = useCallback(async () => {
         setLoading(true);
         try {

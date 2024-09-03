@@ -42,10 +42,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   gradientContainer: {
-    ...StyleSheet.absoluteFillObject, // Ensure the gradient covers the entire container
-    height: 150, // Adjust as needed to cover the height of the header
-    transform: [{ rotate: '-20deg' }], // Rotate the gradient to create a diagonal effect
-    marginTop: -80, // Adjust the position of the gradient
+    backgroundImage: 'linear-gradient(to right, #ecc47e, #c29d6d)', // Use CSS gradient
+    height: 150,
+    transform: [{ rotate: '-20deg' }],
+    marginTop: -80,
   },
   diagonalGradient: {
     flex: 1,

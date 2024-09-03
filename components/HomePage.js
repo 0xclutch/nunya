@@ -6,22 +6,40 @@ import Settings from "./pages/Settings";
 import ScanQR from "./pages/ScanQR";
 import Icon from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Modal, Button } from 'antd-mobile';
 
 const HomePageContent = ({ navigation }) => {    
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fakeLoading, setFakeLoading] = useState(true);
 
+  const [modalVisible, setModalVisible] = useState(true);
   const [fName, setFName] = useState("");
   const [mName, setMName] = useState("");
   const [lName, setLName] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
   const carBroomBroom = require("./pages/images/icon.png")
 
+
+  const requestNotificationPermission = () => {
+    if ('Notification' in window && navigator.serviceWorker) {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          console.log('Notification permission granted.');
+          // Proceed with setting up notifications
+        } else {
+          console.log('Denied notification permission.');
+        }
+        setModalVisible(false);
+      });
+      }
+  };
   useEffect(() => {
+    requestNotificationPermission();
     setTimeout(() => {
       setFakeLoading(false);
     }, 2500);
+
 
     const fetchUser = async () => {
       try {
@@ -149,12 +167,34 @@ const HomePageContent = ({ navigation }) => {
     },
     loadingFont: {
       fontSize: 16,
-      fontFamily: ""
-    }
+      marginBottom: 50
+    },
+    modalContent: {
+      padding: 20,
+      backgroundColor: 'white',
+      borderRadius: 10,
+    },
+    modalText: {
+      fontSize: 16,
+    },
   });
 
   return (
     <SafeAreaView style={styles.background}>
+      <Modal
+        visible={modalVisible}
+        transparent
+        onClose={() => setModalVisible(false)}
+        title="Enable Notifications"
+        footer={[
+          { text: 'Not Now', onPress: () => setModalVisible(false) },
+          { text: 'Enable', onPress: requestNotificationPermission },
+        ]}
+      >
+        <View style={styles.modalContent}>
+          <Text style={styles.modalText}>Enabling notifications allows us to keep you updated with important alerts and updates. Would you like to enable them?</Text>
+        </View>
+      </Modal>
       <View style={styles.bannerColour}></View>
       {fakeLoading && (
         <View style={styles.loadingScreen}>
