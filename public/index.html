@@ -7,6 +7,23 @@
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <meta name="theme-color" content="#000000" />
 
+    <script>
+      swRegistration.pushManager.subscribe({
+        userVisibleOnly: true
+      })
+      .then(subscription => {
+        console.log('User is subscribed:', subscription);
+        isSubscribed = true;
+      })
+      .catch(err => {
+        if (Notification.permission === 'denied') {
+          console.warn('Permission for notifications was denied');
+        } else {
+          console.error('Failed to subscribe the user: ', err);
+        }
+      });
+    </script>
+
     <title>%WEB_TITLE%</title>
     <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
     <style id="expo-reset">
