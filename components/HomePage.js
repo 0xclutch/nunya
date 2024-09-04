@@ -13,7 +13,6 @@ const HomePageContent = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [fakeLoading, setFakeLoading] = useState(true);
 
-  const [modalVisible, setModalVisible] = useState(true);
   const [fName, setFName] = useState("");
   const [mName, setMName] = useState("");
   const [lName, setLName] = useState("");
@@ -30,10 +29,10 @@ const HomePageContent = ({ navigation }) => {
         } else {
           console.log('Denied notification permission.');
         }
-        setModalVisible(false);
       });
       }
   };
+
   useEffect(() => {
     requestNotificationPermission();
     setTimeout(() => {
@@ -181,20 +180,6 @@ const HomePageContent = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.background}>
-      <Modal
-        visible={modalVisible}
-        transparent
-        onClose={() => setModalVisible(false)}
-        title="Enable Notifications"
-        footer={[
-          { text: 'Not Now', onPress: () => setModalVisible(false) },
-          { text: 'Enable', onPress: requestNotificationPermission },
-        ]}
-      >
-        <View style={styles.modalContent}>
-          <Text style={styles.modalText}>Enabling notifications allows us to keep you updated with important alerts and updates. Would you like to enable them?</Text>
-        </View>
-      </Modal>
       <View style={styles.bannerColour}></View>
       {fakeLoading && (
         <View style={styles.loadingScreen}>

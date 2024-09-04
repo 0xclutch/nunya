@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     backgroundColor: '#ecc47e', // Fallback background color
     overflow: 'hidden',
+    position: 'sticky',
   },
   gradientContainer: {
     backgroundImage: 'linear-gradient(to right, #ecc47e, #c29d6d)', // Use CSS gradient
