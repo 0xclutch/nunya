@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
-import { Text, View, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from "react-native";
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {
+  Text,
+  View,
+  Image,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native-web"; // Import components from react-native-web
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Settings from "./pages/Settings";
 import ScanQR from "./pages/ScanQR";
-import Icon from 'react-native-vector-icons/Ionicons';
-import { SafeAreaView } from "react-native-safe-area-context";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const HomePageContent = ({ navigation }) => {
   const [user, setUser] = useState(null);
@@ -16,7 +21,7 @@ const HomePageContent = ({ navigation }) => {
   const [mName, setMName] = useState("");
   const [lName, setLName] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
-  const carBroomBroom = require("./pages/images/icon.png");
+  const carBroomBroom = "/assets/icon.png"; // Use relative path
 
   const requestNotificationPermission = () => {
     if ('Notification' in window && navigator.serviceWorker) {
@@ -37,42 +42,28 @@ const HomePageContent = ({ navigation }) => {
       setFakeLoading(false);
     }, 2500);
 
-    
-
     const fetchUser = async () => {
       try {
         const { data, error } = await supabase.auth.getUser();
         if (error) throw error;
 
         setUser(data.user);
-        console.log('User:', data.user);
+        if (data.user && data.user.id) {
+          const { data: userData, error: userError } = await supabase
+            .from("users")
+            .select("*")
+            .eq("uuid", data.user.id);
 
-        const contactUserInfo = async () => {
-          if (data.user && data.user.id) {
-            console.log('Contacting DB - ' + data.user.id);
-            const { data: userData, error: userError } = await supabase
-              .from("users")
-              .select("*")
-              .eq('uuid', data.user.id);
-
-            if (userError) {
-              console.log('Error fetching user info:', userError);
-            } else {
-              console.log('User data:', userData);
-              if (userData.length > 0) {
-                const userInfo = userData[0];
-                setFName(userInfo.firstname || "");
-                setMName(userInfo.middlename || "");
-                setLName(userInfo.lastname || "");
-                setProfilePicture(userInfo.photo || "");
-              }
-            }
+          if (!userError && userData.length > 0) {
+            const userInfo = userData[0];
+            setFName(userInfo.firstname || "");
+            setMName(userInfo.middlename || "");
+            setLName(userInfo.lastname || "");
+            setProfilePicture(userInfo.photo || "");
           }
-        };
-
-        contactUserInfo();
+        }
       } catch (error) {
-        console.error('Error fetching user:', error);
+        console.error("Error fetching user:", error);
       } finally {
         setLoading(false);
       }
@@ -82,7 +73,8 @@ const HomePageContent = ({ navigation }) => {
   }, []);
 
   const redirectToId = () => {
-    navigation.navigate('GovID');
+    // PWA-specific navigation handling
+    window.location.href = "/GovID"; // Navigate using window.location.href
   };
 
   if (loading) {
@@ -90,33 +82,35 @@ const HomePageContent = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <div style={styles.container}>
       <View style={styles.content}>
-        <View style={styles.bannerColour}></View>
+        <div style={styles.bannerColour}></div>
         {fakeLoading ? (
-          <View style={styles.loadingScreen}>
+          <div style={styles.loadingScreen}>
             <Text style={styles.loadingFont}>Fetching your digital wallet</Text>
-            <ActivityIndicator size={50} color="#6a5964"/>
-          </View>
+            <ActivityIndicator size={50} color="#6a5964" />
+          </div>
         ) : (
-          <View style={styles.safetyPadding}>
-            <View style={styles.profileContainer}>
+          <div style={styles.safetyPadding}>
+            <div style={styles.profileContainer}>
               {profilePicture && (
-                <Image style={styles.profilePicture} source={{ uri: profilePicture }} />
+                <img style={styles.profilePicture} src={profilePicture} alt="Profile" />
               )}
-              <View style={styles.legalNameContainer}>
+              <div style={styles.legalNameContainer}>
                 <Text style={styles.legalName}>{fName} {mName}</Text>
                 <Text style={styles.bold}>{lName}</Text>
-              </View>
-            </View>
+              </div>
+            </div>
             <Text style={styles.header}>Credentials</Text>
-            <TouchableOpacity style={styles.button} onPress={redirectToId}>
-              <Text style={styles.buttonText}><Image style={styles.icon} source={carBroomBroom} /> Drivers License</Text>
+            <TouchableOpacity style={styles.button} onClick={redirectToId}>
+              <Text style={styles.buttonText}>
+                <img style={styles.icon} src={carBroomBroom} alt="Icon" /> Drivers License
+              </Text>
             </TouchableOpacity>
-          </View>
+          </div>
         )}
       </View>
-    </SafeAreaView>
+    </div>
   );
 };
 
@@ -124,23 +118,23 @@ const HomePage = () => {
   const Tab = createBottomTabNavigator();
 
   return (
-    <SafeAreaView style={styles.container}>
+    <div style={styles.container}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ color, size }) => {
             let iconName;
-            if (route.name === 'Home') {
-              iconName = 'home';
-            } else if (route.name === 'Scan QR') {
-              iconName = 'qr-code';
-            } else if (route.name === 'Settings') {
-              iconName = 'settings';
+            if (route.name === "Home") {
+              iconName = "home";
+            } else if (route.name === "Scan QR") {
+              iconName = "qr-code";
+            } else if (route.name === "Settings") {
+              iconName = "settings";
             }
             return <Icon name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: '#a14e61',
-          tabBarInactiveTintColor: '#94737b',
-          tabBarStyle: { position: 'absolute', height: 60 }, // Position the navbar at the bottom
+          tabBarActiveTintColor: "#a14e61",
+          tabBarInactiveTintColor: "#94737b",
+          tabBarStyle: { position: "absolute", height: 60 }, // Position the navbar at the bottom
           headerShown: false,
         })}
       >
@@ -148,24 +142,24 @@ const HomePage = () => {
         <Tab.Screen name="Scan QR" component={ScanQR} />
         <Tab.Screen name="Settings" component={Settings} />
       </Tab.Navigator>
-    </SafeAreaView>
+    </div>
   );
 };
 
 export default HomePage;
 
-const styles = StyleSheet.create({
+const styles = {
   container: {
     flex: 1,
-    backgroundColor: '#e7e6ed',
+    backgroundColor: "#e7e6ed",
   },
   content: {
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   profileContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 20,
     marginTop: 40,
   },
@@ -176,18 +170,18 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   legalNameContainer: {
-    flexDirection: 'column',
+    flexDirection: "column",
   },
   legalName: {
     fontSize: 24,
   },
   bold: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 24,
   },
   header: {
     fontSize: 24,
-    fontWeight: '400',
+    fontWeight: "400",
     marginTop: 20,
     marginBottom: 20,
   },
@@ -195,40 +189,40 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   button: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderBottomColor: '#ccc',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderBottomColor: "#ccc",
     borderBottomWidth: 1,
     paddingVertical: 15,
     paddingHorizontal: 20,
   },
   buttonText: {
     fontSize: 18,
-    color: '#333',
+    color: "#333",
     flex: 1,
     paddingLeft: 10,
-    textAlign: 'center',
+    textAlign: "center",
   },
   icon: {
     width: 30,
     height: 30,
-    alignItems: 'center',
+    alignItems: "center",
   },
   bannerColour: {
-    backgroundColor: '#972541',
-    width: '100%',
+    backgroundColor: "#972541",
+    width: "100%",
     height: 70,
   },
   loadingScreen: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#e7e6ed',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#e7e6ed",
   },
   loadingFont: {
     fontSize: 16,
     marginBottom: 50,
   },
-});
+};
