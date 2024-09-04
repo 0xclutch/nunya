@@ -15,7 +15,6 @@ import Login from './components/Login';
 
 const App = () => {
   const Stack = createStackNavigator();
-
   // Register service worker for PWA
   if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
     window.addEventListener('load', () => {
