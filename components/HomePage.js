@@ -18,11 +18,26 @@ const HomePageContent = ({ navigation }) => {
   const [profilePicture, setProfilePicture] = useState(null);
   const carBroomBroom = require("./pages/images/icon.png");
 
+  const requestNotificationPermission = () => {
+    if ('Notification' in window && navigator.serviceWorker) {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          console.log('Notification permission granted.');
+          // Proceed with setting up notifications
+        } else {
+          console.log('Denied notification permission.');
+        }
+      });
+      }
+  };
+
   useEffect(() => {
     requestNotificationPermission();
     setTimeout(() => {
       setFakeLoading(false);
     }, 2500);
+
+    
 
     const fetchUser = async () => {
       try {
