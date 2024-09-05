@@ -193,9 +193,6 @@ const GovID = () => {
       />
       <ScrollView
         contentContainerStyle={styles.scrollViewContent}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
       >
         <View style={styles.digitalID}>
           <View style={styles.profileContainer}>
@@ -340,10 +337,8 @@ const GovID = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-  },
-  scrollViewContent: {
-    flexGrow: 1, // Ensures ScrollView can grow and take up available space
+    flex: 1,
+    height: '100%',
   },
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
@@ -354,9 +349,6 @@ const styles = StyleSheet.create({
     opacity: 0.1,
     margin: '20%',
     marginTop: '60%'
-  },
-  scrollViewContent: {
-    paddingBottom: 20,
   },
   digitalID: {
     padding: 20,
@@ -502,16 +494,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
+    width: 350,
   },  
   vehicleType: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
+    width: 350,
     
   },
   idExpiry: {
     flexDirection: 'row',
     alignItems: 'center',
+    width: 350, 
   },
   vehicleTextWithIcon: {
     fontSize: 17,
@@ -621,8 +616,15 @@ const styles = StyleSheet.create({
 
 
   btn: {
-    position: 'sticky',
-    bottom: 0
+    position: 'absolute',
+    bottom: 10,
+    left: 0,
+    right: 0,
+    backgroundColor: '#f2f2f2',
+    padding: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10, // Ensures it stays above ScrollView
   }
 });
 
