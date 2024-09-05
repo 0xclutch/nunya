@@ -340,7 +340,7 @@ const GovID = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
   },
   scrollViewContent: {
     flexGrow: 1, // Ensures ScrollView can grow and take up available space
