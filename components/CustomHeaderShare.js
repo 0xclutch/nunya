@@ -25,11 +25,12 @@ const CustomHeaderShare = ({ redirectTo }) => {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 10,
-    paddingHorizontal: 5,
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 150,
+    zIndex: 999,
     backgroundColor: '#ecc47e',
   },
   leftContainer: {

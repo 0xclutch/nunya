@@ -25,7 +25,7 @@ const DriverLicenseCard = () => {
 
 const styles = StyleSheet.create({
     button: {
-        position: 'absolute',
+        position: 'fixed',
         bottom: 20, // Adjust this value to fit your design
         left: 20, // Adjust this value to fit your design
         right: 20, // Adjust this value to fit your design

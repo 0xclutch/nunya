@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient'; // Import LinearGradient
+import { LinearGradient } from 'expo-linear-gradient';
 
 const CustomHeader = () => {
   const navigation = useNavigation();
@@ -16,10 +16,10 @@ const CustomHeader = () => {
     <SafeAreaView style={styles.headerContainer}>
       <View style={styles.gradientContainer}>
         <LinearGradient
-          colors={['#ecc47e', '#c29d6d']} // Define your gradient colors
+          colors={['#ecc47e', '#c29d6d']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.diagonalGradient} // Apply gradient to the diagonal slice
+          style={styles.diagonalGradient}
         />
       </View>
       <View style={styles.contentContainer}>
@@ -38,12 +38,15 @@ const CustomHeader = () => {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    backgroundColor: '#ecc47e', // Fallback background color
-    overflow: 'hidden',
-    position: 'sticky',
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 150,
+    zIndex: 999,
+    backgroundColor: '#ecc47e',
   },
   gradientContainer: {
-    backgroundImage: 'linear-gradient(to right, #ecc47e, #c29d6d)', // Use CSS gradient
     height: 150,
     transform: [{ rotate: '-20deg' }],
     marginTop: -80,
@@ -55,8 +58,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 10,
+    paddingVertical: 0,
     paddingHorizontal: 5,
+    height: 50
   },
   leftContainer: {
     flexDirection: 'column',

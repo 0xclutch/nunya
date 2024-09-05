@@ -41,9 +41,9 @@ const App = () => {
         <Stack.Screen 
           name="GovID" 
           component={GovID} 
-          // options={{
-          //   header: () => <CustomHeader />,
-          // }} 
+          options={{
+            header: () => <CustomHeader />,
+          }} 
         />
       </Stack.Navigator>
     </NavigationContainer>
