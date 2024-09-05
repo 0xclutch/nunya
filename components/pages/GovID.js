@@ -23,6 +23,21 @@ const GovID = () => {
   const backgroundImage = require('./images/background.png'); 
   const isInWebAppiOS = (window.navigator.standalone === true);
 
+  if (isInWebAppiOS){
+    PullToRefresh.init({
+      mainElement: 'body',
+      onRefresh() {
+        setRefreshing(true);
+        fetchUserData();
+        setLastRefreshed(getCurrentTime());
+    
+        setTimeout(() => {
+          setRefreshing(false);
+        }, 1200);
+      }
+    });
+  }
+
   // signatures
   const [signature, setSignature] = useState(null);
   const signature_1 = require('./signatures/signature.png');
@@ -172,15 +187,16 @@ const GovID = () => {
   };
 
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchUserData();
-    setLastRefreshed(getCurrentTime());
+  // const onRefresh = () => {
+  //   setRefreshing(true);
+  //   fetchUserData();
+  //   setLastRefreshed(getCurrentTime());
 
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1200);
-  };
+  //   setTimeout(() => {
+  //     setRefreshing(false);
+  //   }, 1200);
+  // };
+  // OLD METHOD TO REFRESH IF USING EXPO GO
 
 
   const safeUpperCase = (text) => (text || "").toUpperCase();
@@ -197,10 +213,6 @@ const GovID = () => {
       <CustomHeader />
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}
         scrollEnabled={true}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-
         style={{width:'100%', height: '100%'}}
       >
                         
