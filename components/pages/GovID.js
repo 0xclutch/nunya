@@ -192,6 +192,7 @@ const GovID = () => {
         ]}
       />
       <ScrollView
+        contentContainerStyle={styles.scrollViewContent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -340,6 +341,9 @@ const GovID = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollViewContent: {
+    flexGrow: 1, // Ensures ScrollView can grow and take up available space
   },
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
