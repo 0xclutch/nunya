@@ -5,7 +5,6 @@ import { useNavigation } from '@react-navigation/native';
 
 const CustomHeaderShare = ({ redirectTo }) => {
   const navigation = useNavigation();
-  const qldGovLogo = require('./pages/images/qldgov.png');
 
   const warpToHome = () => {
     navigation.navigate(redirectTo);
@@ -29,13 +28,14 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 150,
+    height: 60,
     zIndex: 999,
     backgroundColor: '#ecc47e',
   },
   leftContainer: {
     flexDirection: 'column',
     alignItems: 'flex-start', // Align content to the left
+    marginTop: 25
   },
   backButton: {
     flexDirection: 'row',

@@ -6,8 +6,9 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // Import the FontAwes
 import DriverLicenseCard from '../DriverLicenseCard';
 import { useNavigation } from '@react-navigation/native';
 import CustomHeader from '../CustomHeader';
+import PullToRefresh from 'pulltorefreshjs';
 
-const GovIDO = () => {
+const GovID = () => {
   const navigation = useNavigation();
 
   const [user, setUser] = useState(null);
@@ -20,6 +21,7 @@ const GovIDO = () => {
   const [refreshing, setRefreshing] = useState(false);
   const qldGovLogo = require('./images/qldgov.png');
   const backgroundImage = require('./images/background.png'); 
+  const isInWebAppiOS = (window.navigator.standalone === true);
 
   // signatures
   const [signature, setSignature] = useState(null);
@@ -354,6 +356,7 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
+    position: 'fixed',
     zIndex: -1,
     resizeMode: 'contain', // Ensures the image covers the entire screen while maintaining aspect ratio
     alignItems: 'center',
@@ -627,4 +630,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default GovIDO;
+export default GovID;

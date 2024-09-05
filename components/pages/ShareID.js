@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Modal, Alert, SafeAreaView } from "react-native";
 import { Icon } from "react-native-elements";
+import CustomHeaderShare from "../CustomHeaderShare";
 
 const ShareID = () => {
     const [modalVisible, setModalVisible] = useState(false);
@@ -26,8 +27,8 @@ const ShareID = () => {
 
     return (
         <SafeAreaView style={styles.container}>
+            <CustomHeaderShare />
             <View>
-                
                 <Text style={styles.header}>What would you like to share?</Text>
 
                 <TouchableOpacity style={styles.item} onPress={handleItemPress}>
@@ -46,13 +47,23 @@ const ShareID = () => {
                     </View>
                     <View style={styles.itemTextContainer}>
                         <Text style={styles.itemTitle}>Prove I'm over 18</Text>
-                        <Text style={styles.itemDescription}>Photo, Proof of your age</Text>
+                        <Text style={styles.itemDescription}>Photo, Proof you are over 18</Text>
                     </View>
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.item} onPress={handleItemPress}>
                     <View style={styles.itemIcon}>
                         <Icon name="user" type="font-awesome-5" size={30} />
+                    </View>
+                    <View style={styles.itemTextContainer}>
+                        <Text style={styles.itemTitle}>Share my identity</Text>
+                        <Text style={styles.itemDescription}>Photo, Name, DoB, Licence No., Signature</Text>
+                    </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.item} onPress={handleItemPress}>
+                    <View style={styles.itemIcon}>
+                        <Icon name="pdffile1" type="antdesign" size={30} />
                     </View>
                     <View style={styles.itemTextContainer}>
                         <Text style={styles.itemTitle}>Share a printable copy</Text>
@@ -69,7 +80,9 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
         backgroundColor: "#f0f0f5",
-        margin: 20
+        margin: 20,
+        paddingTop: 80, // Ensure content starts below the sticky header
+        borderRadius: 10
     },
     header: {
         fontSize: 20,
@@ -87,6 +100,10 @@ const styles = StyleSheet.create({
     },
     itemIcon: {
         marginRight: 15,
+        backgroundColor: '#ecc47e',
+        padding: 5,
+        margin: 5,
+        borderRadius: 100
     },
     itemTextContainer: {
         flex: 1,
