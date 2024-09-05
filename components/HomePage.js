@@ -229,6 +229,10 @@ const HomePage = () => {
         tabBarActiveTintColor: '#a14e61',
         tabBarInactiveTintColor: '#94737b',
         headerShown: false,
+        tabBarStyle: {
+          paddingBottom: 10, // This adds a bit of padding at the bottom
+          height: 70, // Slightly increase height for better spacing
+        },
       })}
     >
       <Tab.Screen name="Home" component={HomePageContent} />
