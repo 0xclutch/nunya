@@ -81,7 +81,6 @@ const styles = StyleSheet.create({
     color: '#210a03',
     marginTop: 30,
     margin: 15,
-    fontWeight: 'bold',
     flex: 1,
   },
   qldGovLogo: {
