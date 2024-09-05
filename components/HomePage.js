@@ -1,12 +1,12 @@
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
-import { Text, View, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from "react-native";
+import { Text, View, StyleSheet, Image, TouchableOpacity, ActivityIndicator, SafeAreaView } from "react-native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Settings from "./pages/Settings";
 import ScanQR from "./pages/ScanQR";
 import Icon from 'react-native-vector-icons/Ionicons';
-import { SafeAreaView } from "react-native-safe-area-context";
+
 
 const HomePageContent = ({ navigation }) => {    
   const [user, setUser] = useState(null);
