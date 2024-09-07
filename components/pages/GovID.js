@@ -116,13 +116,24 @@ const GovID = () => {
     loadData(); // Execute the data loading
   }, []); // Empty dependency array to run only on mount
 
-  const generateLicenseNum = () => {
-    let license_num = '';
-    for (let i = 0; i < 9; i++) { 
-      license_num += Math.floor(Math.random() * 10).toString();
+  const generateLicenseNum = async () => {
+    const storedLicenseNum = await AsyncStorage.getItem('licenseNum');
+
+    if (storedLicenseNum) {
+      setLicenseNum(storedLicenseNum);
+      console.log("License number already exists:", storedLicenseNum);
+    } else {
+      let license_num = '';
+      for (let i = 0; i < 9; i++) {
+        license_num += Math.floor(Math.random() * 10).toString();
+      }
+
+      await AsyncStorage.setItem('licenseNum', license_num);
+      setLicenseNum(license_num);
+      console.log("New license number generated:", license_num);
     }
-    setLicenseNum(license_num);
   };
+
   const getCurrentTime = () => {
     // Get current time
     const now = new Date();
@@ -236,7 +247,7 @@ const GovID = () => {
                     {user.day} {months[user.month]} {calculate_year_birth(user.age)}
                   </Text>
                   <Text style={styles.labelBasicGrey}>Licence No.</Text>
-                  <Text style={styles.licenceNum}>{licenseNum}</Text>
+                  <Text style={styles.licenceNum}>{licenseNum ? licenseNum : "Loading..."}</Text>
                 </>
               )}
             </View>

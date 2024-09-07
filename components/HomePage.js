@@ -141,16 +141,13 @@ const HomePageContent = ({ navigation }) => {
       color: '#333',
       flex: 1,
       paddingLeft: 10,
-      alignItems: 'center',
-      textAlign: 'center',
       alignContent: 'space-between',
       flex: 1,
+      marginLeft: 20,
     },
     icon: {
       width: 30,
       height: 30,
-      alignItems: 'center',
-      alignContent: "center"
     },
     bannerColour: {
       backgroundColor: '#972541',
@@ -201,7 +198,8 @@ const HomePageContent = ({ navigation }) => {
           
           <Text style={styles.header}>Credentials</Text>
           <TouchableOpacity style={styles.button} onPress={redirectToId}>
-            <Text style={styles.buttonText}><Image style={styles.icon} source={carBroomBroom} /> Drivers License</Text>
+            <Image style={styles.icon} source={carBroomBroom} />
+            <Text style={styles.buttonText}>Drivers License</Text>
           </TouchableOpacity>
         </View>
       )}

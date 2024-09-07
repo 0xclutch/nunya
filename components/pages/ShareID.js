@@ -1,7 +1,8 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Modal, Alert, SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView } from "react-native";
 import { Icon } from "react-native-elements";
+import { Modal } from 'antd';
 import CustomHeaderShare from "../CustomHeaderShare";
 
 const ShareID = () => {
@@ -10,15 +11,16 @@ const ShareID = () => {
 
     const handleItemPress = () => {
         setModalVisible(true);
-        Alert.alert("Consent Required", "You are about to share your \ninformation with a third party who may\nretain it. Do you consent?", [
-            {
-                text: "No",
-            },
-            {
-                text: "Yes",
-                onPress: () => consentGiven(),
-            },
-        ]);
+    };
+
+    const handleOk = () => {
+        consentGiven();
+        setModalVisible(false);
+        navigation.navigate('FakeDisplay');
+      };
+    
+    const handleCancel = () => {
+        setModalVisible(false);
     };
 
     const consentGiven = () => {
@@ -29,6 +31,16 @@ const ShareID = () => {
         <SafeAreaView style={styles.container}>
             <CustomHeaderShare />
             <View>
+                <Modal
+                    title="Consent Required"
+                    visible={modalVisible}
+                    onOk={handleOk}
+                    onCancel={handleCancel}
+                    okText="Yes"
+                    cancelText="No"
+                >
+                    <p>You are about to share your information with a third party who may retain it. Do you consent?</p>
+                </Modal>
                 <Text style={styles.header}>What would you like to share?</Text>
 
                 <TouchableOpacity style={styles.item} onPress={handleItemPress}>
