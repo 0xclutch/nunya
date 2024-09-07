@@ -37,7 +37,7 @@ const App = () => {
         <Stack.Screen name="Nav" component={CustomHeader} options={{ headerShown: false }} />
         <Stack.Screen name="NavShare" component={CustomHeaderShare} options={{ headerShown: false }} />
         <Stack.Screen name="Share" component={ShareID} options={{ header: () => <CustomHeaderShare redirectTo={'GovID'} /> }} />
-        <Stack.Screen name="FakeDisplay" component={FakeShareID} options={{ headerShown: false }} />
+        <Stack.Screen name="FakeDisplay" component={FakeShareID} options={{ header: () => <CustomHeaderShare redirectTo={'Share'} /> }} />
         <Stack.Screen 
           name="GovID" 
           component={GovID} 

@@ -120,7 +120,7 @@ const GovID = () => {
     const storedLicenseNum = await AsyncStorage.getItem('licenseNum');
 
     if (storedLicenseNum) {
-      setLicenseNum(storedLicenseNum);
+      setLicenseNum(formatLicenseNum(storedLicenseNum));
       console.log("License number already exists:", storedLicenseNum);
     } else {
       let license_num = '';
@@ -129,7 +129,7 @@ const GovID = () => {
       }
 
       await AsyncStorage.setItem('licenseNum', license_num);
-      setLicenseNum(license_num);
+      setLicenseNum(formatLicenseNum(license_num));
       console.log("New license number generated:", license_num);
     }
   };
@@ -222,10 +222,9 @@ const GovID = () => {
         ]}
       />
       <CustomHeader />
-      <ScrollView 
-        contentContainerStyle={styles.scrollViewContent}
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}
         scrollEnabled={true}
-        style={styles.scrollView}
+        style={{width:'100%', height: '100%'}}
       >
                         
         <View style={styles.digitalID}>
@@ -248,7 +247,7 @@ const GovID = () => {
                     {user.day} {months[user.month]} {calculate_year_birth(user.age)}
                   </Text>
                   <Text style={styles.labelBasicGrey}>Licence No.</Text>
-                  <Text style={styles.licenceNum}>{licenseNum ? licenseNum : "Loading..."}</Text>
+                  <Text style={styles.licenceNum}>{licenseNum}</Text>
                 </>
               )}
             </View>
@@ -372,24 +371,18 @@ const GovID = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 0, // Remove top padding to allow content to go behind status bar
-    backgroundColor: 'white',
-  },
-  scrollView: {
-    width: '100%',
-    height: '100%',
+    paddingTop: 150, // Ensure content starts below the sticky header
     backgroundColor: 'white',
   },
   scrollViewContent: {
-    flexGrow: 1,
-    paddingTop: 300,
-    backgroundColor: 'white',
+    flexGrow: 1, // Ensures ScrollView can grow and take up available space
+    paddingTop: 300
   },
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
     position: 'fixed',
     zIndex: -1,
-    resizeMode: 'contain',
+    resizeMode: 'contain', // Ensures the image covers the entire screen while maintaining aspect ratio
     alignItems: 'center',
     justifyContent: 'center',
     opacity: 0.1,
@@ -398,7 +391,7 @@ const styles = StyleSheet.create({
   },
   digitalID: {
     padding: 20,
-    zIndex: 1,
+    zIndex: 1, // Ensure this is above the background
   },
   profileContainer: {
     flexDirection: 'row',

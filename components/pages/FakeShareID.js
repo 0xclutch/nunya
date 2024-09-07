@@ -13,12 +13,14 @@ const FakeShareID = () => {
   const [session, setSession] = useState("");
   const [user, setUser] = useState(null);
   const [licenseNum, setLicenseNum] = useState("");
+  const [timer, setTimer] = useState(20); // Set timer to 120 seconds (2 minutes)
   const navigation = useNavigation();
 
   useEffect(() => {
     console.log("FakeShareID screen - fetching db info for user data");
     fetchUserData();
     generateLicenseNum();
+    startTimer();
   }, []);
 
   const generateLicenseNum = async () => {
@@ -40,8 +42,26 @@ const FakeShareID = () => {
   };
 
   const formatLicenseNum = (licenseNum) => {
-    // Insert spaces after every 3 characters
     return licenseNum.match(/.{1,3}/g).join(' ');
+  };
+
+  const startTimer = () => {
+    const interval = setInterval(() => {
+      setTimer((prevTimer) => {
+        if (prevTimer <= 1) {
+          clearInterval(interval);
+          navigation.navigate('Share'); // Navigate when timer hits 0
+          return 0;
+        }
+        return prevTimer - 1;
+      });
+    }, 1000);
+  };
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const fetchUserData = async () => {
@@ -97,6 +117,7 @@ const FakeShareID = () => {
         )}
         <Text style={styles.licenseNumber}>{licenseNum}</Text>
         <QRCode value={qrValue} size={150} />
+        <Text style={styles.timer}>{formatTime(timer)}</Text>
       </View>
     </SafeAreaView>
   );
@@ -109,12 +130,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Arial',
   },
   header: {
+    marginTop: 100,
     alignItems: 'center',
-    padding: 20, // Adjust padding to add space around content
+    padding: 20,
   },
   headerText: {
     fontWeight: 'bold',
     marginBottom: 20,
+    fontSize: 16.5,
   },
   profilePicture: {
     width: 90,
@@ -126,6 +149,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 20,
+  },
+  timer: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 20,
   },
 });
 
