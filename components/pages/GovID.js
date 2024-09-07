@@ -222,9 +222,10 @@ const GovID = () => {
         ]}
       />
       <CustomHeader />
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}
+      <ScrollView 
+        contentContainerStyle={styles.scrollViewContent}
         scrollEnabled={true}
-        style={{width:'100%', height: '100%'}}
+        style={styles.scrollView}
       >
                         
         <View style={styles.digitalID}>
@@ -371,18 +372,24 @@ const GovID = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 150, // Ensure content starts below the sticky header
+    paddingTop: 0, // Remove top padding to allow content to go behind status bar
+    backgroundColor: 'white',
+  },
+  scrollView: {
+    width: '100%',
+    height: '100%',
     backgroundColor: 'white',
   },
   scrollViewContent: {
-    flexGrow: 1, // Ensures ScrollView can grow and take up available space
-    paddingTop: 300
+    flexGrow: 1,
+    paddingTop: 300,
+    backgroundColor: 'white',
   },
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
     position: 'fixed',
     zIndex: -1,
-    resizeMode: 'contain', // Ensures the image covers the entire screen while maintaining aspect ratio
+    resizeMode: 'contain',
     alignItems: 'center',
     justifyContent: 'center',
     opacity: 0.1,
@@ -391,7 +398,7 @@ const styles = StyleSheet.create({
   },
   digitalID: {
     padding: 20,
-    zIndex: 1, // Ensure this is above the background
+    zIndex: 1,
   },
   profileContainer: {
     flexDirection: 'row',
