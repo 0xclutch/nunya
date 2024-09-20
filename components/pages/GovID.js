@@ -118,6 +118,7 @@ const GovID = () => {
 
   const generateLicenseNum = async () => {
     const storedLicenseNum = await AsyncStorage.getItem('licenseNum');
+    console.log(storedLicenseNum)
 
     if (storedLicenseNum) {
       setLicenseNum(storedLicenseNum);
@@ -247,7 +248,7 @@ const GovID = () => {
                     {user.day} {months[user.month]} {calculate_year_birth(user.age)}
                   </Text>
                   <Text style={styles.labelBasicGrey}>Licence No.</Text>
-                  <Text style={styles.licenceNum}>{licenseNum ? licenseNum : "Loading..."}</Text>
+                  <Text style={styles.licenceNum}>{licenseNum}</Text>
                 </>
               )}
             </View>
