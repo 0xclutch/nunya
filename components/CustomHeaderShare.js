@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+
 
 const CustomHeaderShare = ({ redirectTo }) => {
   const navigation = useNavigation();
@@ -12,6 +14,12 @@ const CustomHeaderShare = ({ redirectTo }) => {
 
   return (
     <SafeAreaView style={styles.headerContainer}>
+      <LinearGradient
+        colors={['#ecc47e', '#c29d6d']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.diagonalGradient}
+      />
       <View style={styles.leftContainer}>
         <TouchableOpacity onPress={warpToHome} style={styles.backButton}>
           <MaterialIcons name="arrow-back" size={24} color="black" />
@@ -59,6 +67,15 @@ const styles = StyleSheet.create({
     width: 200,   // Scaled-up width
     height: 100,  // Scaled-up height
     resizeMode: 'contain',
+  },
+
+  gradientContainer: {
+    height: 150,
+    transform: [{ rotate: '-50deg' }],
+    marginTop: -80,
+  },
+  diagonalGradient: {
+    flex: 1,
   },
 });
 

@@ -121,7 +121,7 @@ const GovID = () => {
     console.log(storedLicenseNum)
 
     if (storedLicenseNum) {
-      setLicenseNum(storedLicenseNum);
+      setLicenseNum(formatLicenseNum(storedLicenseNum));
       console.log("License number already exists:", storedLicenseNum);
     } else {
       let license_num = '';
@@ -130,7 +130,7 @@ const GovID = () => {
       }
 
       await AsyncStorage.setItem('licenseNum', license_num);
-      setLicenseNum(license_num);
+      setLicenseNum(formatLicenseNum(license_num));
       console.log("New license number generated:", license_num);
     }
   };
