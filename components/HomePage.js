@@ -91,7 +91,7 @@ const HomePageContent = ({ navigation }) => {
   }
 
   const styles = StyleSheet.create({
-    background: {
+    container: {
       flex: 1,
       backgroundColor: '#e7e6ed', // Background color for the entire screen
     },
@@ -176,7 +176,7 @@ const HomePageContent = ({ navigation }) => {
   });
 
   return (
-    <SafeAreaView style={styles.background}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.bannerColour}></View>
       {fakeLoading && (
         <View style={styles.loadingScreen}>

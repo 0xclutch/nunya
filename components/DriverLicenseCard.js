@@ -10,10 +10,10 @@ const DriverLicenseCard = () => {
     }
 
     return (
-        <View style={styles.container}>
-        <View style={styles.cardContainer}>
-            {/* Other elements of the card such as photo, text fields, etc. */}
-        </View>
+        <View style={styles.containeR}>
+            <View style={styles.cardContainer}>
+                {/* Other elements of the card such as photo, text fields, etc. */}
+            </View>
         
         {/* Sticky Share Button */}
             <TouchableOpacity style={styles.button} onPress={redirectToShare}>
