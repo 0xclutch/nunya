@@ -393,6 +393,12 @@ const styles = StyleSheet.create({
   digitalID: {
     padding: 20,
     zIndex: 1, // Ensure this is above the background
+    backgroundColor: 'white', // Ensure the background color is white
+    borderTopLeftRadius: 20, // Add curved corner to top-left
+    borderTopRightRadius: 20, // Add curved corner to top-right
+    borderBottomLeftRadius: 0, // Ensure no curve at bottom-left
+    borderBottomRightRadius: 0, // Ensure no curve at bottom-right
+    overflow: 'hidden', // Prevent content from spilling outside the border radius
   },
   profileContainer: {
     flexDirection: 'row',
