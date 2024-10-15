@@ -18,6 +18,11 @@
         height: 100%;
         flex: 1;
       }
+      .container { 
+        height: 100vh; /* Make sure the container takes the full viewport height */
+        overflow-y: auto; /* Enable scrolling inside the content area */
+        -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS */
+      }
     </style>
 
     <!-- Service Worker registration -->

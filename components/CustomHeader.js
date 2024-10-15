@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
   },
   bannerText: {
     fontSize: 16,
+    fontWeight: 600,
     color: '#210a03',
     marginTop: 30,
     margin: 15,

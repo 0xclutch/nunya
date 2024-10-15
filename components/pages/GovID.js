@@ -92,6 +92,13 @@ const GovID = () => {
       setCardNumber(cardNumber.toUpperCase());
     }
 
+    // Prevent scrolling outside of the container (iOS safari fix)
+    document.addEventListener('touchmove', function(event) {
+      if (!event.target.closest('.container')) {
+          event.preventDefault();
+      }
+    }, { passive: false });
+
     
 
     const determine_signature = () => {
@@ -382,7 +389,7 @@ const styles = StyleSheet.create({
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
     position: 'fixed',
-    zIndex: -1,
+    zIndex: 1,
     resizeMode: 'contain', // Ensures the image covers the entire screen while maintaining aspect ratio
     alignItems: 'center',
     justifyContent: 'center',

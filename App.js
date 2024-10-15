@@ -53,5 +53,5 @@ const App = () => {
 export default App;
 
 const styles = StyleSheet.create({
-  // Add any global styles if necessary
+  
 });
