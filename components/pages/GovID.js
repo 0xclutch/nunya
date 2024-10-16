@@ -22,22 +22,22 @@ const GovID = () => {
   const [refreshing, setRefreshing] = useState(false);
   const qldGovLogo = require('./images/qldgov.png');
   const backgroundImage = require('./images/background.png'); 
-  const isInWebAppiOS = (window.navigator.standalone === true);
+  const isInWebAppiOS = (Platform.OS === 'ios');
 
-  if (isInWebAppiOS){
-    PullToRefresh.init({
-      mainElement: 'body',
-      onRefresh() {
-        setRefreshing(true);
-        fetchUserData();
-        setLastRefreshed(getCurrentTime());
+  // if (isInWebAppiOS){
+  //   PullToRefresh.init({
+  //     mainElement: 'body',
+  //     onRefresh() {
+  //       setRefreshing(true);
+  //       fetchUserData();
+  //       setLastRefreshed(getCurrentTime());
     
-        setTimeout(() => {
-          setRefreshing(false);
-        }, 1200);
-      }
-    });
-  }
+  //       setTimeout(() => {
+  //         setRefreshing(false);
+  //       }, 1200);
+  //     }
+  //   });
+  // }
 
   // signatures
   const [signature, setSignature] = useState(null);
@@ -225,6 +225,14 @@ const GovID = () => {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}
         scrollEnabled={true}
         style={{width:'100%', height: '100%'}}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['grey']}
+            progressBackgroundColor={'black'}
+          />
+        }
       >
                         
         <View style={styles.digitalID}>
