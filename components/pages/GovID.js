@@ -86,6 +86,16 @@ const GovID = () => {
       ).start();
     };
 
+    const onRefresh = () => {
+      setRefreshing(true);
+      fetchUserData();
+      setLastRefreshed(getCurrentTime());
+  
+      setTimeout(() => {
+        setRefreshing(false);
+      }, 1200);
+    }
+
 
     const cardnumbergenerator = () => {
       // 10 character alpha numeric random string
