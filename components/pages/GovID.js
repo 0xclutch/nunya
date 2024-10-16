@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Image, SafeAreaView, TouchableOpacity, ScrollView, RefreshControl, Animated, Easing, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, Image, SafeAreaView, TouchableOpacity, ScrollView, RefreshControl, Animated, Easing, ActivityIndicator, Platform, Modal } from 'react-native';
 import { supabase } from '../supabaseClient';
 import { useNavigation } from '@react-navigation/native';
 
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import the FontAwesome icon set
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import PullToRefresh from 'pulltorefreshjs';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import CustomHeader from '../CustomHeader';
 import DriverLicenseCard from '../DriverLicenseCard';
 
@@ -20,7 +19,6 @@ const GovID = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [cardNumber, setCardNumber] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const qldGovLogo = require('./images/qldgov.png');
   const backgroundImage = require('./images/background.png'); 
   const isInWebAppiOS = (Platform.OS === 'ios');
 
@@ -50,6 +48,7 @@ const GovID = () => {
   const [lastRefreshed, setLastRefreshed] = useState(null);
   const [scaleAnim] = useState(new Animated.Value(1));
   const [profilePicture, setProfilePicture] = useState(null);
+  const [isImageExpanded, setIsImageExpanded] = useState(false);
 
   const months = {
     "1": "Jan",
@@ -86,22 +85,13 @@ const GovID = () => {
       ).start();
     };
 
-    const onRefresh = () => {
-      setRefreshing(true);
-      fetchUserData();
-      setLastRefreshed(getCurrentTime());
-  
-      setTimeout(() => {
-        setRefreshing(false);
-      }, 1200);
-    }
-
 
     const cardnumbergenerator = () => {
       // 10 character alpha numeric random string
       const cardNumber = Math.random().toString(36).substr(2, 10);
       setCardNumber(cardNumber.toUpperCase());
     }
+
 
 
     const determine_signature = () => {
@@ -208,19 +198,27 @@ const GovID = () => {
   };
 
 
-  // const onRefresh = () => {
-  //   setRefreshing(true);
-  //   fetchUserData();
-  //   setLastRefreshed(getCurrentTime());
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchUserData();
+    setLastRefreshed(getCurrentTime());
 
-  //   setTimeout(() => {
-  //     setRefreshing(false);
-  //   }, 1200);
-  // };
-  // OLD METHOD TO REFRESH IF USING EXPO GO
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1200);
+  };
+
+
+
+  
 
 
   const safeUpperCase = (text) => (text || "").toUpperCase();
+
+  const toggleImageExpansion = () => {
+    console.log('wheyyyyyyy');
+    setIsImageExpanded(!isImageExpanded);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -248,7 +246,9 @@ const GovID = () => {
         <View style={styles.digitalID}>
           <View style={styles.profileContainer}>
             {profilePicture && (
-              <Image style={styles.profilePicture} source={{ uri: profilePicture }} />
+              <TouchableOpacity onPress={toggleImageExpansion}>
+                <Image style={styles.profilePicture} source={{ uri: profilePicture }} />
+              </TouchableOpacity>
             )}
             <View style={styles.textContainer}>
               {user && (
@@ -270,6 +270,15 @@ const GovID = () => {
               )}
             </View>
           </View>
+
+          {/* Expanded Image Modal */}
+          {isImageExpanded && (
+            <Modal transparent={true} visible={isImageExpanded} animationType="fade">
+              <TouchableOpacity style={styles.overlay} onPress={toggleImageExpansion}>
+                <Image style={styles.expandedImage} source={{ uri: profilePicture }} />
+              </TouchableOpacity>
+            </Modal>
+          )}
           <View style={styles.refreshed}>
             <View style={styles.refreshTextContainer}>
               <Text style={styles.refreshLabel}>Information was refreshed online: </Text>
@@ -419,13 +428,24 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     marginBottom: 10,
   },
   profilePicture: {
     width: 105,
     height: 145,
     marginRight: 15,
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)', // Dark overlay background
+  },
+  expandedImage: {
+    width: '90%', // Set the width of the expanded image
+    height: '90%',
+    resizeMode: 'contain', // Ensure the image keeps its aspect ratio
   },
   textContainer: {
     flex: 1,
