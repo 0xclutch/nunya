@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Image, SafeAreaView, TouchableOpacity, ScrollView, RefreshControl, Animated, Easing, ActivityIndicator } from 'react-native';
 import { supabase } from '../supabaseClient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Import the FontAwesome icon set
-import DriverLicenseCard from '../DriverLicenseCard';
 import { useNavigation } from '@react-navigation/native';
-import CustomHeader from '../CustomHeader';
+
+import Icon from 'react-native-vector-icons/FontAwesome'; // Import the FontAwesome icon set
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import PullToRefresh from 'pulltorefreshjs';
+import CustomHeader from '../CustomHeader';
+import DriverLicenseCard from '../DriverLicenseCard';
 
 const GovID = () => {
   const navigation = useNavigation();
@@ -92,18 +93,10 @@ const GovID = () => {
       setCardNumber(cardNumber.toUpperCase());
     }
 
-    // Prevent scrolling outside of the container (iOS safari fix)
-    document.addEventListener('touchmove', function(event) {
-      if (!event.target.closest('.container')) {
-          event.preventDefault();
-      }
-    }, { passive: false });
-
-    
 
     const determine_signature = () => {
       // random num from 0 to 5 
-      // signature based on random num :d (lmfao nobody except ME (😩😩😩😩 goon time) can see this comment)
+      // signature based on random num :d
       // time to spam racial slurs 
       const signatures = [signature_1, signature_2, signature_3, signature_4, signature_5];
       setSignature(signatures[Math.floor(Math.random() * signatures.length)]);      
@@ -138,7 +131,6 @@ const GovID = () => {
 
       await AsyncStorage.setItem('licenseNum', license_num);
       setLicenseNum(license_num);
-      console.log("New license number generated:", license_num);
     }
   };
 

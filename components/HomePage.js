@@ -90,6 +90,13 @@ const HomePageContent = ({ navigation }) => {
     return <Text>Loading...</Text>;
   }
 
+  // Prevent scrolling outside of the container (iOS safari fix)
+  // document.addEventListener('touchmove', function(event) {
+  //   if (!event.target.closest('.container')) {
+  //       event.preventDefault();
+  //   }
+  // }, { passive: false });
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,

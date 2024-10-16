@@ -65,6 +65,13 @@ const PinScreen = ({ route, navigation }) => {
         setPin((prevPin) => prevPin.slice(0, -1));
     }, []);
 
+    // Prevent scrolling outside of the container (iOS safari fix)
+    // document.addEventListener('touchmove', function(event) {
+    //     if (!event.target.closest('.container')) {
+    //         event.preventDefault();
+    //     }
+    // }, { passive: false });
+
     const keys = useMemo(() => [1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0], []);
 
     return (
