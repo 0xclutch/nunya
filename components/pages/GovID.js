@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 150, // Ensure content starts below the sticky header
-    backgroundColor: 'white',
+    backgroundColor: '#ffffff', // Set background to white
   },
   scrollViewContent: {
     flexGrow: 1, // Ensures ScrollView can grow and take up available space
