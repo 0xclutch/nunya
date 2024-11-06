@@ -80,6 +80,10 @@ const HomePageContent = ({ navigation }) => {
     };
 
     fetchUser();
+    document.body.classList.add("overflowHidden");
+    return () => {
+        document.body.classList.remove("overflowHidden");
+    };
   }, []);
 
   const redirectToId = () => {
@@ -101,6 +105,9 @@ const HomePageContent = ({ navigation }) => {
     container: {
       flex: 1,
       backgroundColor: '#e7e6ed', // Background color for the entire screen
+    },
+    overflowHidden: {
+      overflow: 'hidden',
     },
     profileContainer: {
       flexDirection: 'row',
