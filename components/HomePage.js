@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
-import { Text, View, StyleSheet, Image, TouchableOpacity, ActivityIndicator, SafeAreaView } from "react-native";
+import { Text, View, StyleSheet, Image, TouchableOpacity, ActivityIndicator, SafeAreaView, ScrollView } from "react-native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Settings from "./pages/Settings";
 import ScanQR from "./pages/ScanQR";
@@ -191,32 +191,34 @@ const HomePageContent = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.bannerColour}></View>
-      {fakeLoading && (
-        <View style={styles.loadingScreen}>
-          <Text style={styles.loadingFont}>Fetching your digital wallet</Text>
-          <ActivityIndicator size={50} color="#6a5964"/>
-        </View>
-      )}
-      {!fakeLoading && (
-        <View style={styles.safetyPadding}>
-          <View style={styles.profileContainer}>
-            {profilePicture && (
-              <Image style={styles.profilePicture} source={{uri: profilePicture}} />
-            )}
-            <View style={styles.legalNameContainer}>
-              <Text style={styles.legalName}>{fName} {mName}</Text>
-              <Text style={styles.bold}>{lName}</Text>
-            </View>
+      <ScrollView>
+        <View style={styles.bannerColour}></View>
+        {fakeLoading && (
+          <View style={styles.loadingScreen}>
+            <Text style={styles.loadingFont}>Fetching your digital wallet</Text>
+            <ActivityIndicator size={50} color="#6a5964"/>
           </View>
-          
-          <Text style={styles.header}>Credentials</Text>
-          <TouchableOpacity style={styles.button} onPress={redirectToId}>
-            <Image style={styles.icon} source={carBroomBroom} />
-            <Text style={styles.buttonText}>Drivers License</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        )}
+        {!fakeLoading && (
+          <View style={styles.safetyPadding}>
+            <View style={styles.profileContainer}>
+              {profilePicture && (
+                <Image style={styles.profilePicture} source={{uri: profilePicture}} />
+              )}
+              <View style={styles.legalNameContainer}>
+                <Text style={styles.legalName}>{fName} {mName}</Text>
+                <Text style={styles.bold}>{lName}</Text>
+              </View>
+            </View>
+            
+            <Text style={styles.header}>Credentials</Text>
+            <TouchableOpacity style={styles.button} onPress={redirectToId}>
+              <Image style={styles.icon} source={carBroomBroom} />
+              <Text style={styles.buttonText}>Drivers License</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 };

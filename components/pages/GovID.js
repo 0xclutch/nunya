@@ -67,7 +67,7 @@ const GovID = () => {
     "12": "Dec"
   };
 
-  useEffect(() => {    
+  useEffect(() => {   
     const animateBackground = () => {
       Animated.loop(
         Animated.sequence([
@@ -233,15 +233,10 @@ const GovID = () => {
           ]}
         />
         <CustomHeader />
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}
-          scrollEnabled={true}
-          style={{width:'100%', height: '100%'}}
+        <ScrollView contentContainerStyle={styles.scrollViewContent}
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh}
-              colors={['grey']}
-              progressBackgroundColor={'black'}
-            />
-          }
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
         >
                           
           <View style={styles.digitalID}>
@@ -405,7 +400,6 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     flexGrow: 1, // Ensures ScrollView can grow and take up available space
-    paddingTop: 300
   },
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
@@ -532,6 +526,7 @@ const styles = StyleSheet.create({
     color: 'grey',
     flex: 1, // Take up available space
     textAlign: 'left', // Align text to the left
+    fontSize: '15px',
   },
   ageContainer: {
     flexDirection: 'row',

@@ -51,7 +51,7 @@ const Settings = ({ navigation }) => {
   };
 
   const redirectToLogin = () => {
-    navigation.navigate('Login');
+    navigation.navigate('/');
   };
 
   return (
