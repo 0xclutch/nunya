@@ -1,12 +1,29 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Switch, Button, SafeAreaView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Switch, Button, Linking, SafeAreaView, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'; // Ensure you have installed react-native-vector-icons
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
+import { supabase } from '../supabaseClient';
+
+
+const OpenURLButton = ({url}) => {
+  const handlePress = useCallback(async () => {
+    // Checking if the link is supported for links with custom URL scheme.
+    const supported = await Linking.canOpenURL(url);
+
+    if (supported) {
+      // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+      // by some browser in the mobile
+      await Linking.openURL(url);
+    } else {
+      Alert.alert(`Don't know how to open this URL: ${url}`);
+    }
+  }, [url]);
+};
 
 
 
-const Settings = () => {
+const Settings = ({ navigation }) => {
   const [isEnabled, setIsEnabled] = React.useState(false);
   const [allowNotifications, setAllowNotifications] = React.useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
@@ -14,8 +31,7 @@ const Settings = () => {
   
   const qldGovLogo = require('./images/qldgov.png');
 
-  React.useEffect(() => {
-  })
+
 
   async function registerForPushNotificationsAsync() {
     const { status } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
@@ -31,10 +47,19 @@ const Settings = () => {
     return token;
   }
 
+  const LogoutUser = async () => {
+    const { error } = await supabase.auth.signOut();
+    redirectToLogin();
+  }
+
+  const redirectToLogin = () => {
+    navigation.navigate('Login');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} >
           <Icon name="key-outline" size={20} color="#000" />
           <Text style={styles.buttonText}>Change PIN</Text>
           <Icon name="chevron-forward-outline" size={20} color="#000" />
@@ -70,19 +95,19 @@ const Settings = () => {
           <Icon name="chevron-forward-outline" size={20} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.button}>
-          <Icon name="globe-outline" size={20} color="#000" />
+          <Icon name="globe-outline" size={20} color="#000" onPress={(OpenURLButton("https://www.qld.gov.au/transport/online-services"))} />
           <Text style={styles.buttonText}>Access TMR Online Services</Text>
           <Icon name="chevron-forward-outline" size={20} color="#000" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.button}>
-          <Icon name="person-circle-outline" size={20} color="#000" />
+          <Icon name="person-circle-outline" size={20} color="#000" onPress={(OpenURLButton("https://identity.qld.gov.au/login/login.html"))}/>
           <Text style={styles.buttonText}>Manage your Queensland Digital Identity</Text>
           <Icon name="chevron-forward-outline" size={20} color="#000" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.feedbackButton}>
+        <TouchableOpacity style={styles.feedbackButton} onPress={(OpenURLButton("https://www.transporttalk.tmr.qld.gov.au/jfe/form/SV_8BpqoBULWNnlKZw"))}>
           <Text style={styles.feedbackText}>GIVE US YOUR FEEDBACK</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.logout}>
+        <TouchableOpacity style={styles.logout} onPress={(LogoutUser())}>
           <Text style={styles.logoutText}>LOGOUT</Text>
         </TouchableOpacity>
         <Image source={qldGovLogo} style={styles.logo} />
