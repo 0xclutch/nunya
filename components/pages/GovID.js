@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // Import the FontAwes
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 import CustomHeader from '../CustomHeader';
 import DriverLicenseCard from '../DriverLicenseCard';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const GovID = () => {
   const navigation = useNavigation();
@@ -20,6 +21,7 @@ const GovID = () => {
   const [cardNumber, setCardNumber] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const backgroundImage = require('./images/background.png'); 
+  const tickImage = require("./images/tick.png");
   const isInWebAppiOS = (Platform.OS === 'ios');
 
   // if (isInWebAppiOS){
@@ -221,176 +223,176 @@ const GovID = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Animated.Image
-        source={backgroundImage}
-        style={[
-          styles.backgroundImage,
-          { transform: [{ scale: scaleAnim }] },
-        ]}
-      />
-      <CustomHeader />
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}
-        scrollEnabled={true}
-        style={{width:'100%', height: '100%'}}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={['grey']}
-            progressBackgroundColor={'black'}
-          />
-        }
-      >
-                        
-        <View style={styles.digitalID}>
-          <View style={styles.profileContainer}>
-            {profilePicture && (
-              <TouchableOpacity onPress={toggleImageExpansion}>
-                <Image style={styles.profilePicture} source={{ uri: profilePicture }} />
-              </TouchableOpacity>
-            )}
-            <View style={styles.textContainer}>
-              {user && (
-                <>
-                  <Text style={styles.unimportantNames}>
-                    {safeUpperCase(user.firstname)} {safeUpperCase(user.middlename)}
-                  </Text>
-                  <Text style={styles.importantLast}>
-                    {safeUpperCase(user.lastname)}
-                  </Text>
-  
-                  <Text style={styles.labelBasicGrey}>DoB</Text>
-                  <Text style={styles.dateOfBirth}>
-                    {user.day} {months[user.month]} {calculate_year_birth(user.age)}
-                  </Text>
-                  <Text style={styles.labelBasicGrey}>Licence No.</Text>
-                  <Text style={styles.licenceNum}>{licenseNum}</Text>
-                </>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <Animated.Image
+          source={backgroundImage}
+          style={[
+            styles.backgroundImage,
+            { transform: [{ scale: scaleAnim }] },
+          ]}
+        />
+        <CustomHeader />
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}
+          scrollEnabled={true}
+          style={{width:'100%', height: '100%'}}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh}
+              colors={['grey']}
+              progressBackgroundColor={'black'}
+            />
+          }
+        >
+                          
+          <View style={styles.digitalID}>
+            <View style={styles.profileContainer}>
+              {profilePicture && (
+                <TouchableOpacity onPress={toggleImageExpansion}>
+                  <Image style={styles.profilePicture} source={{ uri: profilePicture }} />
+                </TouchableOpacity>
               )}
-            </View>
-          </View>
-
-          {/* Expanded Image Modal */}
-          {isImageExpanded && (
-            <Modal transparent={true} visible={isImageExpanded} animationType="fade">
-              <TouchableOpacity style={styles.overlay} onPress={toggleImageExpansion}>
-                <Image style={styles.expandedImage} source={{ uri: profilePicture }} />
-              </TouchableOpacity>
-            </Modal>
-          )}
-          <View style={styles.refreshed}>
-            <View style={styles.refreshTextContainer}>
-              <Text style={styles.refreshLabel}>Information was refreshed online: </Text>
-              <Text style={styles.refreshTime}>{lastRefreshed}</Text>
-            </View>
-            {refreshing && (
-              <View style={styles.loadingContainer}>
-                <Text style={styles.loadingText}>Loading...</Text>
-                <ActivityIndicator size="small" color="#000000" style={styles.loadingIcon} />
+              <View style={styles.textContainer}>
+                {user && (
+                  <>
+                    <Text style={styles.unimportantNames}>
+                      {safeUpperCase(user.firstname)} {safeUpperCase(user.middlename)}
+                    </Text>
+                    <Text style={styles.importantLast}>
+                      {safeUpperCase(user.lastname)}
+                    </Text>
+    
+                    <Text style={styles.labelBasicGrey}>DoB</Text>
+                    <Text style={styles.dateOfBirth}>
+                      {user.day} {months[user.month]} {calculate_year_birth(user.age)}
+                    </Text>
+                    <Text style={styles.licenseNoLabel}>Licence No.</Text>
+                    <Text style={styles.licenceNum}>{licenseNum}</Text>
+                  </>
+                )}
               </View>
+            </View>
+
+            {/* Expanded Image Modal */}
+            {isImageExpanded && (
+              <Modal transparent={true} visible={isImageExpanded} animationType="fade">
+                <TouchableOpacity style={styles.overlay} onPress={toggleImageExpansion}>
+                  <Image style={styles.expandedImage} source={{ uri: profilePicture }} />
+                </TouchableOpacity>
+              </Modal>
             )}
-          </View>
-
-
-          <View style={styles.divider} />
-  
-          <View style={styles.statusContainer}>
-            <View style={styles.statusTextContainer}>
-              <Text style={styles.statusOutline}>Status ⓘ</Text>
-            </View>
-            <TouchableOpacity style={styles.statusButton}>
-              <Text style={styles.statusButtonText}>Current</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.divider} />
-
-          <View style={styles.ageContainer}>
-            <Text style={styles.ageLabel}>Age</Text>
-            <View style={styles.ageStatusContainer}>
-              <Icon name="check-circle" size={35} color="#38c634" style={styles.ageIcon} />
-              <Text style={styles.ageText}>Over 18</Text>
-            </View>
-          </View>
-
-          <View style={styles.divider} />
-  
-          <View style={styles.vehicleInfo}>
-            <View style={styles.vehicleClass}>
-              <Text style={styles.labelBasicGrey}>Class</Text>
-              <Text style={styles.vehicleTextWithIcon}>(C) Car <Icon name="car" size={20} color="#000000" /></Text>
-            </View>
-            <View style={styles.vehicleType}>
-              <Text style={styles.labelBasicGrey}>Type</Text>
-              <Text style={styles.vehicleTextCentered}>(P1) Provisional</Text>
-            </View>
-            <View style={styles.idExpiry}>
-              <Text style={styles.labelBasicGrey}>Expiry</Text>
-              <Text style={styles.vehicleTextCentered}>{expiryDate}</Text>
-            </View>
-          </View>
-  
-          <View style={styles.divider} />
-  
-          <View style={styles.conditions}>
-            <Text style={styles.labelBasicGrey}>Conditions</Text>
-          </View>
-  
-          <View style={styles.divider} />
-          <View style={styles.addressContainer}>
-            <View style={styles.addressTitleContainer}>
-              <Text style={styles.labelBasicGrey}>Address</Text>
-              <Text style={styles.italicText}>Are your details up to {'\n'}date?</Text>
-            </View>
-            <View style={styles.addressInfo}>
-              {user && (
-                <>
-                  <Text>{safeUpperCase(user.houseNumber)} {safeUpperCase(user.street)} {safeUpperCase(user.type)}</Text>
-                  <Text>{safeUpperCase(user.suburb)}</Text>
-                  <Text>QLD {safeUpperCase(user.postCode)}</Text>
-                  <Text>AU</Text>
-                </>
+            <View style={styles.refreshed}>
+              <View style={styles.refreshTextContainer}>
+                <Text style={styles.refreshLabel}>Information was refreshed online: </Text>
+                <Text style={styles.refreshTime}>{lastRefreshed}</Text>
+              </View>
+              {refreshing && (
+                <View style={styles.loadingContainer}>
+                  <Text style={styles.loadingText}>Loading...</Text>
+                  <ActivityIndicator size="small" color="#000000" style={styles.loadingIcon} />
+                </View>
               )}
             </View>
-          </View>
-  
-          <View style={styles.divider} />
-          <View style={styles.signatureContainer}>
-            <Text style={styles.statusOutline}>Signature 🔍</Text>
-            <Image style={styles.signature} source={signature} />
-          </View>
-  
-          <View style={styles.divider} />
-  
-          <View style={styles.cardNumberContainer}>
-            <Text style={styles.label}>Card number</Text>
-            <View style={styles.cardNumber}>
-              <Text style={styles.value}>{cardNumber}</Text>
-            </View>
-          </View>
-  
-          <View style={styles.divider} />
-  
-          <View style={styles.countryInfo}>
-            <View style={styles.country}>
-              <Text style={styles.label}>Issuing Country</Text>
-              <Text style={styles.value}>AU</Text>
-            </View>
-            <View style={styles.authority}>
-              <Text style={styles.label}>Issuing Authority</Text>
-              <View style={styles.space} />
-              <Text style={styles.value}>Queensland Government{'\n'}Department of Transport{'\n'}and Main Roads</Text>
-            </View>
-          </View>
-  
-        </View>
-        <View style={styles.bigSpace}>
 
-        </View>
-      </ScrollView>
-      <DriverLicenseCard />
-    </SafeAreaView>
+
+            <View style={styles.divider} />
+    
+            <View style={styles.statusContainer}>
+              <View style={styles.statusTextContainer}>
+                <Text style={styles.statusOutline}>Status ⓘ</Text>
+              </View>
+              <TouchableOpacity style={styles.statusButton}>
+                <Text style={styles.statusButtonText}>Current</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.divider} />
+
+            <View style={styles.ageContainer}>
+              <Text style={styles.ageLabel}>Age</Text>
+              <View style={styles.ageStatusContainer}>
+                <Image source={tickImage} style={styles.ageIcon} />
+                <Text style={styles.ageText}>Over 18</Text>
+              </View>
+            </View>
+
+            <View style={styles.divider} />
+    
+            <View style={styles.vehicleInfo}>
+              <View style={styles.vehicleClass}>
+                <Text style={styles.labelBasicGrey}>Class</Text>
+                <Text style={styles.vehicleTextWithIcon}>(C) Car</Text>
+              </View>
+              <View style={styles.vehicleType}>
+                <Text style={styles.labelBasicGrey}>Type</Text>
+                <Text style={styles.vehicleTextCentered}>(P1) Provisional</Text>
+              </View>
+              <View style={styles.idExpiry}>
+                <Text style={styles.labelBasicGrey}>Expiry</Text>
+                <Text style={styles.vehicleTextCentered}>{expiryDate}</Text>
+              </View>
+            </View>
+    
+            <View style={styles.divider} />
+    
+            <View style={styles.conditions}>
+              <Text style={styles.labelBasicGrey}>Conditions</Text>
+            </View>
+    
+            <View style={styles.divider} />
+            <View style={styles.addressContainer}>
+              <View style={styles.addressTitleContainer}>
+                <Text style={styles.labelBasicGrey}>Address</Text>
+                <Text style={styles.italicText}>Are your details up to {'\n'}date?</Text>
+              </View>
+              <View style={styles.addressInfo}>
+                {user && (
+                  <>
+                    <Text>{safeUpperCase(user.houseNumber)} {safeUpperCase(user.street)} {safeUpperCase(user.type)}</Text>
+                    <Text>{safeUpperCase(user.suburb)}</Text>
+                    <Text>QLD {safeUpperCase(user.postCode)}</Text>
+                    <Text>AU</Text>
+                  </>
+                )}
+              </View>
+            </View>
+    
+            <View style={styles.divider} />
+            <View style={styles.signatureContainer}>
+              <Text style={styles.statusOutline}>Signature 🔍</Text>
+              <Image style={styles.signature} source={signature} />
+            </View>
+    
+            <View style={styles.divider} />
+    
+            <View style={styles.cardNumberContainer}>
+              <Text style={styles.label}>Card number</Text>
+              <View style={styles.cardNumber}>
+                <Text style={styles.value}>{cardNumber}</Text>
+              </View>
+            </View>
+    
+            <View style={styles.divider} />
+    
+            <View style={styles.countryInfo}>
+              <View style={styles.country}>
+                <Text style={styles.label}>Issuing Country</Text>
+                <Text style={styles.value}>AU</Text>
+              </View>
+              <View style={styles.authority}>
+                <Text style={styles.label}>Issuing Authority</Text>
+                <View style={styles.space} />
+                <Text style={styles.value}>Queensland Government{'\n'}Department of Transport{'\n'}and Main Roads</Text>
+              </View>
+            </View>
+    
+          </View>
+          <View style={styles.bigSpace}>
+
+          </View>
+        </ScrollView>
+        <DriverLicenseCard />
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
   
 };
@@ -413,7 +415,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     opacity: 0.1,
-    margin: '20%',
+    margin: '27%',
     marginTop: '80%'
   },
   digitalID: {
@@ -432,9 +434,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   profilePicture: {
-    width: 105,
+    width: 125,
     height: 145,
     marginRight: 15,
+    borderRadius: '5px',
   },
   overlay: {
     flex: 1,
@@ -555,6 +558,8 @@ const styles = StyleSheet.create({
   
   ageIcon: {
     marginRight: 5, // Space between the icon and the "Over 18" text
+    width: 40, 
+    height: 40
   },
   
   
@@ -626,6 +631,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     width: 100, // Fixed width to keep labels aligned
     textAlign: 'left', // Align text to the left
+  },
+  licenseNoLabel: {
+    color: 'black',
+    fontSize: 12,
+    width: 100,
+    lineHeight: '5px',
+    marginTop: '10px',
   },
 
   // ADDRESS CSS
