@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from './supabaseClient';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, TextInput, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { debounce } from 'lodash';
@@ -103,25 +103,29 @@ export default function Login({ navigation }) {
                     <View>
                         <Text style={styles.header}>Login</Text>
                         <Text style={styles.label}>Email</Text>
-                        <TextInput 
-                            style={styles.input} 
-                            value={email} 
-                            onChangeText={setEmail} 
-                            placeholder="Enter your email" 
-                            keyboardType="email-address" 
-                            autoCapitalize="none"
-                        />
+                        <KeyboardAvoidingView behavior='padding'>
+                            <TextInput 
+                                style={styles.input} 
+                                value={email} 
+                                onChangeText={setEmail} 
+                                placeholder="Enter your email" 
+                                keyboardType="email-address" 
+                                autoCapitalize="none"
+                            />
+                        </KeyboardAvoidingView>
                         
                         <View style={styles.gap} />
 
                         <Text style={styles.label}>Password</Text>
-                        <TextInput 
-                            style={styles.input} 
-                            value={password} 
-                            onChangeText={setPassword} 
-                            secureTextEntry 
-                            placeholder="Enter your password" 
-                        />
+                        <KeyboardAvoidingView behavior='padding'>
+                            <TextInput 
+                                style={styles.input} 
+                                value={password} 
+                                onChangeText={setPassword} 
+                                secureTextEntry 
+                                placeholder="Enter your password" 
+                            />
+                        </KeyboardAvoidingView>
 
                         <TouchableOpacity style={styles.button} onPress={signIn}>
                             <Text style={styles.buttonText}>Sign In</Text>
