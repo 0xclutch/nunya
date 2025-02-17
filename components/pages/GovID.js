@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Image, SafeAreaView, TouchableOpacity, ScrollView, RefreshControl, Animated, Easing, ActivityIndicator, Platform, Modal } from 'react-native';
+import { StyleSheet, View, Text, Image, SafeAreaView, TouchableOpacityr, RefreshControl, Animated, Easing, ActivityIndicator, Platform, Modal, TouchableOpacity } from 'react-native';
 import { supabase } from '../supabaseClient';
 import { useNavigation } from '@react-navigation/native';
 
@@ -15,7 +15,7 @@ const GovID = () => {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [licenseNum, setLicenseNum] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
+  const [expiryDate, setExpiryDate] = useState(""); 
   const [loading, setLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [cardNumber, setCardNumber] = useState("");
@@ -232,14 +232,9 @@ const GovID = () => {
             { transform: [{ scale: scaleAnim }] },
           ]}
         />
-        <CustomHeader />
-        <ScrollView contentContainerStyle={styles.scrollViewContent}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-        >
-                          
-          <View style={styles.digitalID}>
+        <CustomHeader />       
+          <View style={styles.digitalID} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+            {refreshing ? <ActivityIndicator /> : null}
             <View style={styles.profileContainer}>
               {profilePicture && (
                 <TouchableOpacity onPress={toggleImageExpansion}>
@@ -260,7 +255,7 @@ const GovID = () => {
                     <Text style={styles.dateOfBirth}>
                       {user.day} {months[user.month]} {calculate_year_birth(user.age)}
                     </Text>
-                    <Text style={styles.licenseNoLabel}>Licence No.</Text>
+                    <Text style={styles.labelBasicGrey}>Licence No.</Text>
                     <Text style={styles.licenceNum}>{licenseNum}</Text>
                   </>
                 )}
@@ -331,6 +326,7 @@ const GovID = () => {
     
             <View style={styles.conditions}>
               <Text style={styles.labelBasicGrey}>Conditions</Text>
+              <Text style={styles.vehicleTextCentered}>-</Text>
             </View>
     
             <View style={styles.divider} />
@@ -384,9 +380,8 @@ const GovID = () => {
           <View style={styles.bigSpace}>
 
           </View>
-        </ScrollView>
-        <DriverLicenseCard />
       </SafeAreaView>
+      <DriverLicenseCard />
     </SafeAreaProvider>
   );
   
