@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Image, SafeAreaView, TouchableOpacityr, RefreshControl, Animated, Easing, ActivityIndicator, Platform, Modal, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, SafeAreaView, TouchableOpacityr, RefreshControl, Animated, Easing, ActivityIndicator, Platform, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import { supabase } from '../supabaseClient';
 import { useNavigation } from '@react-navigation/native';
 
@@ -218,23 +218,25 @@ const GovID = () => {
   const safeUpperCase = (text) => (text || "").toUpperCase();
 
   const toggleImageExpansion = () => {
-    console.log('wheyyyyyyy');
     setIsImageExpanded(!isImageExpanded);
   };
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
         <Animated.Image
           source={backgroundImage}
-          style={[
-            styles.backgroundImage,
-            { transform: [{ scale: scaleAnim }] },
-          ]}
+          style={[styles.backgroundImage, { transform: [{ scale: scaleAnim  }] }]}
         />
         <CustomHeader />       
-          <View style={styles.digitalID} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-            {refreshing ? <ActivityIndicator /> : null}
+        <ScrollView
+          style={{ backgroundColor: 'transparent' }}
+          contentContainerStyle={{ flexGrow: 1 }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          <View style={[styles.digitalID, { backgroundColor: 'transparent' }]}>
             <View style={styles.profileContainer}>
               {profilePicture && (
                 <TouchableOpacity onPress={toggleImageExpansion}>
@@ -377,11 +379,11 @@ const GovID = () => {
             </View>
     
           </View>
-          <View style={styles.bigSpace}>
+          <View style={styles.bigSpace} />
 
-          </View>
+          </ScrollView>
+        <DriverLicenseCard />
       </SafeAreaView>
-      <DriverLicenseCard />
     </SafeAreaProvider>
   );
   
