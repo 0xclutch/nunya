@@ -2,35 +2,19 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, LayoutAnimation } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication'; // Import Local Authentication module
 import { supabase } from './supabaseClient';
+import FaceIDAuth from './FaceIDAuth';
 
 const PinScreen = ({ route, navigation }) => {
     const [pin, setPin] = useState([]);
     const { userKey } = route.params || {};
-
+    const [faceIdFailed, setFaceIdFailed] = useState(false);
 
     useEffect(() => {
         if (pin.length === 6) {
             attemptLogin();
         }
-    }, [pin]);    
-    
-
-    const handleInput = useCallback((num) => {
-        if (pin.length < 6) {
-            const newPin = [...pin, { value: num, visible: true }];
-            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-            setPin(newPin);
-
-            setTimeout(() => {
-                setPin((prevPin) =>
-                    prevPin.map((char, index) =>
-                        index === newPin.length - 1 ? { ...char, visible: false } : char
-                    )
-                );
-            }, 250);
-        }
     }, [pin]);
-
+    
     const attemptLogin = async (useBiometrics = false) => {
         const enteredPin = useBiometrics ? 'biometric-auth' : pin.map((char) => char.value).join('');
 
@@ -60,6 +44,25 @@ const PinScreen = ({ route, navigation }) => {
             setPin([]);  // Reset PIN input
         }
     };
+    
+
+    const handleInput = useCallback((num) => {
+        if (pin.length < 6) {
+            const newPin = [...pin, { value: num, visible: true }];
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+            setPin(newPin);
+
+            setTimeout(() => {
+                setPin((prevPin) =>
+                    prevPin.map((char, index) =>
+                        index === newPin.length - 1 ? { ...char, visible: false } : char
+                    )
+                );
+            }, 250);
+        }
+    }, [pin]);
+
+    
 
     const deleteLast = useCallback(() => {
         setPin((prevPin) => prevPin.slice(0, -1));
@@ -76,6 +79,13 @@ const PinScreen = ({ route, navigation }) => {
 
     return (
         <View style={styles.container}>
+            {!faceIdFailed && (
+                <FaceIDAuth
+                    userKey={userKey}
+                    onSuccess={() => navigation.navigate('HomePage')}
+                    onFailure={() => setFaceIdFailed(true)}
+                />
+            )}
             <View style={styles.header}>
                 <Text style={styles.faceIdIcon}>👁‍🗨</Text>
                 <Text style={styles.title}>Enter your 6 digit PIN</Text>
