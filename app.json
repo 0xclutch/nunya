@@ -2,13 +2,14 @@
   "expo": {
     "name": "Digital License",
     "slug": "Digital License",
+    "orientation": "portrait",
     "platforms": [
       "ios",
       "web"
     ],
     "web": {
       "backgroundColor": "#ffffff",
-      "description": "Cheeky bugger inspecting my farking fakie app?",
+      "description": "Have any questions? Message on Telegram @mkflame0",
       "display": "standalone",
       "themeColor": "#008080",
       "splash": {
