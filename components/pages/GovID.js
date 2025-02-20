@@ -11,6 +11,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const GovID = () => {
   const navigation = useNavigation();
+  const backgroundImage = require('./images/background.png'); 
+  const tickImage = require("./images/tick.png");
 
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
@@ -19,25 +21,8 @@ const GovID = () => {
   const [loading, setLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [cardNumber, setCardNumber] = useState("");
-  const [refreshing, setRefreshing] = useState(false);
-  const backgroundImage = require('./images/background.png'); 
-  const tickImage = require("./images/tick.png");
-  const isInWebAppiOS = (Platform.OS === 'ios');
 
-  // if (isInWebAppiOS){
-  //   PullToRefresh.init({
-  //     mainElement: 'body',
-  //     onRefresh() {
-  //       setRefreshing(true);
-  //       fetchUserData();
-  //       setLastRefreshed(getCurrentTime());
-    
-  //       setTimeout(() => {
-  //         setRefreshing(false);
-  //       }, 1200);
-  //     }
-  //   });
-  // }
+  const [refreshing, setRefreshing] = useState(false);
 
   // signatures
   const [signature, setSignature] = useState(null);
@@ -52,19 +37,22 @@ const GovID = () => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [isImageExpanded, setIsImageExpanded] = useState(false);
 
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+
+    await fetchUserData();
+    setLastRefreshed(getCurrentTime());
+
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1200);
+  };
+
   const months = {
-    "1": "Jan",
-    "2": "Feb",
-    "3": "Mar",
-    "4": "Apr",
-    "5": "May",
-    "6": "Jun",
-    "7": "Jul",
-    "8": "Aug",
-    "9": "Sept",
-    "10": "Oct",
-    "11": "Nov",
-    "12": "Dec"
+    "01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", "05": "May",
+    "06": "Jun", "07": "Jul", "08": "Aug", "09": "Sept", "10": "Oct",
+    "11": "Nov", "12": "Dec"
   };
 
   useEffect(() => {   
@@ -87,30 +75,26 @@ const GovID = () => {
       ).start();
     };
 
-
     const cardnumbergenerator = () => {
       // 10 character alpha numeric random string
-      const cardNumber = Math.random().toString(36).substr(2, 10);
-      setCardNumber(cardNumber.toUpperCase());
+      const cardNumber = Math.random().toString(36).slice(-10).toUpperCase();
+      setCardNumber(cardNumber);
     }
 
-
-
     const determine_signature = () => {
-      // random num from 0 to 5 
-      // signature based on random num :d
-      // time to spam racial slurs 
       const signatures = [signature_1, signature_2, signature_3, signature_4, signature_5];
       setSignature(signatures[Math.floor(Math.random() * signatures.length)]);      
     }
   
     const loadData = async () => {
-      await fetchUserData(); // Fetch user data
-      generateLicenseNum(); // Generate license number
-      generateExpiryDate(); // Generate expiry date
-      setLastRefreshed(getCurrentTime()); // Generate random time
+      await Promise.all([
+        fetchUserData(),
+        generateLicenseNum(),
+        generateExpiryDate(),
+      ]);
       determine_signature(); // Determine signature
       cardnumbergenerator(); // Generate card number
+      setLastRefreshed(getCurrentTime()); // Generate random time
       animateBackground(); // Start background animation
       setIsLoading(false); // Set loading to false when everything is ready
     };
@@ -151,10 +135,13 @@ const GovID = () => {
     return `${day} ${month} ${year} ${formattedHours}:${minutes}${ampm}`;
   };
 
-  const calculate_year_birth = (age) => {
-    const current_year = new Date().getFullYear();
-    const year_birth = current_year - age;
-    return year_birth;
+  const calculateYearOfBirth = (age, birthMonth, birthDay) => {
+    const now = new Date();
+    let birthYear = now.getFullYear() - age;
+    if (now.getMonth() + 1 < birthMonth || (now.getMonth() + 1 === birthMonth && now.getDate() < birthDay)) {
+        birthYear--;
+    }
+    return birthYear;
   }
 
   const fetchUserData = async () => {
@@ -174,17 +161,15 @@ const GovID = () => {
         if (error) {
           console.error('Error fetching user data:', error);
         } else {
-          console.log('User data:', data);
           setProfilePicture(data.photo || "");
-          console.log('FETCH NORM', data.photo, ' VS -> ', profilePicture);
-          setUser(data);
+          setUser(prev => ({ ...prev, ...data }));
         }
       } else {
         setUser(null);
-        console.error("Couldn't get session");
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
+      return;
     } finally {
       setLoading(false);
     }
@@ -200,15 +185,6 @@ const GovID = () => {
   };
 
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchUserData();
-    setLastRefreshed(getCurrentTime());
-
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 1200);
-  };
 
 
 
@@ -224,16 +200,12 @@ const GovID = () => {
       <SafeAreaView style={styles.container}>
         <Animated.Image
           source={backgroundImage}
-          style={[
-            styles.backgroundImage,
-            { transform: [{ scale: scaleAnim }] },
-          ]}
+          style={[styles.backgroundImage, { transform: [{ scale: scaleAnim }] }]}
+          pointerEvents="box-none"
         />
         <CustomHeader />
         <ScrollView contentContainerStyle={styles.scrollViewContent}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
                           
           <View style={styles.digitalID}>
@@ -255,7 +227,7 @@ const GovID = () => {
     
                     <Text style={styles.labelBasicGrey}>DoB</Text>
                     <Text style={styles.dateOfBirth}>
-                      {user.day} {months[user.month]} {calculate_year_birth(user.age)}
+                      {user.day} {months[user.month]} {calculateYearOfBirth(user.age, user.month, user.day)}
                     </Text>
                     <Text style={styles.labelBasicGrey}>Licence No.</Text>
                     <Text style={styles.licenceNum}>{licenseNum}</Text>
@@ -328,6 +300,9 @@ const GovID = () => {
     
             <View style={styles.conditions}>
               <Text style={styles.labelBasicGrey}>Conditions</Text>
+              <View style={styles.ageStatusContainer}>
+                <Text>-</Text>
+              </View>
             </View>
     
             <View style={styles.divider} />
