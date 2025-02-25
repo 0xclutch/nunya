@@ -19,6 +19,9 @@
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "android": {
+      "package": "com.DigitalLicense"
+    }
   }
 }

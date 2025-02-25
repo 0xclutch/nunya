@@ -50,9 +50,18 @@ const GovID = () => {
   };
 
   const months = {
-    "01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", "05": "May",
-    "06": "Jun", "07": "Jul", "08": "Aug", "09": "Sept", "10": "Oct",
-    "11": "Nov", "12": "Dec"
+    "1": "Jan",
+    "2": "Feb",
+    "3": "Mar",
+    "4": "Apr",
+    "5": "May",
+    "6": "Jun",
+    "7": "Jul",
+    "8": "Aug",
+    "9": "Sept",
+    "10": "Oct",
+    "11": "Nov",
+    "12": "Dec"
   };
 
   useEffect(() => {   
@@ -175,6 +184,7 @@ const GovID = () => {
     }
   };
 
+
   const generateExpiryDate = () => {
     const currentYear = new Date().getFullYear();
     const randomDay = Math.floor(Math.random() * 28) + 1;
@@ -183,6 +193,7 @@ const GovID = () => {
     const formattedExpiryDate = `${randomDay} ${months[randomMonth]} ${expiryYear}`;
     setExpiryDate(formattedExpiryDate);
   };
+
 
 
 
@@ -386,6 +397,7 @@ const styles = StyleSheet.create({
   },
   digitalID: {
     padding: 20,
+    flex: 1,
     zIndex: 1, // Ensure this is above the background
     backgroundColor: 'white', // Ensure the background color is white
     borderTopLeftRadius: 20, // Add curved corner to top-left
