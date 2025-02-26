@@ -11,15 +11,17 @@
       "backgroundColor": "#ffffff",
       "description": "Have any questions? Message on Telegram @mkflame0",
       "display": "standalone",
-      "themeColor": "#008080",
+      "themeColor": "#ffffff",
       "splash": {
         "image": "./assets/images/splash.png",
         "resizeMode": "contain"
       }
     },
-    "plugins": [
-      "expo-font"
-    ],
+    "ios": {
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Allow Digital License to use Face ID."
+      }
+    },
     "android": {
       "package": "com.DigitalLicense"
     }

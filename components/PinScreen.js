@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, LayoutAnimation } from 'react-native';
-import * as LocalAuthentication from 'expo-local-authentication'; // Import Local Authentication module
+import { View, Text, StyleSheet, TouchableOpacity, Alert, LayoutAnimation, Button } from 'react-native';
+import * as LocalAuthentication from 'expo-local-authentication';
 import { supabase } from './supabaseClient';
 import FaceIDAuth from './FaceIDAuth';
 
@@ -9,11 +9,45 @@ const PinScreen = ({ route, navigation }) => {
     const { userKey } = route.params || {};
     const [faceIdFailed, setFaceIdFailed] = useState(false);
 
+    const [isBiometricSupported, setIsBiometricSupported] = useState(false);
+    
+
     useEffect(() => {
         if (pin.length === 6) {
             attemptLogin();
         }
+
+        checkDeviceSupport();
     }, [pin]);
+
+
+    const checkDeviceSupport = async () => {
+        const compatible = await LocalAuthentication.hasHardwareAsync();
+        setIsBiometricSupported(compatible);
+        console.log("Biometric State: ", isBiometricSupported, " \nConst Variable: ", compatible);
+    } 
+
+    const handleBiometricAuth = async () => {
+        const savedBiometrics = await LocalAuthentication.isEnrolledAsync();
+
+        if(!savedBiometrics) {
+            return Alert.alert('Biometric Authentication', 'No biometrics Enrolled');
+        }
+        
+        const result = await LocalAuthentication.authenticateAsync({
+            promptMessage: "Authenticate with Face ID",
+            fallbackLabel: "Enter Passcode",
+            disableDeviceFallback: false, // Allow
+        });
+
+
+        if (result.success) {
+            Alert.alert('Success', 'Authenticated successfully! -- ' + result);
+        } else {
+            Alert.alert('Error', 'Authentication failed -- ' + result);
+        }
+    };
+
     
     const attemptLogin = async (useBiometrics = false) => {
         const enteredPin = useBiometrics ? 'biometric-auth' : pin.map((char) => char.value).join('');
@@ -79,6 +113,7 @@ const PinScreen = ({ route, navigation }) => {
 
     return (
         <View style={styles.container}>
+            <Button title="Authenticate with Face ID" onPress={handleBiometricAuth} />
             {!faceIdFailed && (
                 <FaceIDAuth
                     userKey={userKey}

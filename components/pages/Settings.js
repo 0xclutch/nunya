@@ -46,9 +46,27 @@ const Settings = ({ navigation }) => {
   }
 
   const LogoutUser = async () => {
+    // create alert
     const { error } = await supabase.auth.signOut();
-    redirectToLogin();
+
+    if(error) {
+      Alert.alert(`Uh oh`, 'Something went wrong while signing out..', [
+        {
+          text: 'Ok',
+          onPress: () => console.log("User couldnt sign out - ", error)
+        }
+      ]);
+      return;
+    } else {
+      Alert.alert(`You're all set!`, 'Successfully signed out', [
+        {
+          text: "Ok",
+          onPress: () => redirectToLogin()
+        }
+      ]);
+    }
   };
+
 
   const redirectToLogin = () => {
     navigation.navigate('/');
