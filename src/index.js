@@ -10,38 +10,41 @@ import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import PinScreen from "./pages/Pin";
 
+import { SafeAreaWrapper } from "./components/SafeAreaWrapper";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <AuthProvider>
       <Router>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Login />} />
+        <SafeAreaWrapper>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Login />} />
 
-          {/* Protected Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+            {/* Protected Routes */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/pin"
-            element={
-              <ProtectedRoute>
-                <PinScreen />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/pin"
+              element={
+                <ProtectedRoute>
+                  <PinScreen />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* 404 Page */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+            {/* 404 Page */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </SafeAreaWrapper>
       </Router>
     </AuthProvider>
   </React.StrictMode>

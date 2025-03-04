@@ -41,8 +41,11 @@ const LoginWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
   padding: 16px;
+  padding-top: max(16px, env(safe-area-inset-top));
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
 `;
 
 const StyledCard = styled(Card)`
@@ -53,9 +56,12 @@ const StyledCard = styled(Card)`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   background: rgba(255, 255, 255, 0.9);
   font-family: 'Roboto', sans-serif;
+  margin: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
 
   @media (max-width: 600px) {
-    max-width: 90%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
   }
 `;
 

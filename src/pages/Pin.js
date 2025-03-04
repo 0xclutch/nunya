@@ -28,6 +28,9 @@ const PinScreen = () => {
   const [pin, setPin] = useState("");
   const [storedPin, setStoredPin] = useState("");
 
+  let constantURL = "https://1j3bs5vsumvx.share.zrok.io";
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+
   useEffect(() => {
     const fetchPin = async () => {
       if (!user) return;
@@ -55,7 +58,7 @@ const PinScreen = () => {
       message.success("PIN verified!");
       navigate("/dashboard"); // Redirect to homepage
     } else {
-      createPasskey();
+      return;
     }
   };
 
@@ -68,61 +71,151 @@ const PinScreen = () => {
     return randomValues;
   };
 
-  const createPasskey = async () => {
-    if(!navigator.credentials || !navigator.credentials.create || !navigator.credentials.get) {
-      return alert('Your mobile device does not support FaceID Authententication');
+  // const createPasskey = async () => {
+  //   if(!navigator.credentials || !navigator.credentials.create || !navigator.credentials.get) {
+  //     return alert('Your mobile device does not support FaceID Authententication');
+  //   }
+
+  //   let credentials = await navigator.credentials.create({
+  //     publicKey: {
+  //       challenge: generateRandomChallenge(),
+  //       rp: { name: "Digital License", id: window.location.hostname },
+  //       // User info
+  //       user: { id: new TextEncoder().encode(user.id), name: user.email, displayName: userData.firstname },
+  //       pubKeyCredParams: [
+  //         { type: 'public-key', alg: -7 },
+  //         { type: 'public-key', alg: -257 },
+  //       ],
+  //       timeout: 6000,
+  //       authenticatorSelection: { residentKey: 'preferred', requireResidentKey: false, userVerification: 'preferred'},
+  //       attestation: 'none',
+  //       extensions: { credProps: true }
+  //     }
+  //   });
+
+  //   window.currentPasskey = credentials;
+  //   console.log(credentials);
+  // }
+
+  const generateKey = async () => {
+    if (!window.PublicKeyCredential) {
+      message.error("Your device doesn't support biometric authentication");
+      return;
     }
-
-    let credentials = await navigator.credentials.create({
-      publicKey: {
-        challenge: generateRandomChallenge(),
-        rp: { name: "Digital License", id: window.location.hostname },
-        // User info
-        user: { id: new TextEncoder().encode(user.id), name: user.email, displayName: userData.firstname },
-        pubKeyCredParams: [
-          { type: 'public-key', alg: -7 },
-          { type: 'public-key', alg: -257 },
-        ],
-        timeout: 6000,
-        authenticatorSelection: { residentKey: 'preferred', requireResidentKey: false, userVerification: 'preferred'},
-        attestation: 'none',
-        extensions: { credProps: true }
-      }
-    });
-
-    window.currentPasskey = credentials;
-    console.log(credentials);
-  }
+  
+    try {
+      const credential = await navigator.credentials.create({
+        publicKey: {
+          rp: { 
+            id: window.location.hostname,
+            name: "Digital License"
+          },
+          user: { 
+            id: new TextEncoder().encode(user.id),
+            name: user.email,
+            displayName: userData.firstname 
+          },
+          pubKeyCredParams: [
+            { type: 'public-key', alg: -7 },
+            { type: 'public-key', alg: -257 }
+          ],
+          authenticatorSelection: {
+            authenticatorAttachment: "platform",
+            requireResidentKey: true,
+            residentKey: "required",
+            userVerification: "required"
+          },
+          extensions: {
+            credProps: true
+          },
+          attestation: 'direct', // Changed from 'none' for better security
+          timeout: 60000,
+          challenge: generateRandomChallenge()
+        }
+      });
+  
+      // Store the credential in your database
+      const credentialData = {
+        id: credential.id,
+        rawId: Array.from(new Uint8Array(credential.rawId)),
+        type: credential.type,
+        // Add any other relevant credential data
+      };
+  
+      const { error } = await supabase
+        .from('user_credentials')
+        .insert([{
+          user_id: user.id,
+          credential: credentialData,
+          created_at: new Date().toISOString()
+        }]);
+  
+      if (error) throw error;
+      
+      message.success("Face ID setup successful!");
+    } catch (error) {
+      console.error('Error creating credential:', error);
+      message.error("Failed to setup Face ID. Please try again.");
+    }
+  };
 
   const verifyPasskey = async () => {
-    try {
-      if (!user) return;
+    // This here prevents multiple simultaneous auth attempts, its quite important
+    if(isAuthenticating) return;
 
-      // Check if user has a passkey
-      let passkeyExists = await navigator.credentials.get({
+    if (!window.PublicKeyCredential) {
+      message.error("Your device doesn't support biometric authentication");
+      return;
+    }
+  
+    try {
+      setIsAuthenticating(true);
+      // First check if the user has registered credentials
+      const availableCredentials = await navigator.credentials.get({
         publicKey: {
           challenge: generateRandomChallenge(),
-          allowCredentials: [{ type: "public-key", id: new TextEncoder().encode(user.id) }],
-        },
+          timeout: 60000,
+          userVerification: "required",
+          rpId: window.location.hostname,
+        }
       });
-
-      if (passkeyExists) {
-        console.log(passkeyExists);
-        alert("Biometric authentication successful!");
-        navigate("/dashboard"); // Redirect to dashboard
+  
+      if (availableCredentials) {
+        // Handle successful authentication
+        window.localStorage.removeItem('authInProgress');
+        message.success("Biometric authentication successful!");
+        navigate("/dashboard", { replace: true });
       }
-    } catch (err) {
-      // No passkey found or an error occurred, so user will enter PIN manually
+    } catch (error) {
+      console.error("Authentication error:", error);
+      message.error("Authentication failed. Please use PIN instead.");
+    } finally {
+      setIsAuthenticating(false);
     }
+
   };
 
 
 
   useEffect(() => {
-    if (user) {
-      verifyPasskey();
+    const authInProgress = window.localStorage.getItem('authInProgress');
+    
+    if (user && !authInProgress) {
+      // Set flag to prevent multiple auth attempts
+      window.localStorage.setItem('authInProgress', 'true');
+      
+      verifyPasskey().catch(error => {
+        console.error("Passkey verification failed:", error);
+        // Clear the auth in progress flag on error
+        window.localStorage.removeItem('authInProgress');
+      });
     }
-  }, [user])
+  
+    // Cleanup function to remove auth flag when component unmounts
+    return () => {
+      window.localStorage.removeItem('authInProgress');
+    };
+  }, [user]);
 
   return (
     <PinWrapper>
@@ -136,6 +229,9 @@ const PinScreen = () => {
         />
         <Button type="primary" onClick={handleLogin} block>
           Verify
+        </Button>
+        <Button type="secondary" onClick={verifyPasskey} block>
+          Login with FaceID
         </Button>
 
 
