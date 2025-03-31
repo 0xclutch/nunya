@@ -212,6 +212,10 @@ const HomePageContent = ({ navigation }) => {
             </View>
             
             <Text style={styles.header}>Credentials</Text>
+            <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 10}}>
+              <Text style={{color: '#666', fontSize: 12, marginRight: 5}}>Updating</Text>
+              <ActivityIndicator size="small" color="#666"/>
+            </View>
             <TouchableOpacity style={styles.button} onPress={redirectToId}>
               <Image style={styles.icon} source={carBroomBroom} />
               <Text style={styles.buttonText}>Drivers License</Text>

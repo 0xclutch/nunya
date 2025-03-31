@@ -7,18 +7,50 @@ import FaceIDAuth from './FaceIDAuth';
 const PinScreen = ({ route, navigation }) => {
     const [pin, setPin] = useState([]);
     const { userKey } = route.params || {};
-    const [faceIdFailed, setFaceIdFailed] = useState(false);
 
-    const [isBiometricSupported, setIsBiometricSupported] = useState(false);
+    const [hasBiometric, setHasBiometric] = useState(false);
+    const [isBiometricEnrolled, setIsBiometricEnrolled] = useState(false);
+  
     
 
     useEffect(() => {
-        if (pin.length === 6) {
-            attemptLogin();
-        }
+        // if (pin.length === 6) {
+        //     attemptLogin();
+        // }
+        (async () => {
+            const supported = await LocalAuthentication.hasHardwareAsync();
+            const enrolled = await LocalAuthentication.isEnrolledAsync();
 
-        checkDeviceSupport();
+            setHasBiometric(supported);
+            setIsBiometricEnrolled(enrolled);
+        })();
+
+        handleAuth();
     }, [pin]);
+
+    const handleAuth = async () => {
+        if(hasBiometric && isBiometricEnrolled) {
+            try {
+                const result = await LocalAuthentication.authenticateAsync({
+                    promptMessage: "Login with Face ID or Fingerprint",
+                });
+                if(result.success) {
+                    Alert.alert('Authentication successful');
+                    console.log('Authentication successful')
+                    // proceed
+                } else {
+                    Alert.alert('Authentication failed');
+                    console.log('Authentication failed');
+                }
+            } catch (error) {
+                Alert.alert(`Error during biometric authentication ${error}`);
+                console.log(`Error during biometric authentication ${error}`);
+            }
+        } else {
+            Alert.alert('Biometrics not available, falling back to PIN');
+            console.log("Biometrics not available, falling back to PIN");
+        }
+    }
 
 
     const checkDeviceSupport = async () => {
@@ -102,25 +134,11 @@ const PinScreen = ({ route, navigation }) => {
         setPin((prevPin) => prevPin.slice(0, -1));
     }, []);
 
-    // Prevent scrolling outside of the container (iOS safari fix)
-    // document.addEventListener('touchmove', function(event) {
-    //     if (!event.target.closest('.container')) {
-    //         event.preventDefault();
-    //     }
-    // }, { passive: false });
 
     const keys = useMemo(() => [1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0], []);
 
     return (
         <View style={styles.container}>
-            <Button title="Authenticate with Face ID" onPress={handleBiometricAuth} />
-            {!faceIdFailed && (
-                <FaceIDAuth
-                    userKey={userKey}
-                    onSuccess={() => navigation.navigate('HomePage')}
-                    onFailure={() => setFaceIdFailed(true)}
-                />
-            )}
             <View style={styles.header}>
                 <Text style={styles.faceIdIcon}>👁‍🗨</Text>
                 <Text style={styles.title}>Enter your 6 digit PIN</Text>

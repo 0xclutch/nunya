@@ -77,12 +77,6 @@ export default function Login({ navigation }) {
         setSession(null);
     }, [navigation]);
 
-    // Prevent scrolling outside of the container (iOS safari fix)
-    // document.addEventListener('touchmove', function(event) {
-    //     if (!event.target.closest('.container')) {
-    //         event.preventDefault();
-    //     }
-    //     }, { passive: false });
 
 
     return (
