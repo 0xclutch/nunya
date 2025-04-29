@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import PinScreen from "./pages/Pin";
 
 import { SafeAreaWrapper } from "./components/SafeAreaWrapper";
+import GovID from "./pages/GovID";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -37,6 +38,14 @@ root.render(
               element={
                 <ProtectedRoute>
                   <PinScreen />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/id"
+              element={
+                <ProtectedRoute>
+                  <GovID />
                 </ProtectedRoute>
               }
             />

@@ -1,0 +1,169 @@
+/* Ensure the container takes full screen width */
+.govid-container {
+    position: relative;
+    width: 100vw;
+    min-height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f5f5f5;
+  }
+  
+  /* Background Image */
+  .background-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 30vh; /* Adjust height for mobile */
+    object-fit: cover;
+    z-index: -1;
+  }
+  
+  /* Scrollable Content */
+  .scroll-content {
+    width: 90%;
+    max-width: 400px; /* Prevents stretching on wider screens */
+    margin-top: 10vh; /* Space from the background */
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+  }
+  
+  /* Digital ID Card */
+  .digital-id {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+    border-radius: 12px;
+    background-color: #fff;
+  }
+  
+  /* Profile Container */
+  .profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  /* Profile Button */
+  .profile-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    width: 80px;
+    height: 80px;
+  }
+  
+  .profile-picture {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  /* Text Information */
+  .text-container p {
+    margin: 4px 0;
+    font-size: 14px;
+  }
+  
+  /* Name and License Info */
+  .unimportant-names,
+  .label-basic-grey {
+    font-size: 12px;
+    color: grey;
+  }
+  
+  .important-last {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .date-of-birth,
+  .licence-num {
+    font-size: 16px;
+  }
+  
+  /* Divider */
+  .divider {
+    width: 90%;
+    height: 1px;
+    background-color: #ddd;
+    margin: 12px 0;
+  }
+  
+  /* Status and Age Containers */
+  .status-container,
+  .age-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  
+  /* Status Button */
+  .status-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 80px;
+  }
+  
+  /* Age Verification */
+  .age-status-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .age-icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .age-text {
+    font-size: 14px;
+  }
+  
+  /* Mobile Optimization */
+  @media (max-width: 480px) {
+    .scroll-content {
+      width: 95%;
+      padding: 12px;
+    }
+  
+    .profile-button {
+      width: 70px;
+      height: 70px;
+    }
+  
+    .important-last {
+      font-size: 16px;
+    }
+  
+    .date-of-birth,
+    .licence-num {
+      font-size: 14px;
+    }
+  
+    .status-button {
+      font-size: 12px;
+      width: 70px;
+      padding: 6px 12px;
+    }
+  
+    .age-text {
+      font-size: 12px;
+    }
+  }
+  
