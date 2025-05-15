@@ -6,6 +6,14 @@
   --sar: env(safe-area-inset-right);
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+}
+
+
 html {
   height: -webkit-fill-available;
   height: 100%;

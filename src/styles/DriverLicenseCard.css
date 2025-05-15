@@ -1,0 +1,31 @@
+.dl-container {
+    position: relative;
+  }
+  
+  .dl-cardContainer {
+    /* Customize as needed */
+  }
+  
+  .dl-button {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background-color: #f1ae5d;
+    border: none;
+    border-radius: 5px;
+    padding: 15px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    color: black;
+    text-transform: uppercase;
+    cursor: pointer;
+    z-index: 1000;
+  
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  .dl-button:hover {
+    background-color: #e69b42;
+  }
+  

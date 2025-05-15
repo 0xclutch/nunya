@@ -1,70 +1,312 @@
-.header-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100px; /* Adjust height as needed */
-    z-index: 1000;
-    background-color: #ecc47e;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  
-  .gradient-container {
-    height: 150px;
-    transform: rotate(-20deg);
-    margin-top: -80px;
-  }
-  
-  .diagonal-gradient {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #ecc47e, #c29d6d);
-  }
-  
-  .content-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 10px;
-    height: 50px;
-  }
-  
-  .left-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .back-button {
-    display: flex;
-    align-items: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  .back-text {
-    margin-left: 5px;
-    font-size: 18px;
-    color: black;
-  }
-  
-  .banner-text {
-    font-size: 16px;
-    font-weight: 600;
-    color: #210a03;
-    margin-top: 30px;
-  }
-  
-  .qld-gov-logo {
-    width: 200px;
-    height: 100px;
-    object-fit: contain;
-  }
-  
+
+.container {
+  padding-top: 150px;
+  background-color: #ffffff;
+  min-height: 100vh;
+  position: relative;
+}
+
+.backgroundImage {
+  position: fixed;
+  z-index: 1;
+  object-fit: contain;
+  opacity: 0.1;
+  margin: 27%;
+  margin-top: 80%;
+}
+
+.digitalID {
+  padding: 20px;
+  z-index: 1;
+  background-color: white;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  overflow: hidden;
+}
+
+.profileContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.profilePicture {
+  width: 125px;
+  height: 145px;
+  margin-right: 15px;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.expandedImage {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+}
+
+.textContainer {
+  flex: 1;
+}
+
+.unimportantNames,
+.importantLast,
+.dateOfBirth,
+.licenceNum {
+  font-size: 19px;
+}
+
+.importantLast,
+.dateOfBirth,
+.licenceNum {
+  font-weight: bold;
+}
+
+.refreshed {
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.refreshTextContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.refreshLabel {
+  font-size: 16px;
+  color: grey;
+}
+
+.refreshTime {
+  font-weight: bold;
+  font-size: 16px;
+  margin-left: 5px;
+}
+
+.loadingContainer {
+  position: relative;
+  align-self: flex-start;
+}
+
+.loadingIcon {
+  position: absolute;
+  left: 0;
+  z-index: 1;
+  transform: scale(0.7);
+}
+
+.loadingText {
+  font-size: 13px;
+  color: #000;
+  z-index: 2;
+  padding-left: 30px;
+}
+
+.statusContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.statusTextContainer {
+  align-self: flex-start;
+  position: absolute;
+  left: 0;
+}
+
+.statusButton {
+  width: 95px;
+  height: 35px;
+  background-color: #2e9170;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.statusButtonText {
+  color: white;
+  text-align: center;
+}
+
+.statusOutline {
+  text-decoration: underline;
+  color: grey;
+  text-align: left;
+  font-size: 15px;
+}
+
+.ageContainer {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.ageLabel {
+  color: grey;
+  font-size: 16px;
+  margin-right: 105px;
+}
+
+.ageStatusContainer {
+  display: flex;
+  align-items: center;
+}
+
+.ageText {
+  font-size: 17px;
+  color: #65c1a9;
+  text-align: center;
+}
+
+.ageIcon {
+  margin-right: 5px;
+  width: 40px;
+  height: 40px;
+}
+
+.checkIconContainer {
+  margin-right: 10px;
+}
+
+.vehicleInfo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.vehicleRow,
+.vehicleClass,
+.vehicleType,
+.idExpiry {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  width: 350px;
+}
+
+.vehicleTextWithIcon,
+.vehicleTextCentered {
+  font-size: 17px;
+  text-align: center;
+  flex: 1;
+}
+
+.vehicleTextWithIcon {
+  margin-left: -100px;
+}
+
+.vehicleTextCentered {
+  margin-left: -75px;
+}
+
+.divider {
+  height: 1px;
+  background-color: #ccc;
+  margin: 10px 0;
+}
+
+.conditions {
+  margin-top: 10px;
+}
+
+.italicText {
+  font-style: italic;
+  color: grey;
+  font-size: 11px;
+}
+
+.labelBasicGrey {
+  color: grey;
+  font-size: 16px;
+  width: 100px;
+  text-align: left;
+}
+
+.licenseNoLabel {
+  color: black;
+  font-size: 12px;
+  width: 100px;
+  line-height: 5px;
+  margin-top: 10px;
+}
+
+.addressContainer {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+.addressTitleContainer {
+  flex: 1;
+}
+
+.addressInfo {
+  flex: 2;
+  margin-left: 20px;
+}
+
+.signatureContainer {
+  margin-top: 20px;
+}
+
+.signature {
+  width: 240px;
+  height: 80px;
+  font-size: 24px;
+  margin-left: 150px;
+  object-fit: contain;
+}
+
+.cardNumberContainer {
+  margin-top: 20px;
+}
+
+.cardNumber {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.cardNumberText {
+  font-size: 17px;
+  text-align: center;
+}
+
+.countryInfo {
+  margin-bottom: 15px;
+  padding: 0 10px;
+}
+
+.country,
+.authority {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.label {
+  flex: 1;
+}
+
+.value {
+  flex: 2;
+  text-align: right;
+}
+
+.space {
+  width: 60px;
+}
+
+.bigSpace {
+  height: 70px;
+}

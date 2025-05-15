@@ -15,7 +15,7 @@ const CustomHeader = () => {
       </div>
       <div className="content-container">
         <div className="left-container">
-          <button onClick={() => navigate('/')} className="back-button">
+          <button onClick={() => navigate('/dashboard')} className="back-button">
             <ArrowBack fontSize="small" />
             <span className="back-text">Back</span>
           </button>

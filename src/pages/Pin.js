@@ -1,51 +1,128 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Typography,
-  CircularProgress,
   Box,
+  Typography,
   Snackbar,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 import styled from "styled-components";
 import { supabase } from "../components/supabaseClient";
 
-
-
-
 const PinWrapper = styled(Box)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  height: 100vh;
-  width: 100vw;
-  padding: 16px;
-  background-color: #f5f5f5;
+  background-color: #ffffff;
+  font-family: 'SF Pro Display', sans-serif;
+  overflow: hidden;
+  box-sizing: border-box;
 `;
+
+const LockIcon = styled(Box)`
+  font-size: 48px; /* smaller icon, matches photo lock size */
+  color: #7B2B7A;
+`;
+
+const Title = styled(Typography)`
+  font-size: 20px;
+  font-weight: 500;
+  color: #7B2B7A;
+  letter-spacing: 0;
+  margin: 0;
+`;
+
 const PinInputContainer = styled(Box)`
   display: flex;
-  gap: 8px;
-  margin-top: 16px;
+  gap: 5px; /* spacing between PIN boxes */
 `;
-const PinField = styled(TextField)`
-  && {
-    width: 50px;
-    height: 50px;
-    font-size: 24px;
-    text-align: center;
-    background: white;
+
+const PinField = styled(Box)`
+  width: 37px;
+  height: 52px;
+  border: 2px solid #7B2B7A;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ContentContainer = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 80px;  /* space from top to icon */
+  padding-bottom: 40px; /* space from bottom of content */
+  width: 100%;
+`;
+
+const PinDot = styled(Typography)`
+  font-size: 70px;
+  color: #7B2B7A;
+`;
+
+const ResetText = styled(Box)`
+  font-size: 16px;
+  color: #777777;
+  margin-top: 48px; /* space above reset text */
+  font-weight: 400;
+`;
+
+const ResetLink = styled.span`
+  color: #7B2B7A;
+  font-weight: 700;
+  margin-left: 6px;
+  cursor: pointer;
+  user-select: none;
+`;
+
+const KeypadWrapper = styled(Box)`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 90vw;
+  padding: 20px 32px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: -10px 10px;
+  background-color: #fefbfc;
+  border-top: 2px solid #e0dce1;
+`;
+
+const StaticObjects = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;  /* space between icon, text, and pin inputs */
+`;
+
+const KeyButton = styled.button`
+  height: 70px;
+  font-size: 35px;
+  color: black;
+  background-color: #fefbfc;
+  border: none;
+  border-radius: 10px;
+  font-family: 'SF Pro Display', sans-serif;
+  touch-action: manipulation; /* improve tap response */
+  user-select: none;  
+  &:active {
+    background-color: #f3f3f3;
   }
 `;
 
-
+const DeleteButton = styled(KeyButton)`
+  color: #7B2B7A;
+  font-size: 24px;
+`;
 
 const PinScreen = () => {
   const { user, userData } = useAuth();
@@ -53,271 +130,136 @@ const PinScreen = () => {
 
   const [pin, setPin] = useState(["", "", "", "", "", ""]);
   const [storedPin, setStoredPin] = useState("");
-  const [showPinInput, setShowPinInput] = useState(false);
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
 
   const pinRefs = useRef([]);
 
-
   useEffect(() => {
-    const initializeAuth = async () => {
-      if (!user) return;
-      
-      // If pin is null or less than 6 characters, return an error
-      if (!userData?.pin || userData.pin.length !== 6) {
-        const error = new Error("Invalid PIN");
-        message.error("Invalid PIN configuration");
-        console.error(error);
-      }
+    if (!user) return;
+    let isMounted = true;
 
-  
-      setStoredPin(userData.pin);
-    };
-
-    const startAuthentication = async () => {
-      if (!user || isAuthenticating) return;
-  
+    async function initAuth() {
       try {
-        await verifyPasskey();
-      } catch (error) {
-        console.error("Error checking Face ID credential:", error); 
-        setShowPinInput(true);
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('users')
+          .select('pin')
+          .eq('uuid', user.id)
+          .single();
+
+        if (error) throw error;
+
+        if (!data?.pin || data.pin.length !== 6) {
+          throw new Error("Invalid pin configuration");
+        }
+
+        if (isMounted) {
+          setStoredPin(data.pin);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error(err);
+        if (isMounted) {
+          showMessage("Error loading PIN", "error");
+          setLoading(false);
+        }
       }
+    }
+
+    initAuth();
+
+    return () => {
+      isMounted = false;
     };
+  }, [user]);
 
-    initializeAuth();
-    startAuthentication();
+  const showMessage = useCallback((message, severity = "success") => {
+    setSnackbar({ open: true, message: message, severity: severity });
+  }, []);
 
-  }, [user, userData]);
+  const handleKeyPress = (key) => {
+    if (key === "⌫") return handleDelete();
+    const index = pin.findIndex((val) => val === "");
+    if (index !== -1) {
+      const updated = [...pin];
+      updated[index] = key;
+      setPin(updated);
+      if (updated.join("").length === 6) handleSubmit(updated.join(""));
+    }
+  };
 
-  const handleLogin = () => {
-    if (pin.join("") === storedPin) {
-      message.success("PIN verified!");
+  const handleDelete = () => {
+    const index = pin.findLastIndex((val) => val !== "");
+    if (index !== -1) {
+      const updated = [...pin];
+      updated[index] = "";
+      setPin(updated);
+    }
+  };
+
+  const handleSubmit = (value) => {
+    if (value === storedPin) {
+      showMessage("PIN verified", "success");
       navigate("/dashboard");
     } else {
-      message.error("Incorrect PIN. Try again.");
+      showMessage("Incorrect PIN", "error");
       setPin(["", "", "", "", "", ""]);
-      pinRefs.current[0]?.focus();
     }
   };
 
-  const generateRandomChallenge = () => {
-    let length = 32;
-    let randomValues = new Uint8Array(length);
-    window.crypto.getRandomValues(randomValues);
-    return randomValues;
-  };
+  const keypad = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "⌫"];
 
-
-  const generateKey = async () => {
-    if (isAuthenticating) {
-      return setShowPinInput(true);
-    }
-  
-    if (!window.PublicKeyCredential) {
-      message.error("Your device doesn't support biometric authentication");
-      return setShowPinInput(true);
-    }
-  
-    try {
-      setIsAuthenticating(true);
-      const credential = await navigator.credentials.create({
-        publicKey: {
-          rp: { 
-            id: window.location.hostname,
-            name: "Digital License"
-          },
-          user: { 
-            id: new TextEncoder().encode(user.id),
-            name: user.email,
-            displayName: userData.firstname 
-          },
-          pubKeyCredParams: [
-            { type: 'public-key', alg: -7 },
-            { type: 'public-key', alg: -257 }
-          ],
-          authenticatorSelection: {
-            authenticatorAttachment: "platform",
-            requireResidentKey: true,
-            residentKey: "required",
-            userVerification: "required"
-          },
-          extensions: {
-            credProps: true
-          },
-          attestation: 'direct', // Changed from 'none' for better security
-          timeout: 60000,
-          challenge: generateRandomChallenge()
-        }
-      });
-
-      if (!credential) throw new Error("Credential creation failed.");
-  
-      // Store the credential in your database
-      const credentialData = {
-        id: credential.id,
-        rawId: Array.from(new Uint8Array(credential.rawId)),
-        type: credential.type,
-
-        // Add any other relevant credential data
-      };
-  
-      const { data, error } = await supabase
-        .from("users")
-        .update({ user_credentials: credentialData }) // Update user_credentials
-        .eq("uuid", user.id) // Ensure it matches the correct user
-        .select(); // Return the updated row
-    
-    
-      if (error) {
-        throw error;
-      } else {
-        message.success("Credentials updated successfully!");
-      }
-    
-      message.success("Face ID setup successful!");
-    } catch (error) {
-      console.error('Error creating credential:', error);
-      message.error("Failed to setup Face ID. Please try again.");
-    }
-  };
-
-  const verifyPasskey = async () => {
-    // This here prevents multiple simultaneous auth attempts, its quite important
-    if(isAuthenticating || !window.PublicKeyCredential) {
-      return setShowPinInput(true);
-    }
-  
-    try {
-      setIsAuthenticating(true);
-
-      const { data, error } = await supabase
-        .from("users")
-        .select("user_credentials")
-        .eq("uuid", user.id)
-        .single();
-
-      if (error || !data?.user_credentials?.id) {
-        console.error("No valid passkey found for user:", user.id);
-        message.error("Face ID couldn't verify your identity. Please use PIN instead.");
-        setShowPinInput(true);
-        return;
-      };
-
-      const allowCredentials = [{
-        id: new Uint8Array(data.user_credentials.rawId),
-        type: 'public-key',
-      }];
-  
-      const challenge = generateRandomChallenge();
-  
-      const assertionResponse = await navigator.credentials.get({
-        publicKey: {
-          challenge,
-          timeout: 60000,
-          userVerification: "required",
-          rpId: window.location.hostname,
-          allowCredentials, // Specify which credentials are allowed
-        },
-      });
-  
-      if(!assertionResponse) {
-        throw new Error('Face ID Failed');
-      }
-
-
-      // Converting the authentication response so the server can read and understand the shits
-      const authData = {
-        id: assertionResponse.id,
-        rawId: Array.from(new Uint8Array(assertionResponse.rawId)),
-        response: {
-          authenticatorData: Array.from(new Uint8Array(assertionResponse.response.authenticatorData)),
-          clientDataJSON: Array.from(new Uint8Array(assertionResponse.response.clientDataJSON)),
-          signature: Array.from(new Uint8Array(assertionResponse.response.signature)),
-        },
-        type: assertionResponse.type
-      };
-
-
-      const verificationResponse = await supabase.functions.invoke('verify-webauthn', {
-        body: {
-          credential: authData,
-          challenge: Array.from(challenge),
-          userId: user.id
-        }
-      });
-  
-      if (!verificationResponse.data?.verified) {
-        throw new Error('Authentication verification failed');
-      }
-  
-      message.success("Biometric authentication successful!");
-      navigate("/dashboard");
-
-    } catch (error) {
-      console.error("Authentication error:", error);
-      message.error("Authentication failed. Please use PIN instead.");
-      setShowPinInput(true);
-    } finally {
-      setIsAuthenticating(false);
-    }
-  };
-
-
-
-  const handlePinChange = (index, value) => {
-    if (/^\d?$/.test(value)) {
-      let newPin = [...pin];
-      newPin[index] = value;
-      setPin(newPin);
-
-      if (value && index < pin.length - 1) {
-        pinRefs.current[index + 1]?.focus();
-      }
-    }
-
-    if (pin.join("").length === 6) {
-      handleLogin();
-    }
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+      </Box>
+    );
   }
-
-  const handleBackspace = (index, event) => {
-    if (event.key === "Backspace" && !pin[index] && index > 0) {
-      pinRefs.current[index - 1]?.focus();
-    }
-  };
 
   return (
     <PinWrapper>
-    {!showPinInput ? (
-      <>
-        <Typography variant="h5">Authenticating with Face ID...</Typography>
-        <Typography variant="body2">If this fails, you'll be prompted to enter your PIN.</Typography>
-      </>
-    ) : (
-      <>
-        <Typography variant="h5">Enter Your PIN</Typography>
-        <PinInputContainer>
-          {pin.map((num, i) => (
-            <PinField
-              key={i}
-              type="password"
-              variant="outlined"
-              inputProps={{
-                maxLength: 1,
-                style: { textAlign: "center", fontSize: "24px" },
-              }}
-              value={num}
-              onChange={(e) => handlePinChange(i, e.target.value)}
-              onKeyDown={(e) => handleBackspace(i, e)}
-              inputRef={(el) => (pinRefs.current[i] = el)}
-            />
-          ))}
-        </PinInputContainer>
-        <Button onClick={generateKey}>Create new Passkey</Button>
-      </>
-    )}
-  </PinWrapper>
+      <ContentContainer>
+        <StaticObjects>
+          <LockIcon>
+            <span role="img" aria-label="lock">🔒</span>
+          </LockIcon>
+          <Title>Enter your 6 digit PIN</Title>
+
+          <PinInputContainer>
+            {pin.map((val, i) => (
+              <PinField key={i}>
+                <PinDot>{val ? "•" : ""}</PinDot>
+              </PinField>
+            ))}
+          </PinInputContainer>
+        </StaticObjects>
+
+        <ResetText>
+          Forgot your PIN?
+          <ResetLink> RESET</ResetLink>
+        </ResetText>
+      </ContentContainer>
+
+      <KeypadWrapper>
+        {keypad.map((key, i) => (
+          <KeyButton key={i} onClick={() => handleKeyPress(key)} disabled={!key}>
+            {key}
+          </KeyButton>
+        ))}
+      </KeypadWrapper>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+      >
+        <Alert severity={snackbar.severity} onClose={() => setSnackbar((s) => ({ ...s, open: false }))}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </PinWrapper>
   );
 };
 
