@@ -1,169 +1,279 @@
-/* Ensure the container takes full screen width */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-size: 18px; /* Slightly bigger base font size */
+}
+
 .govid-container {
-    position: relative;
-    width: 100vw;
-    min-height: 100vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #f5f5f5;
-  }
-  
-  /* Background Image */
-  .background-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 30vh; /* Adjust height for mobile */
-    object-fit: cover;
-    z-index: -1;
-  }
-  
-  /* Scrollable Content */
-  .scroll-content {
-    width: 90%;
-    max-width: 400px; /* Prevents stretching on wider screens */
-    margin-top: 10vh; /* Space from the background */
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 16px;
-  }
-  
-  /* Digital ID Card */
-  .digital-id {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 16px;
-    border-radius: 12px;
-    background-color: #fff;
-  }
-  
-  /* Profile Container */
-  .profile-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  
-  /* Profile Button */
-  .profile-button {
-    border: none;
-    background: none;
-    cursor: pointer;
-    width: 80px;
-    height: 80px;
-  }
-  
-  .profile-picture {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  
-  /* Text Information */
-  .text-container p {
-    margin: 4px 0;
-    font-size: 14px;
-  }
-  
-  /* Name and License Info */
-  .unimportant-names,
-  .label-basic-grey {
-    font-size: 12px;
-    color: grey;
-  }
-  
-  .important-last {
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .date-of-birth,
-  .licence-num {
-    font-size: 16px;
-  }
-  
-  /* Divider */
-  .divider {
-    width: 90%;
-    height: 1px;
-    background-color: #ddd;
-    margin: 12px 0;
-  }
-  
-  /* Status and Age Containers */
-  .status-container,
-  .age-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
-  
-  /* Status Button */
-  .status-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    font-size: 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    width: 80px;
-  }
-  
-  /* Age Verification */
-  .age-status-container {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .age-icon {
-    width: 24px;
-    height: 24px;
-  }
-  
-  .age-text {
-    font-size: 14px;
-  }
-  
-  /* Mobile Optimization */
-  @media (max-width: 480px) {
-    .scroll-content {
-      width: 95%;
-      padding: 12px;
-    }
-  
-    .profile-button {
-      width: 70px;
-      height: 70px;
-    }
-  
-    .important-last {
-      font-size: 16px;
-    }
-  
-    .date-of-birth,
-    .licence-num {
-      font-size: 14px;
-    }
-  
-    .status-button {
-      font-size: 12px;
-      width: 70px;
-      padding: 6px 12px;
-    }
-  
-    .age-text {
-      font-size: 12px;
-    }
-  }
-  
+  background: #fff;
+  min-height: 100vh;
+  padding-bottom: 48px;
+
+  font-family: Arial, Helvetica, sans-serif;
+  overscroll-behavior: none;
+  overflow-x: hidden;
+  pointer-events: none;
+  z-index: 0;
+  position: relative;
+}
+.govid-header-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 100px;
+  background: #f5f5f5;
+  z-index: 0;
+}
+.govid-header {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  background: transparent;
+  padding: 0 16px;
+  z-index: 1;
+  position: relative;
+}
+.govid-back-arrow {
+  margin-right: 14px;
+  font-size: 24px;
+  color: #000;
+  cursor: pointer;
+}
+.govid-header-title {
+  flex: 1;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  color: #222;
+}
+.govid-qld-logo {
+  width: 50px;
+  height: 30px;
+  object-fit: contain;
+}
+.govid-card {
+  margin: 32px auto 0 auto;
+  padding: 20px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.07);
+  max-width: 425px;
+  font-size: 17px;
+}
+.govid-card-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.govid-photo, .govid-photo-placeholder {
+  width: 125px;
+  height: 145px;
+  border-radius: 8px;
+  background: #eee;
+  margin-right: 16px;
+  object-fit: cover;
+}
+.govid-photo-placeholder {
+  background: #eee;
+}
+.govid-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.govid-name-main {
+  display: flex;
+  align-items: center;
+}
+.govid-name-text {
+  font-size: 21px;
+  margin-right: 4px;
+  color: #222;
+}
+
+.govid-info-label {
+  color: #888;
+  font-size: 15px;
+  margin-top: 2px;
+  text-align: left;
+  /* No flex or width! */
+}
+.govid-name-last {
+  font-size: 21px;
+  font-weight: bold;
+  color: #222;
+}
+.govid-label {
+  flex: 0 0 110px;   /* fixed width for label, adjust as needed */
+  color: #888;
+  font-size: 15px;
+  margin-top: 2px;
+  text-align: left;
+}
+
+.age-label {
+  color: 'grey';
+  font-size: 16px;
+  /* margin-right: 105; if spacing between tick and label ever fucks, uncomment this */
+}
+.govid-sublabel {
+  color: #aaa;
+  font-size: 13px;
+  margin-top: 2px;
+  display: block;
+}
+.govid-value {
+  flex: 1 1 0;
+  text-align: center;
+  font-size: 17px;
+  color: #222;
+}
+
+.govid-value-left {
+  text-align: left !important;
+  width: 100%;
+  padding-left: 0;
+  font-size: 17px;
+  color: #222;
+}
+
+.govid-value.govid-bold {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+.govid-licence-row {
+  display: flex;
+  align-items: center;
+  margin-top: 2px;
+}
+.govid-copy-icon {
+  margin-left: 6px;
+  color: #888;
+  font-size: 18px;
+}
+.govid-refreshed {
+  display: flex;
+  flex-direction: column; /* Stack label and value vertically */
+  align-items: flex-start;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+.govid-refreshed-label {
+  color: #888;
+  font-size: 15px;
+  margin-right: 6px;
+}
+.govid-refreshed-label {
+  color: #888;
+  font-size: 15px;
+  margin-right: 6px;
+}
+.govid-refreshed-value {
+  font-weight: bold;
+  color: #222;
+  font-size: 12px; /* Slightly bigger for readability */
+  margin-top: 2px; /* Space below the label */
+}
+.govid-divider {
+  height: 1px;
+  background: #ddd;
+  margin: 8px 0;
+}
+.govid-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* align children to the start by default */
+  padding: 2px 0;
+  position: relative;
+}
+.govid-row-address {
+  align-items: flex-start;
+}
+.govid-status-badge {
+  background: #2e9170;
+  border-radius: 8px;
+  padding: 4px 12px;
+  color: white;
+  font-weight: bold;
+  font-size: 17px;
+}
+.govid-age-badge {
+  display: flex;
+  align-items: center;
+  font-size: 17px;
+  border-radius: 8px;
+  padding: 2px 8px;
+}
+.govid-age-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+}
+.govid-age-text {
+  color: #52b788;
+  font-weight: bold;
+  font-size: 17px;
+}
+.govid-car-icon {
+  width: 22px;
+  height: 16px;
+  margin-left: 6px;
+  vertical-align: middle;
+  object-fit: contain;
+}
+.govid-share-btn {
+  display: block;
+  margin: 24px auto 0 auto;
+  background: #fab254;
+  border-radius: 12px;
+  padding: 12px 48px;
+  color: #fff;
+  font-weight: bold;
+  font-size: 17px;
+  letter-spacing: 1px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.13);
+  transition: background 0.2s;
+}
+.govid-share-btn:hover {
+  background: #d39d47;
+}
+.govid-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+.govid-expanded-image {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+}
+.govid-row-signature {
+  align-items: center;
+}
+.govid-signature {
+  width: 140px;
+  height: 40px;
+  object-fit: contain;
+  margin-left: 20px;
+}
+.govid-row-country {
+  align-items: flex-start;
+}
+
+
+
+
+
+
+
+
+

@@ -14,6 +14,8 @@ import { supabase } from "../components/supabaseClient";
 import { FaHome, FaQrcode, FaCog } from "react-icons/fa"; // for icons on web
 import Settings from "./Settings";
 import ScanQR from "./ScanQR";
+import DigitalLicense from "./GovID";
+
 
 import icon from './assets/icon.png';
 
@@ -22,24 +24,32 @@ const Container = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  flex: 1; 
+  flex: 1;
+  width: 100vw;
+  max-width: 100vw;
+  box-sizing: border-box;
 `;
 
 const NoScrollStyle = createGlobalStyle`
   html, body {
-    overflow: hidden !important;        /* hide scrollbars */
-    height: 100% !important;            /* ensure no extra height */
-    touch-action: none !important;      /* prevent touch‑drag */
-    overscroll-behavior: contain !important; /* no bounce or parent scroll */
+    overflow: hidden !important;
+    height: 100% !important;
+    touch-action: none !important;
+    overscroll-behavior: contain !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
   }
 `;
+
 const ContentArea = styled.div`
   flex: 1;             /* take up all remaining space */
   overflow: hidden;    /* clip any excess */
   display: flex;
   flex-direction: column;
 `;
-
 
 const Banner = styled.div`
   background-color: #972541;
@@ -48,7 +58,10 @@ const Banner = styled.div`
 `;
 
 const SafetyPadding = styled.div`
-  padding: 20px;
+  padding: 20px; // Set to 0 or a very small value if you want a tiny margin
+  width: 100vw;
+  max-width: 100vw;
+  box-sizing: border-box;
 `;
 
 const ProfileContainer = styled.div`
@@ -237,7 +250,7 @@ function HomePageContent({ navigateTo }) {
 
   return (
     <>
-    <NoScrollStyle />
+      <NoScrollStyle />
       <Container>
         <Banner />
         {fakeLoading ? (
@@ -287,14 +300,14 @@ export default function HomePage() {
       case "Settings":
         return <Settings />;
       case "GovID":
-        return <div>GovID Page Placeholder</div>;
+        return <DigitalLicense />;
       default:
         return <HomePageContent />;
     }
   };
 
   return (
-    <div>
+    <div style={{ width: "100vw", maxWidth: "100vw", boxSizing: "border-box" }}>
       {renderPage()}
       <nav
         style={{
@@ -305,10 +318,14 @@ export default function HomePage() {
           borderTop: "1px solid #ccc",
           position: "fixed",
           bottom: 0,
-          width: "100%",
+          left: 0,
+          right: 0,
+          width: "100vw",
+          maxWidth: "100vw",
           height: 70,
           alignItems: "center",
           color: "#94737b",
+          boxSizing: "border-box",
         }}
       >
         <button
@@ -318,11 +335,17 @@ export default function HomePage() {
             border: "none",
             color: currentPage === "Home" ? "#a14e61" : "#94737b",
             fontSize: 20,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flex: 1,
+            flexDirection: "column",
             cursor: "pointer",
           }}
           aria-label="Home"
         >
           <FaHome />
+          <span style={{ fontSize: 10, marginTop: 2 }}>Home</span>
         </button>
         <button
           onClick={() => setCurrentPage("Scan QR")}
@@ -332,10 +355,16 @@ export default function HomePage() {
             color: currentPage === "Scan QR" ? "#a14e61" : "#94737b",
             fontSize: 20,
             cursor: "pointer",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            flex: 1,
           }}
           aria-label="Scan QR"
         >
           <FaQrcode />
+          <span style={{ fontSize: 10, marginTop: 2 }}>Scan QR</span>
         </button>
         <button
           onClick={() => setCurrentPage("Settings")}
@@ -345,10 +374,16 @@ export default function HomePage() {
             color: currentPage === "Settings" ? "#a14e61" : "#94737b",
             fontSize: 20,
             cursor: "pointer",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            flex: 1,
           }}
           aria-label="Settings"
         >
           <FaCog />
+          <span style={{ fontSize: 10, marginTop: 2 }}>Settings</span>
         </button>
       </nav>
     </div>

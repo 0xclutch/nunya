@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
     return () => authListener.subscription.unsubscribe();
   }, []);
 
-  const fetchUserData = async (uuid) => {
+  const fetchUserData = async (uuid) => { // Database info
     try {
       const { data: reqDB, error } = await supabase
         .from("users")
