@@ -65,6 +65,27 @@ const StyledCard = styled(Card)`
   }
 `;
 
+const Notice = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  color: #f5f5f5;
+  text-align: center;
+  z-index: 1000;
+  font-family: 'Roboto', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0 0 12px 12px;
+  margin: env(safe-area-inset-top) 0 0;
+`;
+
+  
+
 const StyledText = styled.p`
   font-family: 'Roboto', sans-serif;
   font-size: 18px;

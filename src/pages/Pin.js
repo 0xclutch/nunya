@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { setThemeColor, resetThemeColor } from "../components/themeColor";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
 import {
@@ -10,6 +11,8 @@ import {
 } from "@mui/material";
 import styled from "styled-components";
 import { supabase } from "../components/supabaseClient";
+
+//#region Styling Components
 
 const PinWrapper = styled(Box)`
   position: fixed;
@@ -124,6 +127,8 @@ const DeleteButton = styled(KeyButton)`
   font-size: 24px;
 `;
 
+//#endregion
+
 const PinScreen = () => {
   const { user, userData } = useAuth();
   const navigate = useNavigate();
@@ -133,13 +138,13 @@ const PinScreen = () => {
   const [loading, setLoading] = useState(true);
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
 
-  const pinRefs = useRef([]);
 
+  // Preloading the storedPin ASAP
   useEffect(() => {
+    resetThemeColor();
     if (!user) return;
-    let isMounted = true;
-
-    async function initAuth() {
+    let mounted = true;
+    (async () => {
       try {
         setLoading(true);
         const { data, error } = await supabase
@@ -149,54 +154,64 @@ const PinScreen = () => {
           .single();
 
         if (error) throw error;
-
-        if (!data?.pin || data.pin.length !== 6) {
-          throw new Error("Invalid pin configuration");
-        }
-
-        if (isMounted) {
-          setStoredPin(data.pin);
-          setLoading(false);
-        }
+        if (!data?.pin || data.pin.length !== 6) throw new Error("Invalid pin configuration");
+        if (mounted) setStoredPin(data.pin);
       } catch (err) {
-        console.error(err);
-        if (isMounted) {
-          showMessage("Error loading PIN", "error");
-          setLoading(false);
+        setSnackbar({ open: true, message: "Error loading PIN", severity: "error" });
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [user]);
+
+  // 2. INSTANTANEOUS PIN BUTTON HANDLER
+  // - Use useRef for pin to avoid async setState lag
+  const pinRef = useRef(pin);
+  pinRef.current = pin;
+
+  const handleKeyPress = useCallback((key) => {
+    if (key === "⌫") {
+      // Delete logic (instant)
+      const idx = pinRef.current.findLastIndex((val) => val !== "");
+      if (idx !== -1) {
+        const updated = pinRef.current.slice();
+        updated[idx] = "";
+        setPin(updated);
+        pinRef.current = updated;
+      }
+      return;
+    }
+    // Find first empty
+    const idx = pinRef.current.findIndex((val) => val === "");
+    if (idx !== -1 && /^[0-9]$/.test(key)) {
+      const updated = pinRef.current.slice();
+      updated[idx] = key;
+      setPin(updated);
+      pinRef.current = updated;
+      // Submit if complete
+      if (idx === 5) {
+        // Fast: allow button mashing, do not block UI
+        if (updated.join("") === storedPin) {
+          setTimeout(() => {  // allow render before navigation
+            setSnackbar({ open: true, message: "PIN verified", severity: "success" });
+            navigate("/dashboard");
+          }, 10);
+        } else {
+          setSnackbar({ open: true, message: "Incorrect PIN", severity: "error" });
+          setTimeout(() => {
+            setPin(["", "", "", "", "", ""]);
+            pinRef.current = ["", "", "", "", "", ""];
+          }, 120); // short delay so user sees "full" pin
         }
       }
     }
-
-    initAuth();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [user]);
+  }, [navigate, storedPin]);
+  const keypad = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "⌫"];
 
   const showMessage = useCallback((message, severity = "success") => {
     setSnackbar({ open: true, message: message, severity: severity });
-  }, []);
-
-  const handleKeyPress = (key) => {
-    if (key === "⌫") return handleDelete();
-    const index = pin.findIndex((val) => val === "");
-    if (index !== -1) {
-      const updated = [...pin];
-      updated[index] = key;
-      setPin(updated);
-      if (updated.join("").length === 6) handleSubmit(updated.join(""));
-    }
-  };
-
-  const handleDelete = () => {
-    const index = pin.findLastIndex((val) => val !== "");
-    if (index !== -1) {
-      const updated = [...pin];
-      updated[index] = "";
-      setPin(updated);
-    }
-  };
+  }, []);  
 
   const handleSubmit = (value) => {
     if (value === storedPin) {
@@ -208,7 +223,6 @@ const PinScreen = () => {
     }
   };
 
-  const keypad = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "⌫"];
 
   if (loading) {
     return (
@@ -226,7 +240,6 @@ const PinScreen = () => {
             <span role="img" aria-label="lock">🔒</span>
           </LockIcon>
           <Title>Enter your 6 digit PIN</Title>
-
           <PinInputContainer>
             {pin.map((val, i) => (
               <PinField key={i}>
@@ -238,21 +251,23 @@ const PinScreen = () => {
 
         <ResetText>
           Forgot your PIN?
-          <ResetLink> RESET</ResetLink>
+          <ResetLink>RESET</ResetLink> {/* This link should be updated to allow the user the ability to reset it :) */}
         </ResetText>
       </ContentContainer>
 
       <KeypadWrapper>
         {keypad.map((key, i) => (
-          <KeyButton key={i} onClick={() => handleKeyPress(key)} disabled={!key}>
-            {key}
-          </KeyButton>
+          <KeyButton key={i} onPointerDown={key ? (e) => {e.preventDefault(); handleKeyPress(key); } : undefined}
+            disabled={!key}
+            tabIndex={-1} // prevent focus
+            style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
+          >{key}</KeyButton>
         ))}
       </KeypadWrapper>
 
       <Snackbar
         open={snackbar.open}
-        autoHideDuration={3000}
+        autoHideDuration={1800}
         onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
       >
         <Alert severity={snackbar.severity} onClose={() => setSnackbar((s) => ({ ...s, open: false }))}>

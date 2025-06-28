@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
+  import { setThemeColor } from "../components/themeColor";
   import { ArrowLeftOutlined, CopyOutlined, LoadingOutlined, InfoCircleOutlined } from "@ant-design/icons";
-  import PullToRefresh from 'react-simple-pull-to-refresh';
+  import PullToRefresh from "../components/PullToRefresh";
   import { useAuth } from "../components/AuthContext";
-  import { useNavigate } from "react-router-dom";
+  import { useNavigate, Navigate } from "react-router-dom";
   import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
   import { faCarSide, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
   import { motion } from "framer-motion";
@@ -16,14 +17,27 @@ import React, { useEffect, useState } from "react";
   import signature_4 from './signatures/signature3.png';
   import signature_5 from './signatures/signature4.png';
   import "../styles/GovID.css";
+  import OverlappingProfileCard from "../components/OverlappingProfileCard";
 
   const months = {
     1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
     7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
   };
 
+  const COLOR_MAROON = "#972541";
+  const COLOR_BG = "#e7e6ed";
+  const COLOR_CARD = "#fff";
+  const COLOR_YELLOW = "#F1AF5B";
+  const COLOR_HEADING = "#444";
+  const COLOR_MUTED = "#666";
+  const COLOR_TEXT = "#111";
+  const COLOR_NAV_ACTIVE = "#972541";
+  const COLOR_NAV_INACTIVE = "#888";
+  const COLOR_BORDER = "#ccc";
+
+
   const DigitalLicense = () => {
-    const { userData } = useAuth();
+    const { userData, isAuthenticated, loading } = useAuth();
     const navigate = useNavigate();
     const [lastRefreshed, setLastRefreshed] = useState(getCurrentTime());
     const [licenseNum, setLicenseNum] = useState("");
@@ -31,7 +45,6 @@ import React, { useEffect, useState } from "react";
     const [cardNumber, setCardNumber] = useState("");
     const [refreshing, setRefreshing] = useState(false);
     const [signature, setSignature] = useState(null);
-    const [profilePicture, setProfilePicture] = useState(null);
     const [isImageExpanded, setIsImageExpanded] = useState(false);
 
     const fullUser = {
@@ -52,14 +65,20 @@ import React, { useEffect, useState } from "react";
     };
 
     useEffect(() => {
+      setThemeColor(COLOR_YELLOW);
       console.log("User Data:", userData);
       determine_signature();
       generateLicenseNum();
       generateExpiryDate();
       cardnumbergenerator();
-      // setProfilePicture(userData?.photoUrl);
-      // eslint-disable-next-line
     }, [userData]);
+
+    // Redirect to login if not authenticated
+    useEffect(() => {
+      if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+      }
+    }, [isAuthenticated, navigate]);
 
     function getCurrentTime() {
       const now = new Date();
@@ -126,65 +145,65 @@ import React, { useEffect, useState } from "react";
       });
     };
 
+    const redirectBack = () => {
+      return <Navigate to="/login" replace />
+    }
+
     const safeUpperCase = (text) => (text || "").toUpperCase();
     const toggleImageExpansion = () => setIsImageExpanded(!isImageExpanded);
 
     return (
+      <>
+        <div className="govid-banner-sticky">
+          <span className="govid-back-arrow"> 
+            <ArrowLeftOutlined onClick={redirectBack()} /> <span>Back</span>
+          </span>
+          <div className="govid-banner-spacer" />
+          <img src={qldLogo} alt="Queensland Government" className="govid-banner-qld-logo" style={{ pointerEvents: 'none' }} />
+        </div>
+
+          <motion.img
+            src={backgroundImage}
+            alt=""
+            aria-hidden="true"
+            style={{
+            position: "fixed",
+            top: 100,
+            left: 100,
+            width: "50vw",
+            height: "50vh",
+            objectFit: "contain", // Use 'contain' for resizeMode equivalent
+            transformOrigin: 'center',
+            opacity: 0.1,
+            zIndex: 1,
+            pointerEvents: "none",
+            userSelect: "none",
+            }}
+            initial={{ scale: 1 }}
+            animate={{ scale: [1, 1.08, 1] }}
+            transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            repeatType: "loop",
+            ease: "easeInOut"
+            }}
+          />
+          
       <PullToRefresh  
         onRefresh={handleRefresh}
-        refreshingContent={
-          <div style={{
-            width: "100vw",
-            height: 48,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center"
-          }}>
-            <LoadingOutlined style={{ fontSize: 24, color: "#fab254" }} spin />
-          </div>
-        }
       >
         <div className="govid-container">
-          {/* Chopped Background */}
-                <motion.img
-                  src={backgroundImage}
-                  alt=""
-                  aria-hidden="true"
-                  style={{
-                  position: "fixed",
-                  top: 100,
-                  left: 100,
-                  width: "50vw",
-                  height: "50vh",
-                  objectFit: "contain", // Use 'contain' for resizeMode equivalent
-                  transformOrigin: 'center',
-                  opacity: 0.1,
-                  zIndex: 1,
-                  pointerEvents: "none",
-                  userSelect: "none",
-                  }}
-                  initial={{ scale: 1 }}
-                  animate={{ scale: [1, 1.08, 1] }}
-                  transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  repeatType: "loop",
-                  ease: "easeInOut"
-                  }}
-                />
-                {/* Header */}
-          <div className="govid-header-bg"/>
-          <div className="govid-header">
-            <ArrowLeftOutlined className="govid-back-arrow" onClick={() => navigate("/")} />
-            <span className="govid-header-title">Digital License</span>
-            <img src={qldLogo} alt="Queensland Government" className="govid-qld-logo" />
-          </div>
+          {/* Sticky Banner/Header */}
+
+          {/* Static Title */}
+          <div className="govid-header-title-static">Driver Licence</div>
+
           <div className="govid-card">
             <div className="govid-card-row">
               {userData?.photo ? (
                 <div className="govid-photo-wrapper" onClick={toggleImageExpansion}>
-                  <img src={userData?.photo} alt="Profile" className="govid-photo" />
-                </div>
+                  <img src={userData?.photo} alt=" "className="govid-photo"/>
+                </div>  
               ) : (
                 <div className="govid-photo-placeholder" />
               )}
@@ -202,19 +221,19 @@ import React, { useEffect, useState } from "react";
                   <div>Loading...</div>
                 )}
                 <div className="govid-info-label">DoB</div>
-                <div className="govid-value govid-bold govid-value-left">
+                <div className="govid-bold govid-value-left" style={{ letterSpacing: "1px", fontWeight: '600'}}>
                   {fullUser?.day} {months[fullUser?.month]} {calculateYearOfBirth(fullUser?.age, fullUser?.month, fullUser?.day)}
                 </div>
                 <div className="govid-licence-row">
                   <span className="govid-info-label">Licence No.</span>
-                  <CopyOutlined className="govid-copy-icon govid-value-left" />
+                  {/*                  <CopyOutlined className="govid-copy-icon govid-value-left" /> */}
                 </div>
-                <div className="govid-value govid-bold govid-value-left" style={{ letterSpacing: "1px" }}>{licenseNum}</div>
+                <div className="govid-bold govid-value-left" style={{ letterSpacing: "1px", fontWeight: '600'}}>{licenseNum}</div>
               </div>
             </div>
-            {isImageExpanded && profilePicture && (
+            {isImageExpanded && fullUser.photoUrl && (
               <div className="govid-overlay" onClick={toggleImageExpansion}>
-                <img className="govid-expanded-image" src={profilePicture} alt="Expanded" />
+                <img className="govid-expanded-image" src={fullUser.photoUrl} alt="Expanded" />
               </div>
             )}
             <div className="govid-refreshed">
@@ -232,7 +251,7 @@ import React, { useEffect, useState } from "react";
             <div className="govid-row">
               <span className="govid-label">Age</span>
               <span className="govid-age-badge">
-                <FontAwesomeIcon icon={faCircleCheck} size={50} className="govid-age-icon" alt="Tick" style={{ color: "#2e9170" }} />
+                <FontAwesomeIcon icon={faCircleCheck} size={120} className="govid-age-icon" alt="Tick" style={{ color: "#2e9170" }} />
                 <span className="govid-age-text govid-value-left">Over 18</span>
               </span>
             </div>
@@ -266,7 +285,7 @@ import React, { useEffect, useState } from "react";
                 <span className="govid-label">Address</span>
                 <span className="govid-sublabel">Are your details<br /> up to date?</span>
               </div>
-              <span className="govid-value">
+              <span className="govid-value-address" style={{ paddingLeft: "40px"}}>
                 {safeUpperCase(fullUser.houseNumber)} {safeUpperCase(fullUser.street)} {safeUpperCase(fullUser.type)}
                 <br />
                 {safeUpperCase(fullUser.suburb)}
@@ -310,10 +329,16 @@ import React, { useEffect, useState } from "react";
               </div>
             </div>
           </div>
-          <button className="govid-share-btn">SHARE DRIVER LICENCE</button>
         </div>
+          {/* Sticky share button at bottom */}
       </PullToRefresh>
+      <div className="govid-share-btn-sticky-wrapper">
+          <button className="govid-share-btn">SHARE DRIVER LICENCE</button>
+      </div>        
+      </>
     );
   };
 
   export default DigitalLicense;
+
+

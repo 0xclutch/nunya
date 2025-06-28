@@ -8,6 +8,8 @@ export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null); // Track userData here
   const [loading, setLoading] = useState(true);
 
+  const isAuthenticated = !!user; // Check if user is authenticated
+
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -79,7 +81,7 @@ export const AuthProvider = ({ children }) => {
 
 
   return (
-    <AuthContext.Provider value={{ user, userData, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, userData, login, logout, loading, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

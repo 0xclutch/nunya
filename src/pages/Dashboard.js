@@ -1,300 +1,401 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../components/AuthContext";
-import { createGlobalStyle } from "styled-components";
-import {
-  Box,
-  Typography,
-  Snackbar,
-  Alert,
-  CircularProgress,
-} from "@mui/material";
-import styled from "styled-components";
-import { supabase } from "../components/supabaseClient";
-import { FaHome, FaQrcode, FaCog } from "react-icons/fa"; // for icons on web
+import { resetThemeColor, setThemeColor } from "../components/themeColor";
+import { useState, useEffect } from "react";
+import styled, { createGlobalStyle } from "styled-components";
+import { FaHome, FaQrcode, FaCog } from "react-icons/fa";
 import Settings from "./Settings";
 import ScanQR from "./ScanQR";
 import DigitalLicense from "./GovID";
+import carIcon from "./assets/icon.png"; // Car icon for Driver Licence
+import headerIcon from './assets/qldgov.png';
+import OverlappingProfileCard from "../components/OverlappingProfileCard";
 
+const COLOR_MAROON = "#972541";
+const COLOR_BG = "#e7e6ed";
+const COLOR_CARD = "#fff";
+const COLOR_YELLOW = "#F1AF5B";
+const COLOR_HEADING = "#444";
+const COLOR_MUTED = "#666";
+const COLOR_TEXT = "#111";
+const COLOR_NAV_ACTIVE = "#972541";
+const COLOR_NAV_INACTIVE = "#888";
+const COLOR_BORDER = "#ccc";
 
-import icon from './assets/icon.png';
-
-const Container = styled.div`
-  background-color: #e7e6ed;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  width: 100vw;
-  max-width: 100vw;
-  box-sizing: border-box;
-`;
-
+// Prevent scroll and set baseline
 const NoScrollStyle = createGlobalStyle`
   html, body {
     overflow: hidden !important;
-    height: 100% !important;
-    touch-action: none !important;
-    overscroll-behavior: contain !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100vw !important;
-    max-width: 100vw !important;
+    height: 100vh !important;
+    background: ${COLOR_BG};
+    font-family: 'SF Pro Display', 'Roboto', 'Arial', sans-serif;
     box-sizing: border-box !important;
+    overscroll-behavior: none !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: ${COLOR_TEXT};
+    font-size: 16px;
+    line-height: 1.5; 
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    -webkit-font-smoothing: antialiased;
   }
 `;
 
-const ContentArea = styled.div`
-  flex: 1;             /* take up all remaining space */
-  overflow: hidden;    /* clip any excess */
+const Banner = styled.div`
+  position: relative;
+  width: 100vw;
+  height: 180px;
+  background: linear-gradient(120deg, ${COLOR_MAROON} 87%, #a32c4d 100%);
+  border-bottom-right-radius: 36px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+`;
+
+const BannerContent = styled.div`
+  position: absolute;
+  right: 20px;
+  bottom: 18px;
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
 `;
 
-const Banner = styled.div`
-  background-color: #972541;
-  height: 70px;
-  flex-shrink: 0;
+const Crest = styled.img`
+  width: 90px;
+  height: auto;
+  transform: scale(1.5);
+  margin-bottom: 15px;
+  padding: 0 23px 35px 0;
 `;
 
-const SafetyPadding = styled.div`
-  padding: 20px; // Set to 0 or a very small value if you want a tiny margin
-  width: 100vw;
-  max-width: 100vw;
-  box-sizing: border-box;
+const BannerTitle = styled.div`
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.1px;
 `;
 
-const ProfileContainer = styled.div`
+const BannerSub = styled.div`
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.1;
+`;
+
+const OverlapCard = styled.div`
+  position: relative;
+  background: ${COLOR_BG};
+  border-radius: 18px;
+  width: calc(100vw - 32px);
+  max-width: 420px;
+  margin: -62px auto 0 auto;
+  padding: 25px 20px 20px 20px;
   display: flex;
+  flex-direction: column;
+  z-index: 2;
+`;
+
+const ProfileRow = styled.div`
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  margin-bottom: 20px;
-  margin-top: 0px;
 `;
 
 const ProfilePicture = styled.img`
   width: 100px;
   height: 130px;
   border-radius: 8px;
-  margin-right: 20px;
   object-fit: cover;
-  aspect-ratio: 1;
+  background: #eee;
+  margin-right: 18px;
 `;
 
-const LegalNameContainer = styled.div`
+const NameBlock = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: -50px;
-  font-family: 'Arial';
+  justify-content: flex-end;
+  height: 60px;
+  width: calc(100% - 120px);
+  margin-bottom: 73px;
+`;
+
+const Name = styled.div`
+  font-size: 20px;
+  color: ${COLOR_TEXT};
+  font-weight: 400;
+  margin-bottom: 2px;
+  text-transform: none;
+  letter-spacing: 0.01em;
+`;
+
+const LastName = styled.div`
+  font-size: 24px;
+  color: ${COLOR_TEXT};
+  font-weight: 700;
   text-transform: uppercase;
 `;
 
-const LegalName = styled.span`
-  font-size: 24px;
+const SectionLabel = styled.div`
+  font-size: 20px;
+  font-weight: 700;
+  color: ${COLOR_HEADING};
+  margin-top: 8px;
+  margin-bottom: 8px;
 `;
 
-const Bold = styled.span`
-  font-weight: bold;
-  font-size: 24px;
-`;
-
-const Header = styled.h2`
-  font-size: 24px;
-  font-weight: 400;
-  margin-top: 20px;
-  margin-bottom: 20px;
-`;
-
-const Button = styled.button`
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  padding: 15px 20px;
-  margin-bottom: 16px;
+const UpdatingRow = styled.div`
   display: flex;
   align-items: center;
-  width: 100%;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #f3f3f3;
-  }
+  font-size: 14px;
+  color: ${COLOR_MUTED};
+  font-weight: 400;
+  margin-bottom: 13px;
+  margin-left: 2px;
+  gap: 7px;
 `;
 
-const ButtonText = styled.span`
-  font-size: 18px;
-  color: #333;
-  margin-left: 20px;
+const Dot = styled.span`
+  font-size: 23px;
+  font-weight: 700;
+  color: ${COLOR_MUTED};
+  margin-right: 3px;
+  line-height: 6px;
+`;
+
+const Spinner = styled.div`
+  border: 2.2px solid #ddd;
+  border-top: 2.2px solid ${COLOR_MUTED};
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  animation: spin 0.85s linear infinite;
+  @keyframes spin { to { transform: rotate(360deg);} }
+`;
+
+const CredButton = styled.button`
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 1.5px 8px rgba(20,10,35,0.07);
+  width: 100%;
+  min-height: 66px;
+  margin: 8px 0 0 0;
+  padding: 0 18px 0 10px;;
+  cursor: pointer;
+  outline: none;
+`;
+
+const CredIconCircle = styled.div`
+  background: ${COLOR_YELLOW};
+  width: 40px;
+  height: 40px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+`;
+
+const CarIcon = styled.img`
+  width: 40px;
+  height: 40px;
+`;
+
+const CredText = styled.span`
+  font-size: 19px;
+  font-weight: 400;
+  color: ${COLOR_TEXT};
   flex: 1;
   text-align: left;
 `;
 
-const IconImage = styled.img`
-  width: 35px;
-  height: 40px;
+const Chevron = styled.span`
+  font-size: 28px;
+  color: #111;
+  margin-left: 7px;
+  margin-right: 2px;
+  line-height: 1;
+  user-select: none;
 `;
 
+// --- LOADING SCREEN ---
 const LoadingScreen = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 70px);
-  background-color: #e7e6ed;
-  color: #6a5964;
+  min-height: 100vh;
+  background: ${COLOR_BG};
+  color: ${COLOR_MUTED};
 `;
 
 const LoadingFont = styled.div`
-  font-size: 16px;
-  margin-bottom: 50px;
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 28px;
+  color: ${COLOR_HEADING};
+  letter-spacing: 0.02em;
+  font-family: 'SF Pro Display', 'Roboto', 'Arial', sans-serif;
+  text-align: center;
+  line-height: 1.3;
 `;
 
-const UpdatingContainer = styled.div`
+const SafeArea = styled.div`
+  padding-bottom: 110px;
+  min-height: 100vh;
+  background: ${COLOR_BG};
+`;
+
+const NavBar = styled.nav`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 92px; /* Increased height */
+  background: #fff;
+  border-top: 1.5px solid ${COLOR_BORDER};
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
-  color: #666;
-  font-size: 12px;
-`;
+  justify-content: space-around;
+  z-index: 20;
+  width: 100vw;
 
-const ActivityIndicator = styled.div`
-  border: 3px solid #ccc;
-  border-top: 3px solid #666;
-  border-radius: 50%;
-  width: 14px;
-  height: 14px;
-  animation: spin 1s linear infinite;
-  margin-left: 5px;
-
-  @keyframes spin {
-    0% { transform: rotate(0deg);}
-    100% { transform: rotate(360deg);}
+  /* Increase icon size and button area */
+  & > button {
+    font-size: 20px; /* Larger icon size */
+    min-width: 90px;
+    min-height: 92px;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
 `;
 
+const NavButton = styled.button`
+  background: none;
+  border: none;
+  color: ${({ active }) => active ? COLOR_NAV_ACTIVE : COLOR_NAV_INACTIVE};
+  font-size: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  cursor: pointer;
+  outline: none;
+  padding: 0 0 4px 0;
+`;
+
+const NavLabel = styled.span`
+  font-size: 12px;
+  color: ${({ active }) => active ? COLOR_NAV_ACTIVE : COLOR_NAV_INACTIVE};
+  font-weight: 400;
+  margin-top: 1.5px;
+  letter-spacing: 0.04em;
+`;
+
+// ----------- PAGE CONTENT -----------
+// FIX: All hooks must always be called in the same order and count, regardless of navigation.
+// Do NOT put hooks in conditional branches.
+// Solution: Move all hooks to the top-level of the component.
+
 function HomePageContent({ navigateTo }) {
-  const { user, userData } = useAuth();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const { userData } = useAuth();
+
+  // Split loading states so hooks are always called in order
   const [fakeLoading, setFakeLoading] = useState(true);
-  const [fName, setFName] = useState("");
-  const [mName, setMName] = useState("");
-  const [lName, setLName] = useState("");
-  const [profilePicture, setProfilePicture] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const carBroomBroom = icon; // Adjust your public path accordingly
-
-  // Request notification permission (web)
   useEffect(() => {
-    if ("Notification" in window && navigator.serviceWorker) {
-      Notification.requestPermission().then((permission) => {
-        if (permission === "granted") {
-          console.log("Notification permission granted.");
-        } else {
-          console.log("Denied notification permission.");
-        }
-      });
-    }
+    const t1 = setTimeout(() => setFakeLoading(false), 1200);
+    const t2 = setTimeout(() => setLoading(false), 1200);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      setThemeColor(COLOR_MAROON);
+    };
   }, []);
 
+  // These are used below, even if not rendered always
+  const [isUpdating, setIsUpdating] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    const fetchUserData = async () => {
-      setTimeout(() => setFakeLoading(false), 2500);
-      try {
-        if (user && user.id) {
-          const { data: userData, error: userError } = await supabase
-            .from("users")
-            .select("*")
-            .eq("uuid", user.id);
+    const timer = setTimeout(() => {
+      setIsUpdating(false);
+      setIsLoading(false);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
 
-          if (userError) {
-            console.error("Error fetching user info:", userError);
-          } 
-          else if (userData.length > 0) {
-            const userInfo = userData[0];
-            setFName(userInfo.firstname || "");
-            setMName(userInfo.middlename || "");
-            setLName(userInfo.lastname || "");
-            setProfilePicture(userInfo.photo || null);
-          }
-        }
-      } catch (error) {
-          console.error("Error fetching user:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUserData();
-
-
-    // Disable scrolling when login screen is visible
-    document.body.style.overflow = "hidden";
-
-    // Re-enable scrolling when the component is unmounted or the login process is complete
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-
-  }, [user]);
-
-  const redirectToId = () => {
-    if (typeof navigateTo === "function") navigateTo("GovID");
-  };
-
-  if (loading)
+  // Always call hooks above, only return early here
+  if (loading || fakeLoading) {
     return (
       <LoadingScreen>
-        <LoadingFont>Loading...</LoadingFont>
+        <LoadingFont>Fetching your digital wallet</LoadingFont>
+        <Spinner />
       </LoadingScreen>
     );
+  }
 
   return (
     <>
       <NoScrollStyle />
-      <Container>
-        <Banner />
-        {fakeLoading ? (
-          <LoadingScreen>
-            <LoadingFont>Fetching your digital wallet</LoadingFont>
-            <ActivityIndicator />
-          </LoadingScreen>
-        ) : (
-          <SafetyPadding>
-            <ProfileContainer>
-              {profilePicture && (
-                <ProfilePicture src={profilePicture} alt="Profile" />
-              )}
-              <LegalNameContainer>
-                <LegalName>{`${fName} ${mName}`}</LegalName>
-                <Bold>{lName}</Bold>
-              </LegalNameContainer>
-            </ProfileContainer>
-
-            <Header>Credentials</Header>
-            <UpdatingContainer>
-              <span>Updating</span>
-              <ActivityIndicator />
-            </UpdatingContainer>
-            <Button onClick={redirectToId}>
-              <IconImage src={carBroomBroom} alt="Driver's License" />
-              <ButtonText>Drivers License</ButtonText>
-            </Button>
-          </SafetyPadding>
-        )}
-      </Container>
+      <Banner>
+        <BannerContent>
+          <Crest src={headerIcon} alt="Qld Crest" />
+        </BannerContent>
+      </Banner>
+      <SafeArea>
+        <OverlapCard>
+          <ProfileRow>
+            <OverlappingProfileCard src={userData?.photo}/>
+            <NameBlock>
+              <Name>
+                {`${userData?.firstname?.toUpperCase() || ""} ${userData?.middlename?.toUpperCase() || ""}`}
+              </Name>
+              <LastName>{userData?.lastname?.toUpperCase() || ""}</LastName>
+            </NameBlock>
+          </ProfileRow>
+          <SectionLabel>Credentials</SectionLabel>
+          {(isUpdating || isLoading) && (
+            <UpdatingRow>
+              <Spinner style={{ width: 14, height: 14, marginRight: 6 }} />
+              Updating
+            </UpdatingRow>
+          )}
+          <CredButton onClick={() => navigateTo("GovID")}>
+            <CredIconCircle>
+              <CarIcon src={carIcon} alt="" />
+            </CredIconCircle>
+            <CredText>Driver Licence</CredText>
+            <Chevron>&#8250;</Chevron>
+          </CredButton>
+        </OverlapCard>
+      </SafeArea>
     </>
   );
 }
 
-
-// Simple tab nav for web - example only
 export default function HomePage() {
   const [currentPage, setCurrentPage] = useState("Home");
+
+  // Do NOT use hooks conditionally!
+  // Always call the same hooks, always in the same order.
 
   const renderPage = () => {
     switch (currentPage) {
       case "Home":
-        return <HomePageContent navigateTo={(page) => setCurrentPage(page)} />;
+        return <HomePageContent navigateTo={setCurrentPage} />;
       case "Scan QR":
         return <ScanQR />;
       case "Settings":
@@ -302,90 +403,41 @@ export default function HomePage() {
       case "GovID":
         return <DigitalLicense />;
       default:
-        return <HomePageContent />;
+        return <HomePageContent navigateTo={setCurrentPage} />;
     }
   };
 
   return (
     <div style={{ width: "100vw", maxWidth: "100vw", boxSizing: "border-box" }}>
       {renderPage()}
-      <nav
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          padding: 12,
-          background: "#fff",
-          borderTop: "1px solid #ccc",
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          width: "100vw",
-          maxWidth: "100vw",
-          height: 70,
-          alignItems: "center",
-          color: "#94737b",
-          boxSizing: "border-box",
-        }}
-      >
-        <button
-          onClick={() => setCurrentPage("Home")}
-          style={{
-            background: "none",
-            border: "none",
-            color: currentPage === "Home" ? "#a14e61" : "#94737b",
-            fontSize: 20,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flex: 1,
-            flexDirection: "column",
-            cursor: "pointer",
-          }}
-          aria-label="Home"
-        >
-          <FaHome />
-          <span style={{ fontSize: 10, marginTop: 2 }}>Home</span>
-        </button>
-        <button
-          onClick={() => setCurrentPage("Scan QR")}
-          style={{
-            background: "none",
-            border: "none",
-            color: currentPage === "Scan QR" ? "#a14e61" : "#94737b",
-            fontSize: 20,
-            cursor: "pointer",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            flex: 1,
-          }}
-          aria-label="Scan QR"
-        >
-          <FaQrcode />
-          <span style={{ fontSize: 10, marginTop: 2 }}>Scan QR</span>
-        </button>
-        <button
-          onClick={() => setCurrentPage("Settings")}
-          style={{
-            background: "none",
-            border: "none",
-            color: currentPage === "Settings" ? "#a14e61" : "#94737b",
-            fontSize: 20,
-            cursor: "pointer",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            flex: 1,
-          }}
-          aria-label="Settings"
-        >
-          <FaCog />
-          <span style={{ fontSize: 10, marginTop: 2 }}>Settings</span>
-        </button>
-      </nav>
+      {currentPage !== "GovID" && (
+        <NavBar>
+          <NavButton
+            active={currentPage === "Home"}
+            onClick={() => setCurrentPage("Home")}
+            aria-label="Home"
+          >
+            <FaHome />
+            <NavLabel active={currentPage === "Home"}>Home</NavLabel>
+          </NavButton>
+          <NavButton
+            active={currentPage === "Scan QR"}
+            onClick={() => setCurrentPage("Scan QR")}
+            aria-label="Scan QR"
+          >
+            <FaQrcode />
+            <NavLabel active={currentPage === "Scan QR"}>Scan QR</NavLabel>
+          </NavButton>
+          <NavButton
+            active={currentPage === "Settings"}
+            onClick={() => setCurrentPage("Settings")}
+            aria-label="Settings"
+          >
+            <FaCog />
+            <NavLabel active={currentPage === "Settings"}>Settings</NavLabel>
+          </NavButton>
+        </NavBar>
+      )}
     </div>
   );
 }
