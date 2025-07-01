@@ -9,6 +9,9 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import PinScreen from "./pages/Pin";
+import ScanQR from "./pages/ScanQR";
+import MainLayout from "./components/MainLayout";
+import Settings from "./pages/Settings";
 
 import { SafeAreaWrapper } from "./components/SafeAreaWrapper";
 import GovID from "./pages/GovID";
@@ -16,23 +19,27 @@ import GovID from "./pages/GovID";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <SafeAreaWrapper>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Login />} />
 
-            {/* Protected Routes */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/" element={<MainLayout />}> {/* Navbar global attachment hahaa */}
+              <Route path="/scan" element={<ScanQR />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="settings" element={<Settings />} />
+            </Route> 
 
+            {/* Protected Routes */}
             <Route
               path="/pin"
               element={
@@ -54,8 +61,8 @@ root.render(
             <Route path="*" element={<NotFound />} />
           </Routes>
         </SafeAreaWrapper>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   </React.StrictMode>
 );
 

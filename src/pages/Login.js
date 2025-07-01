@@ -136,6 +136,12 @@ const Login = () => {
 
   }, []);
 
+  useEffect(() => {
+    if (!loading && userData) {
+      navigate("/pin", { replace: true });
+    }
+  }, [loading, userData, navigate]);
+
   const onFinish = async (values) => {
     setLoading(true);
     console.log('Logging in with:', values.email, values.password);

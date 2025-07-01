@@ -92,7 +92,7 @@ const KeypadWrapper = styled(Box)`
   bottom: 0;
   left: 0;
   width: 90vw;
-  padding: 20px 32px;
+  padding: 0px 20px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: -10px 10px;

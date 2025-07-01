@@ -1,0 +1,42 @@
+.qr-reader {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    background-color: black;
+    min-height: 100vh;
+    color: white;
+}
+
+.qr-box {
+    position: absolute;
+    border: 2px dashed #0f0;
+    width: 256px;
+    height: 256px;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.qr-frame {
+    opacity: 0.6;
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+.scanned-result {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    color: lime;
+}
+
+.qr-error {
+    margin-top: 2rem;
+    color: red;
+    text-align: center;
+    font-size: 1rem;
+}

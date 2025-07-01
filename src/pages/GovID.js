@@ -76,7 +76,7 @@ import React, { useEffect, useState } from "react";
     // Redirect to login if not authenticated
     useEffect(() => {
       if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
+        navigate("/login", { replace: true });
       }
     }, [isAuthenticated, navigate]);
 
@@ -145,8 +145,9 @@ import React, { useEffect, useState } from "react";
       });
     };
 
+
     const redirectBack = () => {
-      return <Navigate to="/login" replace />
+      navigate("/dashboard", { replace: true });
     }
 
     const safeUpperCase = (text) => (text || "").toUpperCase();
@@ -155,8 +156,8 @@ import React, { useEffect, useState } from "react";
     return (
       <>
         <div className="govid-banner-sticky">
-          <span className="govid-back-arrow"> 
-            <ArrowLeftOutlined onClick={redirectBack()} /> <span>Back</span>
+          <span className="govid-back-arrow" onClick={() => navigate("/dashboard", { replace: true })}> 
+            <ArrowLeftOutlined /> <span>Back</span>
           </span>
           <div className="govid-banner-spacer" />
           <img src={qldLogo} alt="Queensland Government" className="govid-banner-qld-logo" style={{ pointerEvents: 'none' }} />
@@ -191,8 +192,25 @@ import React, { useEffect, useState } from "react";
           
       <PullToRefresh  
         onRefresh={handleRefresh}
+        style={{
+          minHeight: '100vh',
+          minHeight: '-webkit-fill-available',
+          width: '100vw',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          WebkitOverflowScrolling: 'touch',
+          background: 'transparent',
+        }}
       >
-        <div className="govid-container">
+        <div className="govid-container" style={{
+          minHeight: '100vh',
+          minHeight: '-webkit-fill-available',
+          width: '100vw',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          WebkitOverflowScrolling: 'touch',
+          background: 'linear-gradient(135deg, #e0a02a 0%, #ffe595 100%)',
+        }}>
           {/* Sticky Banner/Header */}
 
           {/* Static Title */}

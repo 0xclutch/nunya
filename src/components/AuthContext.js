@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -8,22 +9,42 @@ export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null); // Track userData here
   const [loading, setLoading] = useState(true);
 
+
   const isAuthenticated = !!user; // Check if user is authenticated
 
   useEffect(() => {
+
     const fetchUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user || null);
-    
-      await fetchUserData(session?.user?.id);
+      const activeUser = session?.user || null;
+      setUser(activeUser);
+
+      const stored = localStorage.getItem('userData');
+      if(stored) {
+        setUserData(JSON.parse(stored));
+      }
+
+      // user but no userData yet, fetch it
+      if(activeUser && !stored) {
+        await fetchUserData(activeUser.id);
+      }
+
       setLoading(false); 
     };
 
     fetchUser();
 
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
-      if (session?.user) fetchUserData(session.user.id);
+      const loggedInUser = session?.user || null;
+      
+      setUser(loggedInUser);
+
+      if(loggedInUser) {
+        fetchUserData(loggedInUser.id);
+      } else {
+        setUserData(null); // Clear userData on logout
+        localStorage.removeItem("userData");
+      }
     });
 
 
@@ -42,8 +63,9 @@ export const AuthProvider = ({ children }) => {
         console.error("Error fetching user data:", error);
         return;
       }
-      localStorage.setItem("userData", JSON.stringify(reqDB)); // Ensure data is being saved correctly
+
       setUserData(reqDB); // Store data in context as well
+      localStorage.setItem("userData", JSON.stringify(reqDB)); // Ensure data is being saved correctly
     } catch (error) {
       console.error("Critical error fetching user data:", error);
     }
@@ -55,14 +77,13 @@ export const AuthProvider = ({ children }) => {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
       if (error) {
-        setLoading(false);
         throw error;
       }
 
       setUser(data.user);
       await fetchUserData(data.user.id); // Fetch user data after login
-      setLoading(false);
 
+      setLoading(false);
       return data.user;
     } catch (err) {
       setLoading(false);

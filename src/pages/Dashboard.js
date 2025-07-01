@@ -3,12 +3,19 @@ import { resetThemeColor, setThemeColor } from "../components/themeColor";
 import { useState, useEffect } from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import { FaHome, FaQrcode, FaCog } from "react-icons/fa";
-import Settings from "./Settings";
-import ScanQR from "./ScanQR";
-import DigitalLicense from "./GovID";
+
 import carIcon from "./assets/icon.png"; // Car icon for Driver Licence
 import headerIcon from './assets/qldgov.png';
 import OverlappingProfileCard from "../components/OverlappingProfileCard";
+import { replace, useNavigate } from "react-router-dom";
+
+
+import Navbar from "../components/Navbar"; // adjust path if needed
+
+import Settings from "./Settings";
+import ScanQR from "./ScanQR";
+import DigitalLicense from "./GovID";
+
 
 const COLOR_MAROON = "#972541";
 const COLOR_BG = "#e7e6ed";
@@ -310,18 +317,24 @@ const NavLabel = styled.span`
 
 function HomePageContent({ navigateTo }) {
   const { userData } = useAuth();
+  const navigate = useNavigate();
 
   // Split loading states so hooks are always called in order
   const [fakeLoading, setFakeLoading] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Set theme color for the page
+      resetThemeColor();
+      setThemeColor(COLOR_MAROON);
+
+  }, []);
+  useEffect(() => {
     const t1 = setTimeout(() => setFakeLoading(false), 1200);
     const t2 = setTimeout(() => setLoading(false), 1200);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
-      setThemeColor(COLOR_MAROON);
     };
   }, []);
 
@@ -373,7 +386,7 @@ function HomePageContent({ navigateTo }) {
               Updating
             </UpdatingRow>
           )}
-          <CredButton onClick={() => navigateTo("GovID")}>
+          <CredButton onClick={() => navigate("/id")}>
             <CredIconCircle>
               <CarIcon src={carIcon} alt="" />
             </CredIconCircle>
@@ -388,9 +401,19 @@ function HomePageContent({ navigateTo }) {
 
 export default function HomePage() {
   const [currentPage, setCurrentPage] = useState("Home");
+  const navigate = useNavigate();
 
   // Do NOT use hooks conditionally!
   // Always call the same hooks, always in the same order.
+
+  useEffect(() => {
+
+    // Checks for page reload
+    if(currentPage === "GovID") {
+      navigate("/id", { replace: true });
+    }
+  }, []);
+
 
   const renderPage = () => {
     switch (currentPage) {
@@ -401,7 +424,7 @@ export default function HomePage() {
       case "Settings":
         return <Settings />;
       case "GovID":
-        return <DigitalLicense />;
+        return <DigitalLicense navigateTo={setCurrentPage} />;
       default:
         return <HomePageContent navigateTo={setCurrentPage} />;
     }
@@ -411,32 +434,7 @@ export default function HomePage() {
     <div style={{ width: "100vw", maxWidth: "100vw", boxSizing: "border-box" }}>
       {renderPage()}
       {currentPage !== "GovID" && (
-        <NavBar>
-          <NavButton
-            active={currentPage === "Home"}
-            onClick={() => setCurrentPage("Home")}
-            aria-label="Home"
-          >
-            <FaHome />
-            <NavLabel active={currentPage === "Home"}>Home</NavLabel>
-          </NavButton>
-          <NavButton
-            active={currentPage === "Scan QR"}
-            onClick={() => setCurrentPage("Scan QR")}
-            aria-label="Scan QR"
-          >
-            <FaQrcode />
-            <NavLabel active={currentPage === "Scan QR"}>Scan QR</NavLabel>
-          </NavButton>
-          <NavButton
-            active={currentPage === "Settings"}
-            onClick={() => setCurrentPage("Settings")}
-            aria-label="Settings"
-          >
-            <FaCog />
-            <NavLabel active={currentPage === "Settings"}>Settings</NavLabel>
-          </NavButton>
-        </NavBar>
+        <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
       )}
     </div>
   );
