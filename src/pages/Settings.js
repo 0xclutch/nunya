@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom'; // For navigation
-import { supabase } from '../supabaseClient'; // Adjust path as needed
+import { supabase } from '../components/supabaseClient';
 
 // For PWA notifications, handle them with the Notification API if available
 // For icons, use react-icons
@@ -15,8 +15,8 @@ import {
   IoPersonCircleOutline 
 } from 'react-icons/io5';
 
-import './Settings.css'; // Styles are written in a CSS file for PWA/ReactJS
-import qldGovLogo from './images/qldgov.png'; // Adjust path as needed
+import '../styles/Settings.css'; // Styles are written in a CSS file for PWA/ReactJS
+import qldGovLogo from './assets/_QueenslandGovt.png'; // Adjust path as needed
 
 const OpenURLButton = ({ url, children }) => {
   const handlePress = useCallback(() => {
@@ -24,9 +24,9 @@ const OpenURLButton = ({ url, children }) => {
   }, [url]);
 
   return (
-    <button className="buttonText" onClick={handlePress}>
+    <div className="buttonText" onClick={handlePress}>
       {children || "Open Link"}
-    </button>
+    </div>
   );
 };
 
@@ -71,9 +71,9 @@ const Settings = () => {
   return (
     <div className="container">
       <div className="scrollViewContent">
-        <div className="button">
+        <div className="button" onClick={() => navigate('/settings/manage')}>
           <IoKeyOutline size={20} color="#000" />
-          <span className="buttonText">Change PIN</span>
+          <span className="buttonText">Manage my Digital License</span>
           <IoChevronForwardOutline size={20} color="#000" />
         </div>
         <div className="button">

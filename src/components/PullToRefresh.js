@@ -5,10 +5,10 @@ const TRIGGER_REFRESH_THRESHOLD = 140; // px to trigger refresh
 const ICON_SIZE = 48; // px
 const ICON_COLOR = "#eea23f";
 // Adjustable variable for pull-to-refresh icon vertical offset
-const ICON_TOP_OFFSET = 35; // px from the top of the scroll area
+const ICON_TOP_OFFSET = 45; // px from the top of the scroll area
 
 // Final release polish: accessibility, performance, and mobile UX
-export default function PullToRefresh({ onRefresh, children }) {
+export default function PullToRefresh({ onRefresh, children, onPull  }) {
   const [pull, setPull] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const pulling = useRef(false);
@@ -39,6 +39,7 @@ export default function PullToRefresh({ onRefresh, children }) {
     if (dist > 0) {
       e.preventDefault();
       setPull(dist);
+      if(onPull) onPull(dist); // <-- call parent with new pull value
     }
     setPull(dist);
   }
@@ -50,9 +51,11 @@ export default function PullToRefresh({ onRefresh, children }) {
       Promise.resolve(onRefresh?.()).finally(() => {
         setRefreshing(false);
         setPull(0);
+        if(onPull) onPull(0); // Reset pull value in parent
       });
     } else {
       setPull(0);
+      if(onPull) onPull(0); // Reset pull value in parents
     }
   }
 
@@ -100,7 +103,6 @@ export default function PullToRefresh({ onRefresh, children }) {
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
       tabIndex={0}
-      pointerEvents='none' // Prevent pointer events on the scroller itself
       role="region"
     >
       {/* Pull-to-refresh icon */}

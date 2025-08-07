@@ -1,10 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 import { FaHome, FaQrcode, FaCog } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const COLOR_NAV_ACTIVE = "#972541";
 const COLOR_NAV_INACTIVE = "#888";
 const COLOR_BORDER = "#ccc";
+
+
 
 const NavBar = styled.nav`
   position: fixed;
@@ -53,11 +56,12 @@ const NavLabel = styled.span`
 `;
 
 export default function Navbar({ currentPage, setCurrentPage }) {
+    const navigate = useNavigate();
   return (
     <NavBar>
       <NavButton
         active={currentPage === "Home"}
-        onClick={() => setCurrentPage("Home")}
+        onClick={() => navigate("/dashboard")}
         aria-label="Home"
       >
         <FaHome />
@@ -65,7 +69,7 @@ export default function Navbar({ currentPage, setCurrentPage }) {
       </NavButton>
       <NavButton
         active={currentPage === "Scan QR"}
-        onClick={() => setCurrentPage("Scan QR")}
+        onClick={() => navigate("/scan-qr")}
         aria-label="Scan QR"
       >
         <FaQrcode />
@@ -73,7 +77,7 @@ export default function Navbar({ currentPage, setCurrentPage }) {
       </NavButton>
       <NavButton
         active={currentPage === "Settings"}
-        onClick={() => setCurrentPage("Settings")}
+        onClick={() => navigate("/settings")}
         aria-label="Settings"
       >
         <FaCog />

@@ -16,33 +16,36 @@ const ScanQR = () => {
     const [error, setError] = useState("");
     const [permissionChecked, setPermissionChecked] = useState(false);
 
-    // Redirect if not authenticated
     useEffect(() => {
         if (isAuthenticated === false) {
             navigate("/login", { replace: true });
         }
     }, [isAuthenticated, navigate]);
 
-    // Attempt to request camera permission explicitly
     useEffect(() => {
         const requestCameraAccess = async () => {
             try {
-                // Explicitly request environment (rear) camera
-                const stream = await navigator.mediaDevices.getUserMedia({
+                // iOS: facingMode: "environment" is supported, but fallback if needed
+                let constraints = {
                     video: { facingMode: { ideal: "environment" } },
                     audio: false,
-                });
-
-                // Assign stream to video element
-                if (videoEl.current) {
-                    videoEl.current.srcObject = stream;
+                };
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                    if (videoEl.current) {
+                        videoEl.current.srcObject = stream;
+                    }
+                } catch (e) {
+                    // Fallback: try without facingMode
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    if (videoEl.current) {
+                        videoEl.current.srcObject = stream;
+                    }
                 }
 
-                // Set up QR scanner
                 scanner.current = new QrScanner(
                     videoEl.current,
                     (result) => {
-                        console.log("QR Scan success:", result?.data);
                         setScannedResult(result?.data);
                     },
                     {
@@ -62,8 +65,7 @@ const ScanQR = () => {
                 await scanner.current.start();
                 setQrOn(true);
             } catch (err) {
-                console.error("Camera access denied or failed:", err);
-                setError("Camera permission denied. Please allow access to scan QR codes.");
+                setError("Camera permission denied. Please allow access to scan QR codes. On iOS, go to Settings > Safari > Camera and allow access.");
                 setQrOn(false);
             } finally {
                 setPermissionChecked(true);
@@ -75,39 +77,90 @@ const ScanQR = () => {
         return () => {
             scanner.current?.stop();
             scanner.current = null;
+            if (videoEl.current && videoEl.current.srcObject) {
+                let tracks = videoEl.current.srcObject.getTracks();
+                tracks.forEach(track => track.stop());
+                videoEl.current.srcObject = null;
+            }
         };
     }, []);
 
     return (
-        <div className="qr-reader">
+        <div className="qr-reader" style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: '#222',
+            zIndex: 1000,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'hidden',
+        }}>
             <video
                 ref={videoEl}
                 playsInline
                 autoPlay
                 muted
-                style={{ width: "100%", height: "auto", borderRadius: "12px" }}
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100vw',
+                    height: '100vh',
+                    objectFit: 'cover',
+                    borderRadius: 0,
+                    background: '#222',
+                }}
             />
-
-            <div ref={qrBoxEl} className="qr-box">
-                {!qrOn && (
-                    <img
-                        src="/static/images/icons/scan_qr1.svg"
-                        alt="QR Frame"
-                        width={256}
-                        height={256}
-                        className="qr-frame"
-                    />
-                )}
+            <div ref={qrBoxEl} className="qr-box" style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                zIndex: 1001,
+                pointerEvents: 'none',
+                width: 260,
+                height: 260,
+                border: '4px solid #000',
+                borderRadius: '18px',
+                boxSizing: 'border-box',
+                background: 'none',
+            }}>
+                {/* No animated border, no scan frame image */}
             </div>
-
             {scannedResult && (
-                <div className="scanned-result">
+                <div className="scanned-result" style={{
+                    position: 'absolute',
+                    bottom: 32,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: 'rgba(0,0,0,0.7)',
+                    color: '#fff',
+                    padding: '12px 24px',
+                    borderRadius: '12px',
+                    zIndex: 1002,
+                    fontSize: '1.2rem',
+                }}>
                     <strong>Scanned:</strong> {scannedResult}
                 </div>
             )}
-
             {permissionChecked && !qrOn && error && (
-                <div className="qr-error">
+                <div className="qr-error" style={{
+                    position: 'absolute',
+                    bottom: 32,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: 'rgba(255,0,0,0.8)',
+                    color: '#fff',
+                    padding: '12px 24px',
+                    borderRadius: '12px',
+                    zIndex: 1002,
+                    fontSize: '1.1rem',
+                }}>
                     <strong>Error:</strong> {error}
                     <p>
                         Please go to your browser or phone settings and enable camera

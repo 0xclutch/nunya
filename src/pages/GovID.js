@@ -47,6 +47,8 @@ import React, { useEffect, useState } from "react";
     const [signature, setSignature] = useState(null);
     const [isImageExpanded, setIsImageExpanded] = useState(false);
 
+    const [pullDistance, setPullDistance] = useState(0);
+
     const fullUser = {
       firstname: userData?.firstName,
       middlename: userData?.middleName,
@@ -65,12 +67,16 @@ import React, { useEffect, useState } from "react";
     };
 
     useEffect(() => {
-      setThemeColor(COLOR_YELLOW);
-      console.log("User Data:", userData);
+      setThemeColor('#e0a02a');
+      document.body.style.background = 'linear-gradient(135deg, #e0a02a 0%, #ffe595 100%)';
       determine_signature();
       generateLicenseNum();
       generateExpiryDate();
       cardnumbergenerator();
+      return () => {
+        document.body.style.background = '';
+        setThemeColor('');
+      };
     }, [userData]);
 
     // Redirect to login if not authenticated
@@ -92,6 +98,7 @@ import React, { useEffect, useState } from "react";
       return `${day} ${month} ${year} ${formattedHours}:${minutes}${ampm}`;
     }
 
+
     const calculateYearOfBirth = (age, birthMonth, birthDay) => {
       const now = new Date();
       const birthDate = new Date(now.getFullYear(), birthMonth - 1, birthDay);
@@ -108,16 +115,19 @@ import React, { useEffect, useState } from "react";
       const expiryYear = currentYear + 3;
       const formattedExpiryDate = `${randomDay} ${months[randomMonth]} ${expiryYear}`;
       setExpiryDate(formattedExpiryDate);
+
     };
 
     const cardnumbergenerator = () => {
       const cardNumber = Math.random().toString(36).slice(-10).toUpperCase();
       setCardNumber(cardNumber);
+      localStorage.setItem('cardNumber', cardNumber);
     }
 
     const determine_signature = () => {
       const signatures = [signature_1, signature_2, signature_3, signature_4, signature_5];
       setSignature(signatures[Math.floor(Math.random() * signatures.length)]);
+      localStorage.setItem('signature', signature);
     }
 
     const generateLicenseNum = async () => {
@@ -155,9 +165,13 @@ import React, { useEffect, useState } from "react";
 
     return (
       <>
-        <div className="govid-banner-sticky">
+        <div className="govid-banner-sticky"
+          style={{
+            zIndex: 10000,
+          }}
+        >
           <span className="govid-back-arrow" onClick={() => navigate("/dashboard", { replace: true })}> 
-            <ArrowLeftOutlined /> <span>Back</span>
+            <ArrowLeftOutlined /> <span className="backBtn">Back</span>
           </span>
           <div className="govid-banner-spacer" />
           <img src={qldLogo} alt="Queensland Government" className="govid-banner-qld-logo" style={{ pointerEvents: 'none' }} />
@@ -192,24 +206,24 @@ import React, { useEffect, useState } from "react";
           
       <PullToRefresh  
         onRefresh={handleRefresh}
+        onPull={setPullDistance}
         style={{
-          minHeight: '100vh',
-          minHeight: '-webkit-fill-available',
-          width: '100vw',
+          background: 'none',
+          height: '100vh',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
           overflowY: 'auto',
-          overflowX: 'hidden',
-          WebkitOverflowScrolling: 'touch',
-          background: 'transparent',
+          WebkitOverflowScrolling: 'touch'
         }}
       >
         <div className="govid-container" style={{
           minHeight: '100vh',
-          minHeight: '-webkit-fill-available',
-          width: '100vw',
-          overflowY: 'auto',
-          overflowX: 'hidden',
-          WebkitOverflowScrolling: 'touch',
-          background: 'linear-gradient(135deg, #e0a02a 0%, #ffe595 100%)',
+          paddingBottom: 'calc(env(safe-area-inset-bottom) + 80px)',
+          background: 'none',
+          WebkitOverflowScrolling: 'touch'
         }}>
           {/* Sticky Banner/Header */}
 
@@ -243,14 +257,14 @@ import React, { useEffect, useState } from "react";
                   {fullUser?.day} {months[fullUser?.month]} {calculateYearOfBirth(fullUser?.age, fullUser?.month, fullUser?.day)}
                 </div>
                 <div className="govid-licence-row">
-                  <span className="govid-info-label">Licence No.</span>
-                  {/*                  <CopyOutlined className="govid-copy-icon govid-value-left" /> */}
+                  <span className="govid-info-label"><u>Licence No.</u> <CopyOutlined className="govid-copy-icon govid-value-left" /></span>
+                  
                 </div>
                 <div className="govid-bold govid-value-left" style={{ letterSpacing: "1px", fontWeight: '600'}}>{licenseNum}</div>
               </div>
             </div>
             {isImageExpanded && fullUser.photoUrl && (
-              <div className="govid-overlay" onClick={toggleImageExpansion}>
+              <div className="govid-overlay" onClick={toggleImageExpansion} style={{ background: 'rgba(0,0,0,0.4)' }}>
                 <img className="govid-expanded-image" src={fullUser.photoUrl} alt="Expanded" />
               </div>
             )}
@@ -261,7 +275,7 @@ import React, { useEffect, useState } from "react";
             <div className="govid-divider" />
 
             <div className="govid-row">
-              <span className="govid-label">Status <InfoCircleOutlined style={{ fontSize: 14, verticalAlign: -1 }} /></span>
+              <span className="govid-label"><u>Status</u> <InfoCircleOutlined style={{ fontSize: 14, verticalAlign: -1 }} /></span>
               <span className="govid-status-badge">Current</span>
             </div>
             <div className="govid-divider" />
@@ -276,7 +290,7 @@ import React, { useEffect, useState } from "react";
             <div className="govid-divider" />
 
             <div className="govid-row">
-                <span className="govid-label">Class <InfoCircleOutlined style={{ fontSize: 14, verticalAlign: -1 }} /></span>
+                <span className="govid-label"><u>Class</u> <InfoCircleOutlined style={{ fontSize: 14, verticalAlign: -1 }} /></span>
                 <span className="govid-value" style={{ flex: 1}}>
                   (C) Car <FontAwesomeIcon icon={faCarSide} className="govid-car-icon" />
                 </span>
@@ -292,7 +306,7 @@ import React, { useEffect, useState } from "react";
             <div className="govid-divider" />
 
             <div className="govid-row">
-              <span className="govid-label">Conditions <InfoCircleOutlined style={{ fontSize: 14, verticalAlign: -1 }} /></span>
+              <span className="govid-label"><u>Conditions</u> <InfoCircleOutlined style={{ fontSize: 14, verticalAlign: -1 }} /></span>
               <span className="govid-value">-</span>
             </div>
             <div className="govid-divider" />
@@ -315,22 +329,22 @@ import React, { useEffect, useState } from "react";
             </div>
             <div className="govid-divider" />
 
-            {/* SIGNATURE */}
-            <div className="govid-row govid-row-signature">
-              <span className="govid-label">Signature</span>
-              <span>
-                {signature && (
-                  <img className="govid-signature" src={signature} alt="Signature" style={{ pointerEvents: 'none'}} />
-                )}
-              </span>
-            </div>
-            <div className="govid-divider" />
-
             {/* CARD NUMBER */}
             <div className="govid-row">
-              <span className="govid-label">Card number</span>
+              <span className="govid-label"><u>Card number</u> <CopyOutlined className="govid-copy-icon govid-value-left" /></span>
               <span className="govid-value">{cardNumber}</span>
             </div>
+            
+            <div className="govid-divider" />
+              {/* SIGNATURE */}
+              <div className="govid-row govid-row-signature">
+                <span className="govid-label">Signature</span>
+                <span>
+                  {signature && (
+                    <img className="govid-signature" src={signature} alt="Signature" style={{ pointerEvents: 'none'}} />
+                  )}
+                </span>
+              </div>
             <div className="govid-divider" />
 
             {/* COUNTRY & AUTHORITY */}
@@ -350,8 +364,21 @@ import React, { useEffect, useState } from "react";
         </div>
           {/* Sticky share button at bottom */}
       </PullToRefresh>
-      <div className="govid-share-btn-sticky-wrapper">
-          <button className="govid-share-btn">SHARE DRIVER LICENCE</button>
+      <div className="govid-share-btn-sticky-wrapper" style={{
+        position: 'fixed',
+        left: 0,
+        right: 0,
+        bottom: 'env(safe-area-inset-bottom, 0px)',
+        width: '100%',
+        zIndex: 9999,
+        margin: 0,
+        padding: '10px 5px',
+        display: 'flex',
+        justifyContent: 'center',
+        background: 'linear-gradient(to bottom, transparent, #e0a02a)',
+        backdropFilter: 'blur(10px)',
+      }}>
+        <button className="govid-share-btn" onClick={() => navigate('/id/share')}>SHARE DRIVERS LICENSE</button>
       </div>        
       </>
     );

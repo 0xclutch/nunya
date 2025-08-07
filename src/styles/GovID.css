@@ -8,6 +8,8 @@
   --color-nav-active: #972541;
   --color-nav-inactive: #888;
   --color-border: #ccc;
+
+  --vh: 1vh;
 }
 
 img {
@@ -37,19 +39,21 @@ body {
 }
 
 .govid-container {
-  background: linear-gradient(135deg, #e0a02a 0%, #ffe595 100%) !important;
-  min-height: 100vh;
-  padding-bottom: 110px; /* ensure content never hidden behind sticky button */
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: calc(var(--vh, 1vh) * 100); /* For context, visit SafeAreaWrapper.js, it adjusts VH based on device screen */
+  padding-bottom: 50px; /* reduce from 110px to 32px for less blank space */
+  /* make font roboto regular*/
+  font-family: 'Roboto', sans-serif; /* Use Roboto Regular for consistency */
   overflow-x: hidden;
   overflow-y: auto;
   z-index: 0;
   position: relative;
-  transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.76s cubic-bezier(0.4, 0, 0.2, 1);
   overscroll-behavior-y: contain; /* Prevent over-scrolling/blank space on mobile */
   overscroll-behavior-x: none;
   scrollbar-width: thin;
   scrollbar-color: #fab254 #ffe595;
+  overscroll-behavior-y: contain;
+
 }
 
 .govid-header-bg {
@@ -70,6 +74,9 @@ body {
   top: 0;
   left: 0;
   right: 0;
+  /* BLOCK POINTER EVENTS FOR ALL STICKY/FIXED*/
+  pointer-events: none; /* Prevents interaction with header */
+  user-select: none; /* Prevents text selection */
 }
 .govid-back-arrow {
   margin-right: 14px;
@@ -198,6 +205,9 @@ body {
   margin-left: 6px;
   color: #888;
   font-size: 18px;
+  vertical-align: middle;
+  display: inline-block;
+  width: 10px;
 }
 .govid-refreshed {
   display: flex;
@@ -240,7 +250,7 @@ body {
 .govid-status-badge {
   background: #2e9170;
   border-radius: 8px;
-  padding: 4px 12px;
+  padding: 0px 12px;
   color: white;
   font-weight: bold;
   font-size: 17px;
@@ -277,10 +287,11 @@ body {
 }
 .govid-share-btn {
   margin: 0 auto;
+  margin-bottom: 20px;
   background: #fab254;
   border-radius: 12px;
   padding: 14px 48px;
-  color: #fff;
+  color: #000;
   font-weight: bold;
   font-size: 17px;
   letter-spacing: 1px;
@@ -297,16 +308,14 @@ body {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 10;
   width: 100vw;
   background: linear-gradient(135deg, #e0a02a 0%, #ffe595 100%);
   display: flex;
   justify-content: center;
-  padding-bottom: env(safe-area-inset-bottom, 18px);
+  padding-bottom: env(safe-area-inset-bottom, 28px);
   padding-top: 10px;
   z-index: 9999;
-  box-shadow: 0 -2px 12px 0 rgba(0,0,0,0.07);
-  pointer-events: auto;
 }
 .govid-overlay {
   position: fixed;
@@ -316,6 +325,9 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 10;
+    /* BLOCK POINTER EVENTS FOR ALL STICKY/FIXED*/
+  pointer-events: auto; /* Prevents interaction with overlay */
+  user-select: none; /* Prevents text selection */
 }
 .govid-expanded-image {
   max-width: 90vw;
@@ -348,6 +360,7 @@ body {
   padding: 0 16px;
   box-shadow: none;
   z-index: 10000;
+
 }
 .govid-back-arrow {
   display: flex;
@@ -408,10 +421,13 @@ body {
   pointer-events: none;
   user-select: none;
 }
-
-* {
-  user-select: none !important;
-  -webkit-user-select: none !important;
-  -ms-user-select: none !important;
-  -moz-user-select: none !important;
+.backBtn {
+  font-weight: bold;
+  margin-bottom: 5px;
+  margin-left: 2px;
+  display: inline-block;
+  /* Make font Times New Roman Bold or similar */
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  padding: 0px;
+  vertical-align: middle;
 }

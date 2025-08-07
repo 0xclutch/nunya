@@ -11,6 +11,8 @@ import {
 } from "@mui/material";
 import styled from "styled-components";
 import { supabase } from "../components/supabaseClient";
+import { faLock } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 //#region Styling Components
 
@@ -41,11 +43,14 @@ const Title = styled(Typography)`
   color: #7B2B7A;
   letter-spacing: 0;
   margin: 0;
+  margin-bottom: 200px; /* space between icon and title */
 `;
 
 const PinInputContainer = styled(Box)`
   display: flex;
   gap: 5px; /* spacing between PIN boxes */
+  font-size: 20px;
+  padding-top: 40px;
 `;
 
 const PinField = styled(Box)`
@@ -56,6 +61,7 @@ const PinField = styled(Box)`
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 32px;
 `;
 
 const ContentContainer = styled(Box)`
@@ -68,8 +74,9 @@ const ContentContainer = styled(Box)`
 `;
 
 const PinDot = styled(Typography)`
-  font-size: 70px;
+  font-size: 120px;
   color: #7B2B7A;
+  line-height: 0.5; /* Helps center the dot vertically */
 `;
 
 const ResetText = styled(Box)`
@@ -80,7 +87,7 @@ const ResetText = styled(Box)`
 `;
 
 const ResetLink = styled.span`
-  color: #7B2B7A;
+  color: #b1445fff;
   font-weight: 700;
   margin-left: 6px;
   cursor: pointer;
@@ -88,17 +95,17 @@ const ResetLink = styled.span`
 `;
 
 const KeypadWrapper = styled(Box)`
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 90vw;
-  padding: 0px 20px;
+  width: 100vw;
+  padding: 20px 32px 10px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: -10px 10px;
+  gap: 12px 0;
   background-color: #fefbfc;
-  border-top: 2px solid #e0dce1;
+  border-top: 1px solid #e0dce1;
+  box-sizing: border-box;
+  color: #972541;
 `;
+
 
 const StaticObjects = styled(Box)`
   display: flex;
@@ -108,22 +115,24 @@ const StaticObjects = styled(Box)`
 `;
 
 const KeyButton = styled.button`
-  height: 70px;
-  font-size: 35px;
-  color: black;
-  background-color: #fefbfc;
+  height: 65px;
+  font-size: 32px;
+  color: #6b1e3a;
+  background-color: transparent;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   font-family: 'SF Pro Display', sans-serif;
-  touch-action: manipulation; /* improve tap response */
-  user-select: none;  
+  touch-action: manipulation;
+  user-select: none;
+  color: #972541;
   &:active {
-    background-color: #f3f3f3;
+    background-color: #f2f0f1;
   }
 `;
 
+
 const DeleteButton = styled(KeyButton)`
-  color: #7B2B7A;
+  color: #972541;
   font-size: 24px;
 `;
 
@@ -237,7 +246,7 @@ const PinScreen = () => {
       <ContentContainer>
         <StaticObjects>
           <LockIcon>
-            <span role="img" aria-label="lock">🔒</span>
+            <span role="img" aria-label="lock"><FontAwesomeIcon icon={faLock} color="#b1445fff" /></span>
           </LockIcon>
           <Title>Enter your 6 digit PIN</Title>
           <PinInputContainer>

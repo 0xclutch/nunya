@@ -14,6 +14,7 @@ import Navbar from "../components/Navbar";
 import Settings from "./Settings";
 import ScanQR from "./ScanQR";
 import DigitalLicense from "./GovID";
+import PullToRefresh from "../components/PullToRefresh";
 
 
 
@@ -134,7 +135,7 @@ const NameBlock = styled.div`
   margin-bottom: 73px;
 `;
 
-const Name = styled.div`
+const Greeting = styled.div`
   font-size: 20px;
   color: ${COLOR_TEXT};
   font-weight: 400;
@@ -161,7 +162,7 @@ const SectionLabel = styled.div`
 const UpdatingRow = styled.div`
   display: flex;
   align-items: center;
-  font-size: 14px;
+  font-size: 16px;
   color: ${COLOR_MUTED};
   font-weight: 400;
   margin-bottom: 13px;
@@ -315,7 +316,7 @@ const NavLabel = styled.span`
 // Do NOT put hooks in conditional branches.
 // Solution: Move all hooks to the top-level of the component.
 
-function HomePageContent({ navigateTo }) {
+function DashboardWOP({ navigateTo }) {
   const { userData } = useAuth();
   const navigate = useNavigate();
 
@@ -324,13 +325,17 @@ function HomePageContent({ navigateTo }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    resetThemeColor();
+    // Set theme color for the page
+      resetThemeColor();
+      setThemeColor(COLOR_MAROON);
+  }, []);
+
+  useEffect(() => {
     const t1 = setTimeout(() => setFakeLoading(false), 1200);
     const t2 = setTimeout(() => setLoading(false), 1200);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
-      setThemeColor(COLOR_MAROON);
     };
   }, []);
 
@@ -356,44 +361,43 @@ function HomePageContent({ navigateTo }) {
     );
   }
 
+
+
   return (
     <>
       <NoScrollStyle />
-      <Banner>
-        <BannerContent>
-          <Crest src={headerIcon} alt="Qld Crest" />
-        </BannerContent>
-      </Banner>
-      <SafeArea>
-        <OverlapCard>
-          <ProfileRow>
-            <OverlappingProfileCard src={userData?.photo}/>
-            <NameBlock>
-              <Name>
-                {`${userData?.firstname?.toUpperCase() || ""} ${userData?.middlename?.toUpperCase() || ""}`}
-              </Name>
-              <LastName>{userData?.lastname?.toUpperCase() || ""}</LastName>
-            </NameBlock>
-          </ProfileRow>
-          <SectionLabel>Credentials</SectionLabel>
-          {(isUpdating || isLoading) && (
-            <UpdatingRow>
-              <Spinner style={{ width: 14, height: 14, marginRight: 6 }} />
-              Updating
-            </UpdatingRow>
-          )}
-          <CredButton onClick={() => navigate("/id")}>
-            <CredIconCircle>
-              <CarIcon src={carIcon} alt="" />
-            </CredIconCircle>
-            <CredText>Driver Licence</CredText>
-            <Chevron>&#8250;</Chevron>
-          </CredButton>
-          {/* <CredButton onClick={() => navigate('/secret')}>
-            <Name>Dev Dashboard.js</Name>
-          </CredButton> */}
-        </OverlapCard>
-      </SafeArea>
+        <Banner>
+            <BannerContent>
+            <Crest src={headerIcon} alt="Qld Crest" />
+            </BannerContent>
+        </Banner>
+        <SafeArea>
+            <OverlapCard>
+            <ProfileRow>
+                <NameBlock>
+                <Greeting> {/* Morning/Afternoon is interchangable, function must be made */}
+                    Good {new Date().getHours() < 12 ? "Morning" : "Afternoon"},
+                </Greeting>
+                    {(isUpdating || isLoading) && (
+                        <UpdatingRow>
+                            <Spinner style={{ width: 14, height: 14, marginRight: 6 }} />
+                            Updating
+                        </UpdatingRow>
+                    )}
+                </NameBlock>
+            </ProfileRow>
+                <CredButton onClick={() => navigate("/id")}>
+                    <CredIconCircle>
+                        <CarIcon src={carIcon} alt="" />
+                    </CredIconCircle>
+                    <CredText>Driver Licence</CredText>
+                    <Chevron>&#8250;</Chevron>
+                </CredButton>
+            <CredButton onClick={() => navigate('/')}>
+                <LastName>Return</LastName>
+            </CredButton>
+            </OverlapCard>
+        </SafeArea>
     </>
   );
 }
@@ -417,7 +421,7 @@ export default function HomePage() {
   const renderPage = () => {
     switch (currentPage) {
       case "Home":
-        return <HomePageContent navigateTo={setCurrentPage} />;
+        return <DashboardWOP navigateTo={setCurrentPage} />;
       case "Scan QR":
         return <ScanQR />;
       case "Settings":
@@ -425,7 +429,7 @@ export default function HomePage() {
       case "GovID":
         return <DigitalLicense navigateTo={setCurrentPage} />;
       default:
-        return <HomePageContent navigateTo={setCurrentPage} />;
+        return <DashboardWOP navigateTo={setCurrentPage} />;
     }
   };
 

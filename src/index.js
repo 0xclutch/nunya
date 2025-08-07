@@ -8,13 +8,17 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
+import DashboardWOP from './pages/developDashboard.js'
 import PinScreen from "./pages/Pin";
 import ScanQR from "./pages/ScanQR";
 import MainLayout from "./components/MainLayout";
 import Settings from "./pages/Settings";
+import ManageApp from "./pages/ManageApp";
 
 import { SafeAreaWrapper } from "./components/SafeAreaWrapper";
 import GovID from "./pages/GovID";
+import ShareID from "./pages/ShareID";
+import QRVerification from "./pages/QRVerification";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -36,7 +40,8 @@ root.render(
                   </ProtectedRoute>
                 }
               />
-              <Route path="settings" element={<Settings />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path='/secret' element={<DashboardWOP />} />
             </Route> 
 
             {/* Protected Routes */}
@@ -56,6 +61,27 @@ root.render(
                 </ProtectedRoute>
               }
             />
+
+            <Route
+              path="/id/share"
+              element={
+                <ProtectedRoute>
+                  <ShareID />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/id/share/qr"
+              element={
+                <ProtectedRoute>
+                  <QRVerification />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path="/scan-qr" element={<ScanQR />} />
+            <Route path="/settings/manage" element={<ManageApp />} />
 
             {/* 404 Page */}
             <Route path="*" element={<NotFound />} />
