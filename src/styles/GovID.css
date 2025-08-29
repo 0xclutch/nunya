@@ -241,23 +241,22 @@ body {
   display: flex;
   align-items: center;
   text-align: left;
-  padding: 2px 0px;
+  padding: 1 0px;
   position: relative;
 }
 .govid-row-address {
   align-items: flex-start;
 }
 .govid-status-badge {
-  background: #2e9170;
-  border-radius: 8px;
+  background: #10772f;
+  border-radius: 10px;
   padding: 0px 12px;
   color: white;
-  font-weight: bold;
-  font-size: 17px;
+  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  height: 36px;
+  height: 30px;
   /* Remove min-width and center alignment */
   margin-left: 0;
   margin-left: 32px;
@@ -422,7 +421,6 @@ body {
   user-select: none;
 }
 .backBtn {
-  font-weight: bold;
   margin-bottom: 5px;
   margin-left: 2px;
   display: inline-block;
@@ -431,3 +429,5 @@ body {
   padding: 0px;
   vertical-align: middle;
 }
+
+

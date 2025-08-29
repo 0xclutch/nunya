@@ -5,7 +5,7 @@ const TRIGGER_REFRESH_THRESHOLD = 140; // px to trigger refresh
 const ICON_SIZE = 48; // px
 const ICON_COLOR = "#eea23f";
 // Adjustable variable for pull-to-refresh icon vertical offset
-const ICON_TOP_OFFSET = 45; // px from the top of the scroll area
+const ICON_TOP_OFFSET = 65; // px from the top of the scroll area
 
 // Final release polish: accessibility, performance, and mobile UX
 export default function PullToRefresh({ onRefresh, children, onPull  }) {

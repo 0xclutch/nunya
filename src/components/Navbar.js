@@ -3,39 +3,24 @@ import styled from "styled-components";
 import { FaHome, FaQrcode, FaCog } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-const COLOR_NAV_ACTIVE = "#972541";
-const COLOR_NAV_INACTIVE = "#888";
-const COLOR_BORDER = "#ccc";
-
-
-
 const NavBar = styled.nav`
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 92px; /* Increased height */
+  height: 92px;
   background: #fff;
-  border-top: 1.5px solid ${COLOR_BORDER};
+  border-top: 1.5px solid #ccc;
   display: flex;
   align-items: center;
   justify-content: space-around;
   z-index: 20;
-  width: 100vw;
-
-  & > button {
-    font-size: 20px;
-    min-width: 90px;
-    min-height: 92px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
 `;
 
 const NavButton = styled.button`
   background: none;
   border: none;
-  color: ${({ active }) => (active ? COLOR_NAV_ACTIVE : COLOR_NAV_INACTIVE)};
+  color: ${({ active }) => (active ? "#972541" : "#888")};
   font-size: 22px;
   display: flex;
   flex-direction: column;
@@ -44,45 +29,41 @@ const NavButton = styled.button`
   flex: 1;
   cursor: pointer;
   outline: none;
-  padding: 0 0 4px 0;
 `;
 
 const NavLabel = styled.span`
   font-size: 12px;
-  color: ${({ active }) => (active ? COLOR_NAV_ACTIVE : COLOR_NAV_INACTIVE)};
+  color: ${({ active }) => (active ? "#972541" : "#888")};
   font-weight: 400;
   margin-top: 1.5px;
-  letter-spacing: 0.04em;
 `;
 
 export default function Navbar({ currentPage, setCurrentPage }) {
     const navigate = useNavigate();
-  return (
-    <NavBar>
-      <NavButton
-        active={currentPage === "Home"}
-        onClick={() => navigate("/dashboard")}
-        aria-label="Home"
-      >
-        <FaHome />
-        <NavLabel active={currentPage === "Home"}>Home</NavLabel>
-      </NavButton>
-      <NavButton
-        active={currentPage === "Scan QR"}
-        onClick={() => navigate("/scan-qr")}
-        aria-label="Scan QR"
-      >
-        <FaQrcode />
-        <NavLabel active={currentPage === "Scan QR"}>Scan QR</NavLabel>
-      </NavButton>
-      <NavButton
-        active={currentPage === "Settings"}
-        onClick={() => navigate("/settings")}
-        aria-label="Settings"
-      >
-        <FaCog />
-        <NavLabel active={currentPage === "Settings"}>Settings</NavLabel>
-      </NavButton>
-    </NavBar>
-  );
+
+    return (
+        <NavBar>
+            <NavButton
+                active={currentPage === "Home"}
+                onClick={() => navigate("/dashboard")}
+            >
+                <FaHome />
+                <NavLabel active={currentPage === "Home"}>Home</NavLabel>
+            </NavButton>
+            <NavButton
+                active={currentPage === "Scan QR"}
+                onClick={() => navigate("/scan-qr")}
+            >
+                <FaQrcode />
+                <NavLabel active={currentPage === "Scan QR"}>Scan QR</NavLabel>
+            </NavButton>
+            <NavButton
+                active={currentPage === "Settings"}
+                onClick={() => navigate("/settings")}
+            >
+                <FaCog />
+                <NavLabel active={currentPage === "Settings"}>Settings</NavLabel>
+            </NavButton>
+        </NavBar>
+    );
 }

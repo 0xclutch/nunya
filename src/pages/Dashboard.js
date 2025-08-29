@@ -1,8 +1,8 @@
 import { useAuth } from "../components/AuthContext";
 import { resetThemeColor, setThemeColor } from "../components/themeColor";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styled, { createGlobalStyle } from "styled-components";
-import { FaHome, FaQrcode, FaCog } from "react-icons/fa";
+import PullToRefresh from "../components/PullToRefresh";
 
 import carIcon from "./assets/icon.png";
 import headerIcon from './assets/qldgov.png';
@@ -19,7 +19,6 @@ import DigitalLicense from "./GovID";
 
 const COLOR_MAROON = "#972541";
 const COLOR_BG = "#e7e6ed";
-const COLOR_CARD = "#fff";
 const COLOR_YELLOW = "#F1AF5B";
 const COLOR_HEADING = "#444";
 const COLOR_MUTED = "#666";
@@ -323,14 +322,16 @@ function HomePageContent({ navigateTo }) {
   const [fakeLoading, setFakeLoading] = useState(true);
   const [loading, setLoading] = useState(true);
 
+  const [pullDistance, setPullDistance] = useState(0);
+
   useEffect(() => {
     resetThemeColor();
+    setThemeColor(COLOR_MAROON);
     const t1 = setTimeout(() => setFakeLoading(false), 1200);
     const t2 = setTimeout(() => setLoading(false), 1200);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
-      setThemeColor(COLOR_MAROON);
     };
   }, []);
 
@@ -346,6 +347,17 @@ function HomePageContent({ navigateTo }) {
     return () => clearTimeout(timer);
   }, []);
 
+  const handleRefresh = () => { 
+    new Promise((resolve) => {
+      setTimeout(() => {
+        setIsUpdating(true);
+      }, 500);
+      setTimeout(() => {
+        setIsUpdating(false);
+        resolve();
+      }, 2000);
+    });
+  };
   // Always call hooks above, only return early here
   if (loading || fakeLoading) {
     return (
@@ -359,41 +371,57 @@ function HomePageContent({ navigateTo }) {
   return (
     <>
       <NoScrollStyle />
-      <Banner>
-        <BannerContent>
-          <Crest src={headerIcon} alt="Qld Crest" />
-        </BannerContent>
-      </Banner>
-      <SafeArea>
-        <OverlapCard>
-          <ProfileRow>
-            <OverlappingProfileCard src={userData?.photo}/>
-            <NameBlock>
-              <Name>
-                {`${userData?.firstname?.toUpperCase() || ""} ${userData?.middlename?.toUpperCase() || ""}`}
-              </Name>
-              <LastName>{userData?.lastname?.toUpperCase() || ""}</LastName>
-            </NameBlock>
-          </ProfileRow>
-          <SectionLabel>Credentials</SectionLabel>
-          {(isUpdating || isLoading) && (
-            <UpdatingRow>
-              <Spinner style={{ width: 14, height: 14, marginRight: 6 }} />
-              Updating
-            </UpdatingRow>
-          )}
-          <CredButton onClick={() => navigate("/id")}>
-            <CredIconCircle>
-              <CarIcon src={carIcon} alt="" />
-            </CredIconCircle>
-            <CredText>Driver Licence</CredText>
-            <Chevron>&#8250;</Chevron>
-          </CredButton>
-          {/* <CredButton onClick={() => navigate('/secret')}>
-            <Name>Dev Dashboard.js</Name>
-          </CredButton> */}
-        </OverlapCard>
-      </SafeArea>
+      <PullToRefresh
+        onRefresh={handleRefresh}
+        onPull={setPullDistance}
+        style={{
+          background: 'none',
+          height: '100vh',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          overflowY: 'auto',
+          WebkitOverflowScrolling: 'touch'
+        }}
+      >
+        <Banner>
+          <BannerContent>
+            <Crest src={headerIcon} alt="Qld Crest" />
+          </BannerContent>
+        </Banner>
+        <SafeArea>
+          <OverlapCard>
+            <ProfileRow>
+              <OverlappingProfileCard src={userData?.photo}/>
+              <NameBlock>
+                <Name>
+                  {`${userData?.firstname?.toUpperCase() || ""} ${userData?.middlename?.toUpperCase() || ""}`}
+                </Name>
+                <LastName>{userData?.lastname?.toUpperCase() || ""}</LastName>
+              </NameBlock>
+            </ProfileRow>
+            <SectionLabel>Credentials</SectionLabel>
+            {(isUpdating || isLoading) && (
+              <UpdatingRow>
+                <Spinner style={{ width: 14, height: 14, marginRight: 6 }} />
+                Updating
+              </UpdatingRow>
+            )}
+            <CredButton onClick={() => navigate("/id")}>
+              <CredIconCircle>
+                <CarIcon src={carIcon} alt="" />
+              </CredIconCircle>
+              <CredText>Driver Licence</CredText>
+              <Chevron>&#8250;</Chevron>
+            </CredButton>
+            {/* <CredButton onClick={() => navigate('/secret')}>
+              <Name>Dev Dashboard.js</Name>
+            </CredButton> */}
+          </OverlapCard>
+        </SafeArea>
+      </PullToRefresh>
     </>
   );
 }
@@ -411,7 +439,7 @@ export default function HomePage() {
     if(currentPage === "GovID") {
       navigate("/id", { replace: true });
     }
-  }, []);
+  }, [currentPage, navigate]); // dependency array
 
 
   const renderPage = () => {
@@ -421,7 +449,7 @@ export default function HomePage() {
       case "Scan QR":
         return <ScanQR />;
       case "Settings":
-        return <Settings />;
+        return null;//<Settings />;
       case "GovID":
         return <DigitalLicense navigateTo={setCurrentPage} />;
       default:

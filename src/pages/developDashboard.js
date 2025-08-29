@@ -1,12 +1,12 @@
-import { useAuth } from "../components/AuthContext";
+// import { useAuth } from "../components/AuthContext";
 import { resetThemeColor, setThemeColor } from "../components/themeColor";
 import { useState, useEffect } from "react";
 import styled, { createGlobalStyle } from "styled-components";
-import { FaHome, FaQrcode, FaCog } from "react-icons/fa";
+// import { FaHome, FaQrcode, FaCog } from "react-icons/fa";
 
 import carIcon from "./assets/icon.png";
 import headerIcon from './assets/qldgov.png';
-import OverlappingProfileCard from "../components/OverlappingProfileCard";
+// import OverlappingProfileCard from "../components/OverlappingProfileCard";
 import { useNavigate } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
@@ -14,20 +14,20 @@ import Navbar from "../components/Navbar";
 import Settings from "./Settings";
 import ScanQR from "./ScanQR";
 import DigitalLicense from "./GovID";
-import PullToRefresh from "../components/PullToRefresh";
+// import PullToRefresh from "../components/PullToRefresh";
 
 
 
 const COLOR_MAROON = "#972541";
 const COLOR_BG = "#e7e6ed";
-const COLOR_CARD = "#fff";
+// const COLOR_CARD = "#fff";
 const COLOR_YELLOW = "#F1AF5B";
 const COLOR_HEADING = "#444";
 const COLOR_MUTED = "#666";
 const COLOR_TEXT = "#111";
-const COLOR_NAV_ACTIVE = "#972541";
-const COLOR_NAV_INACTIVE = "#888";
-const COLOR_BORDER = "#ccc";
+// const COLOR_NAV_ACTIVE = "#972541";
+// const COLOR_NAV_INACTIVE = "#888";
+// const COLOR_BORDER = "#ccc";
 
 // Prevent scroll and set baseline
 const NoScrollStyle = createGlobalStyle`
@@ -84,19 +84,19 @@ const Crest = styled.img`
   padding: 0 23px 35px 0;
 `;
 
-const BannerTitle = styled.div`
-  color: #fff;
-  font-size: 17px;
-  font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: 0.1px;
-`;
+// const BannerTitle = styled.div`
+//   color: #fff;
+//   font-size: 17px;
+//   font-weight: 600;
+//   line-height: 1.1;
+//   letter-spacing: 0.1px;
+// `;
 
-const BannerSub = styled.div`
-  color: #fff;
-  font-size: 15px;
-  line-height: 1.1;
-`;
+// const BannerSub = styled.div`
+//   color: #fff;
+//   font-size: 15px;
+//   line-height: 1.1;
+// `;
 
 const OverlapCard = styled.div`
   position: relative;
@@ -117,14 +117,14 @@ const ProfileRow = styled.div`
   align-items: center;
 `;
 
-const ProfilePicture = styled.img`
-  width: 100px;
-  height: 130px;
-  border-radius: 8px;
-  object-fit: cover;
-  background: #eee;
-  margin-right: 18px;
-`;
+// const ProfilePicture = styled.img`
+//   width: 100px;
+//   height: 130px;
+//   border-radius: 8px;
+//   object-fit: cover;
+//   background: #eee;
+//   margin-right: 18px;
+// `;
 
 const NameBlock = styled.div`
   display: flex;
@@ -151,13 +151,13 @@ const LastName = styled.div`
   text-transform: uppercase;
 `;
 
-const SectionLabel = styled.div`
-  font-size: 20px;
-  font-weight: 700;
-  color: ${COLOR_HEADING};
-  margin-top: 8px;
-  margin-bottom: 8px;
-`;
+// const SectionLabel = styled.div`
+//   font-size: 20px;
+//   font-weight: 700;
+//   color: ${COLOR_HEADING};
+//   margin-top: 8px;
+//   margin-bottom: 8px;
+// `;
 
 const UpdatingRow = styled.div`
   display: flex;
@@ -264,52 +264,52 @@ const SafeArea = styled.div`
   background: ${COLOR_BG};
 `;
 
-const NavBar = styled.nav`
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 92px; /* Increased height */
-  background: #fff;
-  border-top: 1.5px solid ${COLOR_BORDER};
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  z-index: 20;
-  width: 100vw;
+// const NavBar = styled.nav`
+//   position: fixed;
+//   bottom: 0;
+//   left: 0;
+//   right: 0;
+//   height: 92px; /* Increased height */
+//   background: #fff;
+//   border-top: 1.5px solid ${COLOR_BORDER};
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-around;
+//   z-index: 20;
+//   width: 100vw;
 
-  /* Increase icon size and button area */
-  & > button {
-    font-size: 20px; /* Larger icon size */
-    min-width: 90px;
-    min-height: 92px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-  }
-`;
+//   /* Increase icon size and button area */
+//   & > button {
+//     font-size: 20px; /* Larger icon size */
+//     min-width: 90px;
+//     min-height: 92px;
+//     padding-top: 10px;
+//     padding-bottom: 10px;
+//   }
+// `;
 
-const NavButton = styled.button`
-  background: none;
-  border: none;
-  color: ${({ active }) => active ? COLOR_NAV_ACTIVE : COLOR_NAV_INACTIVE};
-  font-size: 22px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  cursor: pointer;
-  outline: none;
-  padding: 0 0 4px 0;
-`;
+// const NavButton = styled.button`
+//   background: none;
+//   border: none;
+//   color: ${({ active }) => active ? COLOR_NAV_ACTIVE : COLOR_NAV_INACTIVE};
+//   font-size: 22px;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: center;
+//   flex: 1;
+//   cursor: pointer;
+//   outline: none;
+//   padding: 0 0 4px 0;
+// `;
 
-const NavLabel = styled.span`
-  font-size: 12px;
-  color: ${({ active }) => active ? COLOR_NAV_ACTIVE : COLOR_NAV_INACTIVE};
-  font-weight: 400;
-  margin-top: 1.5px;
-  letter-spacing: 0.04em;
-`;
+// const NavLabel = styled.span`
+//   font-size: 12px;
+//   color: ${({ active }) => active ? COLOR_NAV_ACTIVE : COLOR_NAV_INACTIVE};
+//   font-weight: 400;
+//   margin-top: 1.5px;
+//   letter-spacing: 0.04em;
+// `;
 
 // ----------- PAGE CONTENT -----------
 // FIX: All hooks must always be called in the same order and count, regardless of navigation.
@@ -317,7 +317,6 @@ const NavLabel = styled.span`
 // Solution: Move all hooks to the top-level of the component.
 
 function DashboardWOP({ navigateTo }) {
-  const { userData } = useAuth();
   const navigate = useNavigate();
 
   // Split loading states so hooks are always called in order
@@ -415,7 +414,7 @@ export default function HomePage() {
     if(currentPage === "GovID") {
       navigate("/id", { replace: true });
     }
-  }, []);
+  }, [currentPage, navigate]);
 
 
   const renderPage = () => {

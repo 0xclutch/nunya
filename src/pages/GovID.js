@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
   import { setThemeColor } from "../components/themeColor";
-  import { ArrowLeftOutlined, CopyOutlined, LoadingOutlined, InfoCircleOutlined } from "@ant-design/icons";
+  import { CopyOutlined, LoadingOutlined, InfoCircleOutlined } from "@ant-design/icons";
   import PullToRefresh from "../components/PullToRefresh";
   import { useAuth } from "../components/AuthContext";
   import { useNavigate, Navigate } from "react-router-dom";
   import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
   import { faCarSide, faCircleCheck } from '@fortawesome/free-solid-svg-icons';
   import { motion } from "framer-motion";
+  import { IoIosArrowBack } from "react-icons/io";
 
 
   import backgroundImage from './assets/background.png';
@@ -171,7 +172,7 @@ import React, { useEffect, useState } from "react";
           }}
         >
           <span className="govid-back-arrow" onClick={() => navigate("/dashboard", { replace: true })}> 
-            <ArrowLeftOutlined /> <span className="backBtn">Back</span>
+            <IoIosArrowBack /> <span className="backBtn">Back</span>
           </span>
           <div className="govid-banner-spacer" />
           <img src={qldLogo} alt="Queensland Government" className="govid-banner-qld-logo" style={{ pointerEvents: 'none' }} />
@@ -289,17 +290,17 @@ import React, { useEffect, useState } from "react";
             </div>
             <div className="govid-divider" />
 
-            <div className="govid-row">
+            <div className="govid-row impo">
                 <span className="govid-label"><u>Class</u> <InfoCircleOutlined style={{ fontSize: 14, verticalAlign: -1 }} /></span>
                 <span className="govid-value" style={{ flex: 1}}>
                   (C) Car <FontAwesomeIcon icon={faCarSide} className="govid-car-icon" />
                 </span>
             </div>
-            <div className="govid-row">
+            <div className="govid-row impo">
               <span className="govid-label">Type</span>
               <span className="govid-value">(L) Learner</span>
             </div>
-            <div className="govid-row">
+            <div className="govid-row impo">
               <span className="govid-label">Expiry</span>
               <span className="govid-value">{expiryDate}</span>
             </div>

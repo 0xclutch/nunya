@@ -26,11 +26,15 @@ const Left = styled.div`
 `;
 
 const BackText = styled.span`
-  font-size: 2.2rem;
-  color: #111;
-  font-family: 'SF Pro Display', 'Roboto', 'Arial', sans-serif;
-  font-weight: 400;
-  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  color: #000;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-right: 0;
 `;
 
 const Right = styled.div`
