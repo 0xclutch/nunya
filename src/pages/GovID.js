@@ -166,17 +166,6 @@ import React, { useEffect, useState } from "react";
 
     return (
       <>
-        <div className="govid-banner-sticky"
-          style={{
-            zIndex: 10000,
-          }}
-        >
-          <span className="govid-back-arrow" onClick={() => navigate("/dashboard", { replace: true })}> 
-            <IoIosArrowBack /> <span className="backBtn">Back</span>
-          </span>
-          <div className="govid-banner-spacer" />
-          <img src={qldLogo} alt="Queensland Government" className="govid-banner-qld-logo" style={{ pointerEvents: 'none' }} />
-        </div>
 
           <motion.img
             src={backgroundImage}
@@ -229,7 +218,22 @@ import React, { useEffect, useState } from "react";
           {/* Sticky Banner/Header */}
 
           {/* Static Title */}
-          <div className="govid-header-title-static">Driver Licence</div>
+          <div className="govid-header-title-static">
+            <div className="govid-banner-sticky"
+              style={{
+                  zIndex: 10000,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+              }}
+            >
+              <span className="govid-back-arrow" onClick={() => navigate("/dashboard", { replace: true })}>
+                  <IoIosArrowBack /> <span className="backBtn">Back</span>
+              </span>
+              <img src={qldLogo} alt="Queensland Government" className="govid-banner-qld-logo" style={{ pointerEvents: 'none' }} />
+            </div>
+            Driver Licence
+          </div>
 
           <div className="govid-card">
             <div className="govid-card-row">
@@ -376,7 +380,6 @@ import React, { useEffect, useState } from "react";
         padding: '10px 5px',
         display: 'flex',
         justifyContent: 'center',
-        background: 'linear-gradient(to bottom, transparent, #e0a02a)',
         backdropFilter: 'blur(10px)',
       }}>
         <button className="govid-share-btn" onClick={() => navigate('/id/share')}>SHARE DRIVERS LICENSE</button>

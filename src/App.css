@@ -1,8 +1,8 @@
 html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 html.plt-ios.plt-pwa {

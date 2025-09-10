@@ -21,7 +21,7 @@ const PinWrapper = styled(Box)`
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: 100dvh; /* instead of 100vh */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -31,6 +31,7 @@ const PinWrapper = styled(Box)`
   overflow: hidden;
   box-sizing: border-box;
 `;
+
 
 const LockIcon = styled(Box)`
   font-size: 48px; /* smaller icon, matches photo lock size */
@@ -104,6 +105,9 @@ const KeypadWrapper = styled(Box)`
   border-top: 1px solid #e0dce1;
   box-sizing: border-box;
   color: #972541;
+  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: 40vh; /* Safeguard: Limit the height of the keypad */
+  touch-action: auto; /* Ensure touch scrolling works */
 `;
 
 
@@ -171,6 +175,16 @@ const PinScreen = () => {
         if (mounted) setLoading(false);
       }
     })();
+
+  const setVH = () => {
+    document.documentElement.style.setProperty(
+      "--vh",
+      `${window.innerHeight * 0.01}px`
+    );
+  };
+  setVH();
+  window.addEventListener("resize", setVH);
+  return () => window.removeEventListener("resize", setVH);
     return () => { mounted = false; };
   }, [user]);
 

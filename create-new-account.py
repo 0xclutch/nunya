@@ -1,135 +1,112 @@
 import os
-import string, random, pyperclip, requests
-from dotenv import load_dotenv
-from supabase import create_client, Client
+import random
+import string
+import requests
 
+# -------------------
+# CONFIG (from os.env)
+# -------------------
+SUPABASE_URL = os.environ.get("SUPABASE_URL")  # e.g. https://xxxx.supabase.co
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")  # service_role or anon key
 
-url: str = os.getenv("SUPABASE_URL")
-key: str = os.getenv("SUPABASE_KEY")
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise ValueError("❌ Missing SUPABASE_URL or SUPABASE_KEY in environment variables")
 
-supabase: Client = create_client("https://mkzrsppxtzvdfmraueiv.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1renJzcHB4dHp2ZGZtcmF1ZWl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMzNzcyNDMsImV4cCI6MjAzODk1MzI0M30.jCheBzxYFXUS63z-ISo9MXgxFosrXdu8LPobRFyUNro")
+TABLE = "users"
+API_URL = f"{SUPABASE_URL}/rest/v1/{TABLE}"
+HEADERS = {
+    "apikey": SUPABASE_KEY,
+    "Authorization": f"Bearer {SUPABASE_KEY}",
+    "Content-Type": "application/json",
+    "Prefer": "return=representation"
+}
 
-load_dotenv()
-def create_new_auth():
-    # Generate a simple but secure password
-    # Format: CommonWord + 2 digits + Special character
-    common_words = ['Forest', 'Ocean', 'Mountain', 'River', 'Valley', 'Desert', 'Brisbane', 'XXXX', 'Footy', 'Flute', 'Password', 'Flame']
-    password = random.choice(common_words) + str(random.randint(10,99)) + random.choice('!@#$')
-
-    # Check on supabase auth for most-recent email (usual format is user402@gmail.com), create new email with an incremented number
-    # Get the most recent email
-    response = supabase.table("users").select("email").order("created_at", desc=True).limit(1).execute()
-    most_recent_email = response.data[0]["email"]
-
-    # Extract the username and number
-    username_parts = most_recent_email.split("@")[0]
-    # Find where the digits start in the username
-    i = len(username_parts) - 1
-    while i >= 0 and username_parts[i].isdigit():
-        i -= 1
-    base_username = username_parts[:i+1]
-    number = int(username_parts[i+1:]) if username_parts[i+1:].isdigit() else 0
+# -------------------
+# EMAIL + PASSWORD GENERATOR
+# -------------------
+def generate_email(base_name="user", domain="gmail.com"):
+    # get last email
+    resp = requests.get(API_URL + "?select=email&order=id.desc&limit=1", headers=HEADERS)
+    data = resp.json()
     
-    # Create new email with incremented number
-    new_email = f"{base_username}{number + 1}@gmail.com"
+    if data:
+        last_email = data[0]["email"]
+        num = int("".join(filter(str.isdigit, last_email)))
+        next_num = num + 1
+    else:
+        next_num = 500
     
-    confirmation = input(f"Create an account with {new_email}, {password} : (Y/N) ")
-    match confirmation:
-        case 'Y' | 'y':
-            print('Great. Info has been copied to clipboard')
-            pyperclip.copy(f"{new_email}\n{password}")
-            return
-        case 'N' | 'n':
-            print('Exitting program.... Reason: DECLINED RESPONSE')
-            exit()
+    return f"{base_name}{next_num}@{domain}"
 
-    return {
-        "email": new_email,
-        "password": password
-    }
-    
-def determine_postcode(suburb: str):
-    # Use Australia Post API to lookup postcode
-    print(f"Looking up postcode for suburb: {suburb}")
-    
-    try:
-        # Format suburb name properly
-        formatted_suburb = suburb.strip().title()
-        print(f"Formatted suburb name: {formatted_suburb}")
-        
-        # Australia Post API endpoint
-        url = "https://digitalapi.auspost.com.au/postcode/search.json"
-        print(f"Making request to API endpoint: {url}")
-        
-        # Query parameters
-        params = {
-            "q": formatted_suburb,
-            "state": "QLD"
-        }
-        print(f"Request parameters: {params}")
-        
-        # Add API key to headers - should be stored in environment variable
-        headers = {
-            "AUTH-KEY": "5GGkv2GlwcSTtGX2povdnR4C5jSn10mY"
-        }
-        
-        # Make API request
-        response = requests.get(url, params=params, headers=headers)
-        print(f"API response status code: {response.status_code}")
-        
-        if response.status_code == 200:
-            data = response.json()
-            print("Raw response:", data)
-            
-            localities = data.get("localities", {}).get("locality")
-            
-            if not localities:
-                print("No results found")
-                return None
+def generate_password():
+    length = random.randint(6, 10)
+    num_symbols_count = random.randint(2, 4)
+    letters_count = length - num_symbols_count
 
-            # Handle dict or list
-            if isinstance(localities, dict):
-                postcode = localities.get("postcode")
-            elif isinstance(localities, list):
-                postcode = localities[0].get("postcode")
-            else:
-                print("Unexpected format")
-                return None
+    letters = ''.join(random.choices(string.ascii_letters, k=letters_count))
+    nums_symbols = ''.join(random.choices(string.digits + "!@#$%^&*", k=num_symbols_count))
 
-            print(f"Found postcode: {postcode}")
-            return postcode
+    password_list = list(letters + nums_symbols)
+    random.shuffle(password_list)
+    return "".join(password_list)
 
-        print(f"API call failed: {response.text}")
-        return None
+# -------------------
+# USER INPUT
+# -------------------
+def collect_user_data():
+    user_data = {}
+    user_data["pin"] = input("Enter PIN: ")
+    user_data["firstname"] = input("Enter First Name: ")
+    user_data["middlename"] = input("Enter Middle Name (optional): ") or None
+    user_data["lastname"] = input("Enter Last Name: ")
+    user_data["age"] = int(input("Enter Age (e.g., 18, 19, 20): "))
+    user_data["month"] = int(input("Enter Birth Month (1-12): "))
+    user_data["day"] = int(input("Enter Birth Day (1-31): "))
+    user_data["houseNumber"] = input("Enter House Number: ")
+    user_data["street"] = input("Enter Street Name: ")
+    user_data["type"] = input("Enter Street Type (St/Rd/etc): ")
+    user_data["suburb"] = input("Enter Suburb: ")
+    user_data["postCode"] = input("Enter Postcode: ")
+    user_data["state"] = "QLD"
+    user_data["country"] = "AU"
+    return user_data
 
-    except Exception as e:
-        print(f"Error looking up postcode: {e}")
-        return None
+# -------------------
+# INSERT USER
+# -------------------
+def insert_user():
+    email = generate_email()
+    password = generate_password()
+    user_info = collect_user_data()
 
-
-x = input('Suburb: ')
-determine_postcode(x)
-
-def create_new_account(first_name: str,
-                      middle_name: str,
-                      last_name: str,
-                      phone_number: str,
-                      address: str,
-                      city: str,
-                      state: str,
-                      zip_code: str,
-                      country: str,
-                      date_of_birth: str,
-                      gender: str,
-                      profile_picture: str,
-                      auth_details=create_new_auth()):
-    email = auth_details["email"]
-    password = auth_details["password"]
-    
-    supabase.table("users").insert({
+    data = {
+        "pin": user_info["pin"],
         "email": email,
         "password": password,
-        "first_name": first_name,
-        "last_name": last_name,
+        "firstname": user_info["firstname"],
+        "middlename": user_info["middlename"],
+        "lastname": user_info["lastname"],
+        "age": user_info["age"],
+        "month": user_info["month"],
+        "day": user_info["day"],
+        "houseNumber": user_info["houseNumber"],
+        "street": user_info["street"],
+        "type": user_info["type"],
+        "suburb": user_info["suburb"],
+        "postCode": user_info["postCode"],
+        "state": user_info["state"],
+        "country": user_info["country"],
+        "admin": False,
+        "user_credentials": {}
+    }
 
-    })
+    resp = requests.post(API_URL, headers=HEADERS, json=data)
+    if resp.status_code in (200, 201):
+        print("✅ User inserted successfully!")
+        print("Email:", email)
+        print("Password:", password)
+    else:
+        print("❌ Error inserting user:", resp.status_code, resp.text)
+
+if __name__ == "__main__":
+    insert_user()

@@ -309,7 +309,7 @@ body {
   right: 0;
   bottom: 10;
   width: 100vw;
-  background: linear-gradient(135deg, #e0a02a 0%, #ffe595 100%);
+
   display: flex;
   justify-content: center;
   padding-bottom: env(safe-area-inset-bottom, 28px);
@@ -347,14 +347,13 @@ body {
 }
 .govid-banner-sticky {
   position: fixed;
-  top: 0;
+  top: 0px;
   left: 0;
   right: 0;
   width: 100vw;
-  height: 120px;
-  background: var(--color-yellow);
+  height: 50px;
+  background-color: #E7AF42; /* Corrected: Removed quotes */
   display: flex;
-
   justify-content: space-between;
   padding: 0 16px;
   box-shadow: none;
@@ -376,10 +375,10 @@ body {
   flex: 1;
 }
 .govid-banner-qld-logo {
-  height: 150px;
+  height: 70px;
   max-width: 140px;
   width: auto;
-  object-fit: contain;
+  object-fit: fill;
   margin-right: 50px;
   display: block;
 }

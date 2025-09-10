@@ -6,6 +6,8 @@ import { Form, Input, Button, message, Card, Modal, Spin } from "antd";
 import { UserOutlined, LockOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 
+import HelpButton from "../components/HelpButton";
+
 const Background = styled.div`
   position: absolute;
   width: 100%;
@@ -165,6 +167,7 @@ const Login = () => {
 
   return (
     <>
+      <HelpButton />
       <Background />
       <Overlay />
       <LoginWrapper>

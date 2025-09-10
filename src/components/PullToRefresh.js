@@ -6,6 +6,7 @@ const ICON_SIZE = 48; // px
 const ICON_COLOR = "#eea23f";
 // Adjustable variable for pull-to-refresh icon vertical offset
 const ICON_TOP_OFFSET = 65; // px from the top of the scroll area
+const DURATION = 2000; // ms duration for the refresh icon to appear
 
 // Final release polish: accessibility, performance, and mobile UX
 export default function PullToRefresh({ onRefresh, children, onPull  }) {
@@ -48,33 +49,37 @@ export default function PullToRefresh({ onRefresh, children, onPull  }) {
     pulling.current = false;
     if (pull >= TRIGGER_REFRESH_THRESHOLD) {
       setRefreshing(true);
-      Promise.resolve(onRefresh?.()).finally(() => {
-        setRefreshing(false);
-        setPull(0);
-        if(onPull) onPull(0); // Reset pull value in parent
-      });
+      Promise.resolve(onRefresh?.())
+        .then(() => new Promise((resolve) => setTimeout(resolve, DURATION))) // Use DURATION here
+        .finally(() => {
+          setRefreshing(false);
+          setPull(0);
+          if (onPull) onPull(0); // Reset pull value in parent
+        });
     } else {
       setPull(0);
-      if(onPull) onPull(0); // Reset pull value in parents
+      if (onPull) onPull(0); // Reset pull value in parent
     }
   }
 
   // Keyboard accessibility: allow refresh with Ctrl+R or Cmd+R
   React.useEffect(() => {
     function handleKey(e) {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'r') {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r") {
         e.preventDefault();
         if (!refreshing) {
           setRefreshing(true);
-          Promise.resolve(onRefresh?.()).finally(() => {
-            setRefreshing(false);
-            setPull(0);
-          });
+          Promise.resolve(onRefresh?.())
+            .then(() => new Promise((resolve) => setTimeout(resolve, DURATION))) // Use DURATION here
+            .finally(() => {
+              setRefreshing(false);
+              setPull(0);
+            });
         }
       }
     }
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
   }, [refreshing, onRefresh]);
 
   // Icon position and rotation logic

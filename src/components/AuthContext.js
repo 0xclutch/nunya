@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
       const activeUser = session?.user || null;
       setUser(activeUser);
 
-      const stored = localStorage.getItem('userData');
+      const stored = localStorage.getItem('session');
       if(stored) {
         setUserData(JSON.parse(stored));
       }
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       setUserData(reqDB); // Store data in context as well
-      localStorage.setItem("userData", JSON.stringify(reqDB)); // Ensure data is being saved correctly
+      localStorage.setItem("session", JSON.stringify(reqDB)); // Ensure data is being saved correctly
     } catch (error) {
       console.error("Critical error fetching user data:", error);
     }
@@ -96,7 +96,7 @@ export const AuthProvider = ({ children }) => {
     await supabase.auth.signOut();
     setUser(null);
     setUserData(null); // Clear userData on logout
-    localStorage.removeItem("userData");
+    localStorage.removeItem("session");
   };
 
 

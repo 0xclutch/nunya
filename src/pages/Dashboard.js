@@ -14,6 +14,7 @@ import Navbar from "../components/Navbar";
 import Settings from "./Settings";
 import ScanQR from "./ScanQR";
 import DigitalLicense from "./GovID";
+import HelpButton from "../components/HelpButton";
 
 
 
@@ -30,7 +31,8 @@ const COLOR_BORDER = "#ccc";
 // Prevent scroll and set baseline
 const NoScrollStyle = createGlobalStyle`
   html, body {
-    overflow: hidden !important;
+    overflow: hidden !important; /* Prevent both vertical and horizontal scrolling */
+    overflow-x: hidden !important; /* Specifically prevent horizontal scrolling */
     margin: 0 !important;
     padding: 0 !important;
     width: 100vw !important;
@@ -49,7 +51,6 @@ const NoScrollStyle = createGlobalStyle`
     touch-action: manipulation;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-    -webkit-font-smoothing: antialiased;
   }
 `;
 
