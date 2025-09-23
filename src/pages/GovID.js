@@ -302,7 +302,7 @@ import React, { useEffect, useState } from "react";
             </div>
             <div className="govid-row impo">
               <span className="govid-label">Type</span>
-              <span className="govid-value">(L) Learner</span>
+              <span className="govid-value">(P) Provisional</span>
             </div>
             <div className="govid-row impo">
               <span className="govid-label">Expiry</span>
@@ -380,7 +380,7 @@ import React, { useEffect, useState } from "react";
         padding: '10px 5px',
         display: 'flex',
         justifyContent: 'center',
-        backdropFilter: 'blur(10px)',
+       
       }}>
         <button className="govid-share-btn" onClick={() => navigate('/id/share')}>SHARE DRIVERS LICENSE</button>
       </div>        
