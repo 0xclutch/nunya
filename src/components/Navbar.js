@@ -1,7 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import { FaHome, FaQrcode, FaCog } from "react-icons/fa";
+import { AiFillHome } from "react-icons/ai";
+import { HiOutlineQrCode } from "react-icons/hi2";
+import { RiQrScan2Line } from "react-icons/ri";
+import { IoSettingsOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import ShowUserQR from "../pages/2.0/ShowUserQR";
 
 const NavBar = styled.nav`
   position: fixed;
@@ -32,10 +36,10 @@ const NavButton = styled.button`
 `;
 
 const NavLabel = styled.span`
-  font-size: 12px;
+  font-size: 14px;
   color: ${({ active }) => (active ? "#972541" : "#888")};
   font-weight: 400;
-  margin-top: 1.5px;
+  padding: 5px;
 `;
 
 export default function Navbar({ currentPage, setCurrentPage }) {
@@ -47,21 +51,28 @@ export default function Navbar({ currentPage, setCurrentPage }) {
                 active={currentPage === "Home"}
                 onClick={() => navigate("/dashboard")}
             >
-                <FaHome />
+                <AiFillHome size='27' />
                 <NavLabel active={currentPage === "Home"}>Home</NavLabel>
+            </NavButton>
+            <NavButton 
+                active={currentPage === "ShowQR"}
+                onclick={() => navigate("/id/showqr")}
+            >
+                <HiOutlineQrCode size='27' />
+                <NavLabel active={currentPage === "ShowQR"}>Show QR</NavLabel>
             </NavButton>
             <NavButton
                 active={currentPage === "Scan QR"}
                 onClick={() => navigate("/scan-qr")}
             >
-                <FaQrcode />
+                <RiQrScan2Line size='27' />
                 <NavLabel active={currentPage === "Scan QR"}>Scan QR</NavLabel>
             </NavButton>
             <NavButton
                 active={currentPage === "Settings"}
                 onClick={() => navigate("/settings")}
             >
-                <FaCog />
+                <IoSettingsOutline size='27' style={{ padding: '1px'}}/>
                 <NavLabel active={currentPage === "Settings"}>Settings</NavLabel>
             </NavButton>
         </NavBar>

@@ -302,7 +302,7 @@ import React, { useEffect, useState } from "react";
             </div>
             <div className="govid-row impo">
               <span className="govid-label">Type</span>
-              <span className="govid-value">(P) Provisional</span>
+              <span className="govid-value">(P1) Provisional</span>
             </div>
             <div className="govid-row impo">
               <span className="govid-label">Expiry</span>

@@ -19,10 +19,13 @@ import { SafeAreaWrapper } from "./components/SafeAreaWrapper";
 import GovID from "./pages/GovID";
 import ShareID from "./pages/ShareID";
 import QRVerification from "./pages/QRVerification";
+import ShowUserQR from "./pages/2.0/ShowUserQR.js";
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+    <SpeedInsights/>
     <Router>
       <AuthProvider>
         <SafeAreaWrapper>
@@ -36,7 +39,7 @@ root.render(
                 path="/dashboard"
                 element={
                   <ProtectedRoute>
-                    <Dashboard />
+                    <DashboardWOP />
                   </ProtectedRoute>
                 }
               />
@@ -61,6 +64,16 @@ root.render(
                 </ProtectedRoute>
               }
             />
+
+            <Route
+              path='/id/showqr'
+              element={
+                <ProtectedRoute>
+                  <ShowUserQR />
+                </ProtectedRoute>
+              }
+            />
+
 
             <Route
               path="/id/share"

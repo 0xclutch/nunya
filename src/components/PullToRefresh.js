@@ -100,7 +100,6 @@ export default function PullToRefresh({ onRefresh, children, onPull  }) {
         WebkitOverflowScrolling: "touch",
         height: "100vh",
         touchAction: "pan-y",
-        background: "transparent",
         outline: "none",
         WebkitTapHighlightColor: "transparent",
       }}
