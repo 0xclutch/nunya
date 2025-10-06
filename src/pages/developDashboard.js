@@ -1,7 +1,6 @@
-import { useAuth } from "../components/AuthContext";
-import { resetThemeColor, setThemeColor } from "../components/themeColor";
-import React, { useState, useEffect, useCallback, useMemo, lazy, Suspense } from "react";
+import React, { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import styled, { createGlobalStyle } from "styled-components";
+import { setThemeColor, resetThemeColor } from "../components/themeColor";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 // import { FaHome, FaQrcode, FaCog } from "react-icons/fa";
@@ -11,8 +10,9 @@ import Navbar from "../components/Navbar";
 import carIcon from "./assets/icon.png";
 import headerIcon from './assets/NewQueenslandGovernmentBanner.png';
 import { MdOutlineAttachMoney } from "react-icons/md";
-import { FaGavel, FaCreditCard  } from "react-icons/fa6";
+import { FaGavel  } from "react-icons/fa6";
 import { FaExternalLinkAlt } from "react-icons/fa";
+import { VscCreditCard } from "react-icons/vsc";
 import { IoLocationSharp } from "react-icons/io5";
 
 
@@ -83,17 +83,15 @@ const NoScrollStyle = createGlobalStyle`
 `;
 
 const Banner = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: clamp(96px, 14vh, 120px); /* smaller mobile-friendly header */
-  background: linear-gradient(180deg, ${COLOR_MAROON} 0%, #7b1e3a 100%);
+  position: relative;
+  width: 100vw;
+  height: 180px;
+  background: linear-gradient(120deg, ${COLOR_MAROON} 87%, #a32c4d 100%);
+  border-bottom-right-radius: 36px;
   overflow: hidden;
   display: flex;
   align-items: flex-end;
-  z-index: 80;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  justify-content: flex-end;
 `;
 
 // keep banner image but ensure it covers and is subtle
@@ -114,76 +112,55 @@ const BannerImg = styled.img`
 
 const BannerContent = styled.div`
   position: absolute;
-  left: 20px; /* moved closer to left now */
+  right: 20px;
   bottom: 18px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  pointer-events: none;
+  align-items: flex-end;
 `;
 
+const Crest = styled.img`
+  width: 90px;
+  height: auto;
+  transform: scale(1.5);
+  margin-bottom: 15px;
+  padding: 0 23px 35px 0;
+`;
 
-// const BannerTitle = styled.div`
-//   color: #fff;
-//   font-size: 17px;
-//   font-weight: 600;
-//   line-height: 1.1;
-//   letter-spacing: 0.1px;
-// `;
-
-// const BannerSub = styled.div`
-//   color: #fff;
-//   font-size: 15px;
-//   line-height: 1.1;
-// `;
-
+/* Overlap card returned to previous layout so page spacing is unchanged */
 const OverlapCard = styled.div`
   position: relative;
   background: ${COLOR_BG};
+  border-radius: 18px;
   width: calc(100vw - 32px);
   max-width: 420px;
-  margin: clamp(88px, 14vh, 120px) auto 0 auto; /* aligned with banner height */
-  padding: 18px;
+  margin: -62px auto 0 auto;
+  padding: 25px 20px 20px 20px;
   display: flex;
   flex-direction: column;
   z-index: 2;
-  border-radius: 12px;
 `;
 
-const ProfileRow = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-`;
-
-// const ProfilePicture = styled.img`
-//   width: 100px;
-//   height: 130px;
-//   border-radius: 8px;
-//   object-fit: cover;
-//   background: #eee;
-//   margin-right: 18px;
-// `;
-
+/* Name / greeting block restored */
 const NameBlock = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: flex-end;
   align-items: flex-start;
   width: 100%;
-  margin-bottom: 12px;
-  gap: 6px;
+  margin-bottom: 6px;
 `;
 
+/* Greeting reverted to the previous sizing */
 const Greeting = styled.div`
-  font-size: 28px; /* bold and prominent */
+  font-size: 30px;
   color: ${COLOR_TEXT};
-  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 400;
   margin: 0;
-  letter-spacing: 0.01em;
 `;
 
-/* UpdatingRow flows below greeting, not absolute */
+/* UpdatingRow below greeting (non-absolute) */
 const UpdatingRow = styled.div`
   display: flex;
   align-items: center;
@@ -192,7 +169,7 @@ const UpdatingRow = styled.div`
   gap: 8px;
 `;
 
-/* ID card: taller, cleaner */
+/* Credentials / ID card restored */
 const CredButton = styled.button`
   display: flex;
   align-items: center;
@@ -208,7 +185,7 @@ const CredButton = styled.button`
   box-shadow: 0 2px 8px rgba(20,10,35,0.06);
 `;
 
-/* small left badge for ID */
+/* small left badge for ID (keep simple) */
 const CredIconSquare = styled.div`
   background: ${COLOR_YELLOW};
   width: 56px;
@@ -220,31 +197,40 @@ const CredIconSquare = styled.div`
   border-radius: 8px;
 `;
 
-/* Services list */
+/* Services container and items reverted to previous form */
 const ServicesContainer = styled.div`
-  margin-top: 12px;
+  margin-top: 24px;
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 8px;
+  padding-bottom: 10px;
+  -webkit-overflow-scrolling: touch;
 `;
 
-/* cleaner service items: white cards with small left badge/icon */
-const ServiceButton = styled.button`
-  background: #fff;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 1px 6px rgba(20,10,35,0.04);
-  width: 100%;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  cursor: pointer;
-  gap: 12px;
-`;
+// const ServiceButton = styled.button`
+//   background: #fff;
+//   border: none;
+//   border-radius: 15px;
+//   box-shadow: 0 1.5px 8px rgba(20, 10, 35, 0.07);
+//   width: 100%;
+//   height: 54px;
+//   margin-right: 0;
+//   display: flex;
+//   align-items: center;
+//   padding: 0 12px;
+//   cursor: pointer;
+//   overflow: hidden;
 
-/* badge on the left (QLD label style) */
+//   /* Removal of bottom radius for middle children handled where buttons are grouped in JSX */
+//   &:nth-child(2) {
+//     border-radius: 12px 12px 0 0;
+//   }
+//   &:nth-child(5) {
+//     border-radius: 0 0 12px 12px;
+//   }
+// `;
+
+/* small left badge (QLD) */
 const ServiceBadge = styled.div`
   background: ${COLOR_MAROON};
   color: #fff;
@@ -265,45 +251,49 @@ const ServiceIconImportsOnly = styled.div`
   width: 36px;
   height: 36px;
   color: ${COLOR_TEXT};
+  margin-right: 10px;
 `;
 
-/* ensure text wraps and aligns left */
+/* Button text restored to previous behaviour */
 const ButtonText = styled.span`
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   color: ${COLOR_TEXT};
   text-align: left;
   letter-spacing: 0.01em;
   line-height: 1.2;
   flex: 1;
+  white-space: normal;
+  overflow-wrap: break-word;
 `;
 
-/* Learn-more cards: image-top with rounded top corners, text area below */
-const InformationButton = styled.button`
-  background: #fff;
-  border: none;
-  border-radius: 12px;
-  box-shadow: 0 1px 8px rgba(20,10,35,0.06);
-  flex: 0 0 150px;
-  height: 180px;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  padding: 0;
-  overflow: hidden;
-`;
+/* Learn-more cards reverted to simpler previous variant */
+// const InformationButton = styled.button`
+//   background: #fff;
+//   border: none;
+//   border-radius: 12px;
+//   box-shadow: 0 1.5px 8px rgba(20, 10, 35, 0.07);
+//   flex: 0 0 150px;
+//   height: 190px;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: stretch;
+//   padding: 0;
+//   cursor: pointer;
+//   overflow: hidden;
+// `;
 
-/* image fills left/right/top, rounded only at top */
+/* image area similar to before (top cropped, covers) */
 const ServiceImg = styled.img`
   width: 100%;
   height: 110px;
   object-fit: cover;
-  object-position: center;
+  object-position: top center;
   display: block;
-  border-radius: 12px 12px 0 0;
+  flex-shrink: 0;
 `;
 
-/* caption area */
+/* caption area kept simple */
 const InfoCaption = styled.div`
   padding: 10px;
   display:flex;
@@ -313,15 +303,15 @@ const InfoCaption = styled.div`
   text-align:center;
 `;
 
-/* small external link icon bottom-right (no border) */
+/* restore small chevron corner to the previous simple form */
 const ChevronBtmCorner = styled.span`
-  font-size: 12px;
-  color: rgba(0,0,0,0.5);
-  position: absolute;
-  right: 8px;
-  bottom: 8px;
-  background: transparent;
-  padding: 4px;
+  font-size: 10px;
+  color: #111;
+  margin-left: auto;
+  margin-top: auto;
+  margin-right: 6px;
+  display: flex;
+  padding: 5px;
 `;
 
 
@@ -362,17 +352,6 @@ const ContentsButton = styled.div`
   height: fit-content;
 `;
 
-const ServicesContainer = styled.div`
-  margin-top: 24px;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding-bottom: 10px;
-  overflow-y: hidden;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-
-`;
 
 const SectionLabel = styled.div`
   font-size: 18px;
@@ -413,37 +392,33 @@ const ServiceButton = styled.button`
 
 `;
 
-const ServiceIcon = styled.img`
-  width: 36px;
-  height: 36px;
-  margin: 14px;
-`;
-const ServiceIconImportsOnly = styled.div`
-  display: flex;
-  align-items: center; /* Vertically align the icon with the text */
-  justify-content: center; /* Center the icon horizontally */
-  width: 36px; /* Match the size of the text */
-  height: 36px; /* Match the size of the text */
-  font-size: 16px; /* Match the font size of the text */
-  color: ${COLOR_TEXT}; /* Ensure the icon color matches the text */
-  margin-right: 10px; /* Add spacing between the icon and the text */
-`;
+
+// const ServiceIconImportsOnly = styled.div`
+//   display: flex;
+//   align-items: center; /* Vertically align the icon with the text */
+//   justify-content: center; /* Center the icon horizontally */
+//   width: 36px; /* Match the size of the text */
+//   height: 36px; /* Match the size of the text */
+//   font-size: 16px; /* Match the font size of the text */
+//   color: ${COLOR_TEXT}; /* Ensure the icon color matches the text */
+//   margin-right: 10px; /* Add spacing between the icon and the text */
+// `;
  // default font for ios and android
 
-const ButtonText = styled.span`
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  color: ${COLOR_TEXT};
-  text-align: left;
-  padding-left: 8px;
-  letter-spacing: 0.01em;
-  flex-wrap: wrap; /* Allow wrapping */
-  white-space: normal; /* Allow text to break into multiple lines */
-  word-wrap: break-word; /* Break long words if necessary */
-  overflow-wrap: break-word; /* Ensure long words wrap properly */
-  margin: 3.5px;
+// const ButtonText = styled.span`
+//   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+//   font-size: 16px;
+//   color: ${COLOR_TEXT};
+//   text-align: left;
+//   padding-left: 8px;
+//   letter-spacing: 0.01em;
+//   flex-wrap: wrap; /* Allow wrapping */
+//   white-space: normal; /* Allow text to break into multiple lines */
+//   word-wrap: break-word; /* Break long words if necessary */
+//   overflow-wrap: break-word; /* Ensure long words wrap properly */
+//   margin: 3.5px;
   
-`;
+// `;
 
 const LearnMoreAbout = styled.div`
   margin-top: 24px;
@@ -492,34 +467,38 @@ const InformationButton = styled.button`
   overflow: hidden;
 `;
 // make this fill the container fully at the top half
-const ServiceImg = styled.img`
-  width: 100%;
-  height: 110px; /* image area height, adjust as needed */
-  object-fit: cover; /* fill and crop as needed */
-  object-position: top center; /* align crop to top */
-  display: block;
-  flex-shrink: 0;
-`
+// const ServiceImg = styled.img`
+//   width: 100%;
+//   height: 110px; /* image area height, adjust as needed */
+//   object-fit: cover; /* fill and crop as needed */
+//   object-position: top center; /* align crop to top */
+//   display: block;
+//   flex-shrink: 0;
+// `;
   
 
 
-const ChevronBtmCorner = styled.span`
-  font-size: 10px;
-  color: #111;
-  margin-left: auto; /* Push the icon to the far right */
-  margin-top: auto;
-  margin-right: 6px;
-  display: flex;
-  padding: 5px;
-`;
+// const ChevronBtmCorner = styled.span`
+//   font-size: 10px;
+//   color: #111;
+//   margin-left: auto; /* Push the icon to the far right */
+//   margin-top: auto;
+//   margin-right: 6px;
+//   display: flex;
+//   padding: 5px;
+// `;
 
 
+/* POTENTIAL REVERT - commented duplicate/unused nav styled-components (keep for reference)
+   Uncomment only if you plan to replace the Navbar component with these.
+*/
+/*
 const NavBar = styled.nav`
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 92px; /* Increased height */
+  height: 92px;
   background: #fff;
   border-top: 1.5px solid ${COLOR_BORDER};
   display: flex;
@@ -528,9 +507,8 @@ const NavBar = styled.nav`
   z-index: 20;
   width: 100vw;
 
-  /* Increase icon size and button area */
   & > button {
-    font-size: 20px; /* Larger icon size */
+    font-size: 20px;
     min-width: 90px;
     min-height: 92px;
     padding-top: 10px;
@@ -560,6 +538,7 @@ const NavLabel = styled.span`
   margin-top: 1.5px;
   letter-spacing: 0.04em;
 `;
+*/
 
 // ----------- PAGE CONTENT -----------
 // FIX: All hooks must always be called in the same order and count, regardless of navigation.
@@ -657,15 +636,15 @@ const DashboardWOP = React.memo(function DashboardWOP({ navigateTo }) {
             <OverlapCard>
               <ProfileRow>
                   <NameBlock>
-                  <Greeting> {/* Morning/Afternoon is interchangable, function must be made */}
-                      Good {new Date().getHours() < 12 ? "morning" : "evening"}
-                  </Greeting>
-                      {(isUpdating || isLoading) && (
-                          <UpdatingRow>
-                              <Spinner style={{ width: 14, height: 14, marginRight: 6 }} />
-                              Updating
-                          </UpdatingRow>
-                      )}
+                    <Greeting> {/* Morning/Afternoon is interchangable, function must be made */}
+                        Good {new Date().getHours() < 12 ? "morning" : "evening"}
+                    </Greeting>
+                    {(isUpdating || isLoading) && (
+                        <UpdatingRow>
+                            <Spinner style={{ width: 14, height: 14, marginRight: 6 }} />
+                            Updating
+                        </UpdatingRow>
+                    )}
                   </NameBlock>
               </ProfileRow>
             
@@ -682,13 +661,12 @@ const DashboardWOP = React.memo(function DashboardWOP({ navigateTo }) {
 
               <ServicesContainer>
                 <SectionLabel>Services</SectionLabel>
-                <ServiceButton>
-                  <ServiceBadge>QLD</ServiceBadge>
+                <ServiceButton>   
                   <ServiceIconImportsOnly>
-                    <FaCreditCard size={18} color="#fff" />
+                    <VscCreditCard size='30' color="#363737" />
                   </ServiceIconImportsOnly>
                   <ButtonText>Check registration status</ButtonText>
-                  <Chevron><FaExternalLinkAlt size={14} /></Chevron>
+                  <Chevron><FaExternalLinkAlt size={14} color="#363737" style={{ opacity: '0.5'}} /></Chevron>
                 </ServiceButton>
 
                 <ServiceButton>
@@ -696,7 +674,7 @@ const DashboardWOP = React.memo(function DashboardWOP({ navigateTo }) {
                     <MdOutlineAttachMoney size='30' color="#363737"/>
                     </ServiceIconImportsOnly>
                   <ButtonText>Renew registration</ButtonText>
-                  <Chevron><FaExternalLinkAlt size='15' /></Chevron>
+                  <Chevron><FaExternalLinkAlt size='15' color="#363737" style={{ opacity: '0.5'}}/></Chevron>
                 </ServiceButton>
 
                 <ServiceButton>
@@ -704,7 +682,7 @@ const DashboardWOP = React.memo(function DashboardWOP({ navigateTo }) {
                     <FaGavel size='22' color="#363737" /> 
                   </ServiceIconImportsOnly>
                   <ButtonText>Pay a fine</ButtonText>
-                  <Chevron><FaExternalLinkAlt size='15' /></Chevron>
+                  <Chevron><FaExternalLinkAlt size='15' color="#363737" style={{ opacity: '0.5'}}/></Chevron>
                 </ServiceButton>
 
                 <ServiceButton>
@@ -712,7 +690,7 @@ const DashboardWOP = React.memo(function DashboardWOP({ navigateTo }) {
                     <IoLocationSharp size='25' color="#363737"/>
                   </ServiceIconImportsOnly>
                   <ButtonText>Find a Customer Service {`\n`}Centre</ButtonText>
-                  <Chevron><FaExternalLinkAlt size='15'  /></Chevron>
+                  <Chevron><FaExternalLinkAlt size='15' color="#363737" style={{ opacity: '0.5'}} /></Chevron>
                 </ServiceButton>
               </ServicesContainer>
 
@@ -721,27 +699,25 @@ const DashboardWOP = React.memo(function DashboardWOP({ navigateTo }) {
                 <HorizontalScrollingContainer>
                   <InformationButton>
                     <ServiceImg src={imgLM1} alt="Security & Privacy" loading="lazy" decoding="async" />
-                    <InfoCaption>
-                      <ButtonText style={{fontSize:13}}>Security &amp; Privacy of your information</ButtonText>
-                    </InfoCaption>
-                    <ChevronBtmCorner><FaExternalLinkAlt size={12} /></ChevronBtmCorner>
+                    <ButtonText>Security <br></br> Privacy of your information</ButtonText>
+                    <ChevronBtmCorner><FaExternalLinkAlt size={12} color="#363737" /></ChevronBtmCorner>
                   </InformationButton>
 
                   <InformationButton>
                     <ServiceImg src={imgLM2} alt="Digital License App" loading="lazy" decoding="async" />
-                    <ButtonText>The Digital {`\n`}License app</ButtonText>
+                    <ButtonText>The Digital <br></br>License app</ButtonText>
                     <ChevronBtmCorner><FaExternalLinkAlt size='10' /></ChevronBtmCorner>
                   </InformationButton>
 
                   <InformationButton>
                     <ServiceImg src={imgLM3} alt="Queensland Digital Identity" loading="lazy" decoding="async" />
-                    <ButtonText>The {`\n`}Queensland{`\n`}Digital{`\n`}Identity</ButtonText>
+                    <ButtonText>The <br></br>Queensland<br></br>Digital<br></br>Identity</ButtonText>
                     <ChevronBtmCorner><FaExternalLinkAlt size='10' /></ChevronBtmCorner>
                   </InformationButton>
 
                   <InformationButton>
                     <ServiceImg src={imgLM4} alt="Severe Weather" loading="lazy" decoding="async" />
-                    <ButtonText>Plan for {`\n`} severe <br></br>weather</ButtonText>
+                    <ButtonText>Plan for <br></br> severe <br></br>weather</ButtonText>
                     <ChevronBtmCorner><FaExternalLinkAlt size='10' /></ChevronBtmCorner>
                   </InformationButton>
 
@@ -753,7 +729,7 @@ const DashboardWOP = React.memo(function DashboardWOP({ navigateTo }) {
 
                   <InformationButton>
                     <ServiceImg src={imgLM6} alt="TMR Online Services" loading="lazy" decoding="async" />
-                    <ButtonText>TMR online {`\n`}services</ButtonText>
+                    <ButtonText>TMR online <br></br>services</ButtonText>
                     <ChevronBtmCorner><FaExternalLinkAlt size='10' /></ChevronBtmCorner>
                   </InformationButton>
                 </HorizontalScrollingContainer>
@@ -835,3 +811,56 @@ export default function HomePage() {
     </div>
   );
 }
+
+/* --- Add minimal UI pieces to resolve undefined-symbol errors --- */
+/* These are lightweight, safe defaults — keep or replace with your full implementations. */
+
+const ProfileRow = styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  margin-bottom: 6px;
+`;
+
+const CarIcon = styled.img`
+  width: 40px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+`;
+
+const CredText = styled.span`
+  font-size: 15px;
+  color: ${COLOR_TEXT};
+  margin-left: 8px;
+  flex: 1;
+  text-align: left;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 500;
+  margin-left: 17px;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  white-space: normal;
+  overflow-wrap: break-word;
+`;
+
+const Chevron = styled.span`
+  position: absolute;  
+  font-size: 32px;
+  color: ${COLOR_TEXT};
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  right: 30px;
+`;
+
+/* simple spinner used in multiple places */
+const Spinner = styled.div`
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid rgba(0,0,0,0.08);
+  border-top-color: rgba(0,0,0,0.35);
+  animation: spin 1s linear infinite;
+  @keyframes spin { to { transform: rotate(360deg); } }
+`;
