@@ -1,6 +1,12 @@
-<<<<<<< HEAD
 Nunya Project
-*The hardest shit ive ever worked on...*
+
+To build to server:
+npx vercel --prod
+
+To build locally:
+npm start 
+
+Just a little hobby project, will not work without project keys and correct database layout. for info, contact owner.
 
 ***This application is under copyright law. Any distribution or unauthorised saving of the codebase will result in legal action being persued. Application requires 3rd-party access however none of the data is saved or stored anywhere.***
 
