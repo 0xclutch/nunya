@@ -15,6 +15,7 @@ import Typography from '@mui/material/Typography';
 
 
 const changelogVersion = "2.0.0"; //    Bump me when making changes, add the neccessary comment
+const FORCE_SHOW_CHANGELOG = false; // Set to true to always show the changelog popup (for testing)
 const updateTitle = `In version 2.0.0 there are a few changes made, \nSuch as the update of the Homepage and added additional scenes for ScanQR/ShareQR.\n`
 const updateNotes = {
     "Main Updates": [
@@ -43,40 +44,70 @@ export default function ChangelogPopup() {
     const { userData, isAuthenticated } = useAuth();
 
     useEffect(() => {
+        // Force show if manual flag is true
+        if (FORCE_SHOW_CHANGELOG) {
+            setOpen(true);
+            return;
+        }
+        
+        // Add throttling - only check once every 12 hours
+        const lastCheck = localStorage.getItem('changelog-last-check');
+        const now = Date.now();
+        const twelveHours = 12 * 60 * 60 * 1000;
+        
+        if (lastCheck && (now - parseInt(lastCheck)) < twelveHours) {
+            return; // Skip if checked recently
+        }
+        
+        if (!userData?.uuid || !isAuthenticated) {
+            return; // Skip if user not loaded
+        }
+
         try {
             const checkChangelog = async () => {
-                const user = supabase.auth.getUser();
-                if (user) {
-                    const { data, error } = await supabase
+                // Check localStorage first to avoid database call
+                const cachedVersion = localStorage.getItem('changelog-version');
+                if (cachedVersion === changelogVersion) {
+                    return; // Already seen this version
+                }
+
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('last_seen_changelog_version')
+                    .eq('uuid', userData.uuid)
+                    .single();
+                    
+                if (error) {
+                    console.error("Error fetching user data:", error);
+                    return;
+                }
+                
+                if (data.last_seen_changelog_version !== changelogVersion) {
+                    setOpen(true);
+                    // Update the user's last seen changelog version
+                    const { error: updateError } = await supabase
                         .from('users')
-                        .select('last_seen_changelog_version')
-                        .eq('uuid', userData.uuid)
-                        .single();
-                    if (error) {
-                        console.error("Error fetching user data:", error);
-                        return;
-                    }
-                    if (data.last_seen_changelog_version !== changelogVersion) {
-                        setOpen(true);
-                        // Update the user's last seen changelog version
-                        const { error: updateError } = await supabase
-                            .from('users')
-                            .update({ last_seen_changelog_version: changelogVersion })
-                            .eq('uuid', userData.uuid);
-                        if (updateError) {
-                            console.error("Error updating changelog version:", updateError);
-                        }
+                        .update({ last_seen_changelog_version: changelogVersion })
+                        .eq('uuid', userData.uuid);
+                        
+                    if (updateError) {
+                        console.error("Error updating changelog version:", updateError);
+                    } else {
+                        // Cache the version locally
+                        localStorage.setItem('changelog-version', changelogVersion);
                     }
                 }
+                
+                // Update last check timestamp
+                localStorage.setItem('changelog-last-check', now.toString());
             };
+            
             checkChangelog();
 
         } catch (error) {
             console.error("Error checking changelog:", error);
-            // The user will see this screen next time they open the app...
-        
         }
-    });
+    }, [userData?.uuid, isAuthenticated]); // Add proper dependency array
 
 
     const acknowledgedChangelog = () => {

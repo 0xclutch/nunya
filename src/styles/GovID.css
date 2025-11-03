@@ -21,38 +21,25 @@ img {
 }
 
 html, body {
-  height: 100%;
+  height: auto;
   margin: 0;
   padding: 0;
   font-size: 18px;
   background: linear-gradient(135deg, #e0a02a 0%, #ffe595 100%) !important;
   transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  overscroll-behavior-y: contain; /* Prevent over-scroll bounce on mobile */
-  overscroll-behavior-x: none;
-  -webkit-overflow-scrolling: touch;
 }
 
-/* Prevent scroll chaining and blank space on iOS/Android */
-body {
-  overscroll-behavior-y: contain;
-  overscroll-behavior-x: none;
-}
 
 .govid-container {
-  min-height: calc(var(--vh, 1vh) * 100); /* For context, visit SafeAreaWrapper.js, it adjusts VH based on device screen */
+  min-height: calc(var(--vh, 1vh) * 120); /* For context, visit SafeAreaWrapper.js, it adjusts VH based on device screen */
+  width: auto;
   padding-bottom: 50px; /* reduce from 110px to 32px for less blank space */
   /* make font roboto regular*/
   font-family: 'Roboto', sans-serif; /* Use Roboto Regular for consistency */
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow-x:hidden;
   z-index: 0;
-  position: relative;
   transition: background 0.76s cubic-bezier(0.4, 0, 0.2, 1);
-  overscroll-behavior-y: contain; /* Prevent over-scrolling/blank space on mobile */
-  overscroll-behavior-x: none;
   scrollbar-width: thin;
-  scrollbar-color: #fab254 #ffe595;
-  overscroll-behavior-y: contain;
 
 }
 
@@ -106,6 +93,8 @@ body {
   max-width: 425px;
   font-size: 17px;
   overflow: hidden;
+  /* Add extra space at bottom */
+
 }
 .govid-card-row {
   display: flex;
@@ -352,7 +341,6 @@ body {
   right: 0;
   width: 100vw;
   height: 50px;
-  background-color: #E7AF42; /* Corrected: Removed quotes */
   display: flex;
   justify-content: space-between;
   padding: 0 16px;

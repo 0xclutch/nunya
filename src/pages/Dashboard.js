@@ -326,13 +326,13 @@ function HomePageContent({ navigateTo }) {
   const [pullDistance, setPullDistance] = useState(0);
 
   useEffect(() => {
-    resetThemeColor();
-    setThemeColor(COLOR_MAROON);
     const t1 = setTimeout(() => setFakeLoading(false), 1200);
     const t2 = setTimeout(() => setLoading(false), 1200);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
+      resetThemeColor();
+      setThemeColor(COLOR_MAROON);
     };
   }, []);
 

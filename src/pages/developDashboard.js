@@ -10,7 +10,7 @@ import Navbar from "../components/Navbar";
 import carIcon from "./assets/icon.png";
 import headerIcon from './assets/NewQueenslandGovernmentBanner.png';
 import { MdOutlineAttachMoney } from "react-icons/md";
-import { FaGavel  } from "react-icons/fa6";
+import { FaGavel, FaAngleLeft } from "react-icons/fa6";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { VscCreditCard } from "react-icons/vsc";
 import { IoLocationSharp } from "react-icons/io5";
@@ -24,6 +24,11 @@ import imgLM4 from './2.0/images-learnmore/4.jpg';
 import imgLM5 from './2.0/images-learnmore/5.jpg';
 import imgLM6 from './2.0/images-learnmore/6.jpg';
 
+// Random hyperlinks
+import streetSmarts from './2.0/images-learnmore/StreetSmarts.jpg';
+import translink from './2.0/images-learnmore/Translink.jpg';
+import roadRules from './2.0/images-learnmore/RoadRulesQuiz.jpg';
+
 import banner from './2.0/images-learnmore/banner.jpg'
 
 
@@ -34,6 +39,7 @@ import banner from './2.0/images-learnmore/banner.jpg'
 // import DigitalLicense from "./GovID";
 // import ShowUserQR from "./2.0/ShowUserQR";
 import ChangelogPopup from "../components/versionChangelog";
+import { useAuth } from "../components/AuthContext";
 // import PullToRefresh from "../components/PullToRefresh";
 
 // lazyload all elements that wont be needed straight away!
@@ -55,6 +61,7 @@ const COLOR_NAV_ACTIVE = "#972541";
 const COLOR_NAV_INACTIVE = "#888";
 const COLOR_BORDER = "#ccc";
 
+// #region css
 // Prevent scroll and set baseline
 const NoScrollStyle = createGlobalStyle`
   html, body {
@@ -67,7 +74,6 @@ const NoScrollStyle = createGlobalStyle`
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     box-sizing: border-box !important;
     overscroll-behavior: none !important;
-    -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: ${COLOR_TEXT};
     font-size: 16px;
@@ -77,35 +83,32 @@ const NoScrollStyle = createGlobalStyle`
     touch-action: manipulation;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-    -webkit-font-smoothing: antialiased;
     
+  }
+
+  #root {
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 `;
 
 const Banner = styled.div`
   position: relative;
-  width: 100vw;
-  height: 180px;
+  height: 160px;
   background: linear-gradient(120deg, ${COLOR_MAROON} 87%, #a32c4d 100%);
   border-bottom-right-radius: 36px;
   overflow: hidden;
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
 `;
 
 // keep banner image but ensure it covers and is subtle
 const BannerImg = styled.img`
   position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  min-width: 100%;
-  width: auto;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
-  opacity: 0.12; /* subtle overlay so text and crest stay readable */
+  top: -10px;
+  height: 110px;
+  width: auto + 1px;
   pointer-events: none;
   user-select: none;
 `
@@ -175,26 +178,24 @@ const CredButton = styled.button`
   align-items: center;
   background: #fff;
   border: none;
-  border-radius: 12px;
-  width: 100%;
+  border-radius: 15px;
+  width: 95%;
   height: 64px;
-  margin: 8px 0 12px 0;
-  padding: 8px;
   cursor: pointer;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(20,10,35,0.06);
 `;
 
 /* small left badge for ID (keep simple) */
 const CredIconSquare = styled.div`
   background: ${COLOR_YELLOW};
-  width: 56px;
-  height: 48px;
+  flex: 0 0 58px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border-radius: 8px;
+  border-radius: 15px 0 0 15px;
+  margin-left: -12px;
 `;
 
 /* Services container and items reverted to previous form */
@@ -202,7 +203,7 @@ const ServicesContainer = styled.div`
   margin-top: 24px;
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 120%;
   padding-bottom: 10px;
   -webkit-overflow-scrolling: touch;
 `;
@@ -265,6 +266,7 @@ const ButtonText = styled.span`
   flex: 1;
   white-space: normal;
   overflow-wrap: break-word;
+  padding: 10px;
 `;
 
 /* Learn-more cards reverted to simpler previous variant */
@@ -303,16 +305,7 @@ const InfoCaption = styled.div`
   text-align:center;
 `;
 
-/* restore small chevron corner to the previous simple form */
-const ChevronBtmCorner = styled.span`
-  font-size: 10px;
-  color: #111;
-  margin-left: auto;
-  margin-top: auto;
-  margin-right: 6px;
-  display: flex;
-  padding: 5px;
-`;
+
 
 
 // --- LOADING SCREEN ---
@@ -356,7 +349,7 @@ const ContentsButton = styled.div`
 const SectionLabel = styled.div`
   font-size: 18px;
   color: ${COLOR_HEADING};
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   letter-spacing: 0.02em;
   font-family: "Arial";
   opacity: 0.7;
@@ -366,12 +359,13 @@ const ServiceButton = styled.button`
   border: none;
   border-radius: 15px;
   box-shadow: 0 1.5px 8px rgba(20, 10, 35, 0.07);
-  width: 100%;
+  width: 85%;
   height: 54px;
   margin-right: 12px;
   display: flex; /* Ensure children are displayed inline */
   align-items: center; /* Center content vertically */
   padding: 0 12px; /* Add padding for spacing */
+  margin-bottom: 1px;
   cursor: pointer;
 
   // Removal of bottom radius
@@ -446,48 +440,100 @@ const HorizontalScrollingContainer = styled.div`
 `;
 
 const InformationButton = styled.button`
+  position: relative; /* Add this to establish positioning context */
   background: #fff;
   border: none;
   border-radius: 12px;
   box-shadow: 0 1.5px 8px rgba(20, 10, 35, 0.07);
   flex: 0 0 150px; /* Fixed width for each button */
-  height: 190px; /* Fixed height for uniformity */
+  height: 200px; /* Fixed height for uniformity */
   display: flex;
   flex-direction: column; /* Stack icon and text vertically */
   align-items: stretch; 
   justify-content: flex-start; 
   padding: 0;
   cursor: pointer;
+  overflow: hidden;
 
   &:hover {
     box-shadow: 0 4px 12px rgba(20, 10, 35, 0.15); /* Slightly larger shadow on hover */
     transform: translateY(-2px); /* Slight lift on hover */
     transition: all 0.2s ease-in-out; /* Smooth transition */
   }
-  overflow: hidden;
+
+  &:hover .chevron-icon {
+    opacity: 0.8; /* Slightly more visible on hover */
+    transform: scale(1.1); /* Slight scale on hover */
+  }
 `;
-// make this fill the container fully at the top half
-// const ServiceImg = styled.img`
-//   width: 100%;
-//   height: 110px; /* image area height, adjust as needed */
-//   object-fit: cover; /* fill and crop as needed */
-//   object-position: top center; /* align crop to top */
-//   display: block;
-//   flex-shrink: 0;
-// `;
-  
 
+const ChevronBtmCorner = styled.span`
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  z-index: 15; /* Higher z-index to appear above content */
+  font-size: 12px;
+  color: ${COLOR_TEXT};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  pointer-events: none; /* keeps the chevron visible but non-interactive */
+  transition: all 0.2s ease; /* Smooth transitions */
+  opacity: 1;
+`;
 
-// const ChevronBtmCorner = styled.span`
-//   font-size: 10px;
-//   color: #111;
-//   margin-left: auto; /* Push the icon to the far right */
-//   margin-top: auto;
-//   margin-right: 6px;
-//   display: flex;
-//   padding: 5px;
-// `;
+// Also update the ButtonText in the learn more section to not interfere
+const LearnMoreButtonText = styled(ButtonText)`
+  padding: 10px 20px 40px 10px; /* Add bottom padding to avoid overlap with icon */
+  font-size: 14px; /* Slightly smaller for learn more cards */
+  line-height: 1.3;
+`;
 
+const ViewAllButton = styled.button`
+  background: none;
+  border: none;
+  display: flex;
+  width: 100%;
+  border: 0;
+  text-transform: capitalize;
+`;
+
+const HyperlinkGroup = styled.div`
+  margin: 14px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+`;
+
+const HyperlinkButton = styled.button`
+  position: relative;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 1.5px 8px rgba(20, 10, 35, 0.07);
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0;
+`;
+
+const HyperlinkImg = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 1;
+`;
+
+//#endregion
 
 /* POTENTIAL REVERT - commented duplicate/unused nav styled-components (keep for reference)
    Uncomment only if you plan to replace the Navbar component with these.
@@ -547,227 +593,316 @@ const NavLabel = styled.span`
 
 const DashboardWOP = React.memo(function DashboardWOP({ navigateTo }) {
   const navigate = useNavigate();
+  const { userData } = useAuth(); // Get user data from context
 
-  // Split loading states so hooks are always called in order
-  const [fakeLoading, setFakeLoading] = useState(true);
-  const [loading, setLoading] = useState(true);
-  const splashScreenDuration = 3000;
-  const howlongshoulditloadfor = 3500;
+  // Smart loading states for different types of content
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [userDataLoaded, setUserDataLoaded] = useState(false);
+  const [assetsPreloaded, setAssetsPreloaded] = useState(false);
 
   useEffect(() => {
-    // Set theme color for the page
+    // Set theme color and page background for this page; restore on unmount
+    const prevBodyBg = document.body.style.backgroundColor;
+    setThemeColor(COLOR_MAROON);
+    document.body.style.backgroundColor = COLOR_BG;
+
+    return () => {
       resetThemeColor();
-      setThemeColor(COLOR_MAROON);
+      document.body.style.backgroundColor = prevBodyBg || "";
+    };
   }, []);
 
+  // Check if user data is loaded
   useEffect(() => {
-    // non-blocking splash + image warming using idle time
+    if (userData) {
+      setUserDataLoaded(true);
+      
+      // Preload user photo if it exists
+      if (userData.photo) {
+        const img = new Image();
+        img.onload = () => console.log('User photo preloaded');
+        img.onerror = () => console.log('User photo failed to load');
+        img.src = userData.photo;
+      }
+    }
+  }, [userData]);
+
+  // Preload all assets and components
+  useEffect(() => {
     let cancelled = false;
 
-    // Keep splash for minimum time
-    const minSplash = setTimeout(() => {
-      if (!cancelled) setFakeLoading(false);
-    }, splashScreenDuration);
+    const preloadAssets = async () => {
+      try {
+        // 1. Preload dashboard images
+        const dashboardImages = [
+          banner, 
+          imgLM1, imgLM2, imgLM3, imgLM4, imgLM5, imgLM6, 
+          carIcon, 
+          headerIcon,
+          streetSmarts,
+          translink,
+          roadRules
+        ].filter(Boolean);
+        
+        const imagePromises = dashboardImages.map(src => 
+          new Promise((resolve) => {
+            const img = new Image();
+            img.onload = resolve;
+            img.onerror = resolve; // Don't fail on single image error
+            img.src = src;
+          })
+        );
 
-    // Warm images on idle to avoid main-thread blocking
-    const imagesToWarm = useMemo
-      ? ( () => ([banner, imgLM1, imgLM2, imgLM3, imgLM4, imgLM5, imgLM6, carIcon, headerIcon].filter(Boolean)) )()
-      : [banner, imgLM1, imgLM2, imgLM3, imgLM4, imgLM5, imgLM6, carIcon, headerIcon].filter(Boolean);
+        await Promise.allSettled(imagePromises);
+        if (!cancelled) setImagesLoaded(true);
 
-    const warmImages = () => {
-      imagesToWarm.forEach((src) => {
-        try {
-          const img = new Image();
-          img.src = src;
-          // use decode where supported so browser can do async decoding
-          if (img.decode) img.decode().catch(() => {});
-        } catch (_) {}
-      });
+        // 2. Preload GovID component and its assets
+        const govIdModule = await import("./GovID").catch(() => null);
+        
+        // 3. Preload GovID-specific assets (signatures, background, etc.)
+        const govIdAssets = [
+          './assets/background.png',
+          './assets/qldgov.png',
+          './signatures/signature.png',
+          './signatures/signature1.png',
+          './signatures/signature2.png',
+          './signatures/signature3.png',
+          './signatures/signature4.png'
+        ];
+
+        const govIdImagePromises = govIdAssets.map(src => 
+          new Promise((resolve) => {
+            const img = new Image();
+            img.onload = resolve;
+            img.onerror = resolve;
+            img.src = src;
+          })
+        );
+
+        await Promise.allSettled(govIdImagePromises);
+        if (!cancelled) setAssetsPreloaded(true);
+
+      } catch (error) {
+        console.log('Asset preloading completed with some errors:', error);
+        if (!cancelled) {
+          setImagesLoaded(true);
+          setAssetsPreloaded(true);
+        }
+      }
     };
 
-    // Prefer requestIdleCallback; fallback to setTimeout
+    // Use requestIdleCallback for non-blocking preloading
     if ('requestIdleCallback' in window) {
-      const id = (window).requestIdleCallback(() => { if (!cancelled) warmImages(); }, { timeout: 2000 });
-      // after warming, reveal content (but don't block longer than maxWait)
-      const reveal = setTimeout(() => { if (!cancelled) setLoading(false); }, 2500);
-      return () => { cancelled = true; clearTimeout(minSplash); clearTimeout(reveal); (window).cancelIdleCallback && (window).cancelIdleCallback(id); };
+      const id = window.requestIdleCallback(() => {
+        if (!cancelled) preloadAssets();
+      }, { timeout: 2000 });
+      
+      return () => {
+        cancelled = true;
+        if (window.cancelIdleCallback) window.cancelIdleCallback(id);
+      };
     } else {
-      const id = setTimeout(() => { if (!cancelled) warmImages(); }, 400);
-      const reveal = setTimeout(() => { if (!cancelled) setLoading(false); }, 2500);
-      return () => { cancelled = true; clearTimeout(minSplash); clearTimeout(id); clearTimeout(reveal); };
+      // Fallback for browsers without requestIdleCallback
+      const timer = setTimeout(() => {
+        if (!cancelled) preloadAssets();
+      }, 100);
+      
+      return () => {
+        cancelled = true;
+        clearTimeout(timer);
+      };
     }
   }, []);
 
-  // These are used below, even if not rendered always
-  const [isUpdating, setIsUpdating] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
+  // Show loading screen only if critical data isn't ready
+  const isLoading = !userDataLoaded || !imagesLoaded;
 
-  useEffect(() => {
-    const timer = setTimeout(() => { // Text visual "Loading..." timer
-      setIsUpdating(false);
-      setIsLoading(false);
-    }, howlongshoulditloadfor);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Always call hooks above, only return early here
-  if (loading || fakeLoading) {
+  if (isLoading) {
     return (
       <LoadingScreen>
-        <LoadingFont>Fetching your digital wallet</LoadingFont>
+        <LoadingFont>
+          {!userDataLoaded ? 'Preparing your dashboard...' : 'Fetching your digital wallet...'}
+        </LoadingFont>
         <Spinner />
       </LoadingScreen>
     );
   }
 
-
-
   return (
     <>
       <NoScrollStyle />
-      <ChangelogPopup />  {/* It's exactly what you think! Changelog updater!!! Woahhh*/} 
-        <Banner>
-          <BannerImg src={banner} alt="banner" />
-            <BannerContent>
-            </BannerContent>
-        </Banner>
+      <ChangelogPopup />
+      <Banner>
+        <BannerImg 
+          src={banner} 
+          alt="banner"
+          style={{ 
+            opacity: imagesLoaded ? 1 : 0.5,
+            transition: 'opacity 0.3s ease'
+          }}
+        />
+      </Banner>
 
-        <SafeArea>
-            <OverlapCard>
-              <ProfileRow>
-                  <NameBlock>
-                    <Greeting> {/* Morning/Afternoon is interchangable, function must be made */}
-                        Good {new Date().getHours() < 12 ? "morning" : "evening"}
-                    </Greeting>
-                    {(isUpdating || isLoading) && (
-                        <UpdatingRow>
-                            <Spinner style={{ width: 14, height: 14, marginRight: 6 }} />
-                            Updating
-                        </UpdatingRow>
-                    )}
-                  </NameBlock>
-              </ProfileRow>
-            
-              <CredButton onClick={goToId}>
-                  <CredIconSquare>
-                      <CarIcon src={carIcon} alt="" />
-                  </CredIconSquare>
+      <SafeArea>
+        <OverlapCard>
+          <ProfileRow>
+            <NameBlock>
+              <Greeting>
+                Good {new Date().getHours() < 12 ? "morning" : "evening"}
+                {userData?.firstName && `, ${userData.firstName}`}
+              </Greeting>
+            </NameBlock>
+          </ProfileRow>
 
-                  <ContentsButton>
-                    <CredText>Driver Licence</CredText>
-                    <Chevron>&#8250;</Chevron>
-                  </ContentsButton>
-              </CredButton>
+          <CredButton onClick={() => navigate("/id")}>
+            <CredIconSquare>
+              <CarIcon 
+                src={carIcon} 
+                alt=""
+                style={{ 
+                  opacity: imagesLoaded ? 1 : 0.5,
+                  transition: 'opacity 0.3s ease'
+                }}
+              />
+            </CredIconSquare>
+            <ContentsButton>
+              <CredText>Driver Licence</CredText>
+              <Chevron style={{ marginLeft: 'auto' }}>&#8250;</Chevron>
+            </ContentsButton>
+          </CredButton>
 
-              <ServicesContainer>
-                <SectionLabel>Services</SectionLabel>
-                <ServiceButton>   
-                  <ServiceIconImportsOnly>
-                    <VscCreditCard size='30' color="#363737" />
-                  </ServiceIconImportsOnly>
-                  <ButtonText>Check registration status</ButtonText>
-                  <Chevron><FaExternalLinkAlt size={14} color="#363737" style={{ opacity: '0.5'}} /></Chevron>
-                </ServiceButton>
+          {/* Services section with loading states */}
+          <ServicesContainer>
+            <SectionLabel>Services</SectionLabel>
+            {[
+              { icon: VscCreditCard, text: "Check registration status" },
+              { icon: MdOutlineAttachMoney, text: "Renew registration" },
+              { icon: FaGavel, text: "Pay a fine" },
+              { icon: IoLocationSharp, text: "Find a Customer Service Centre" }
+            ].map((service, index) => (
+              <ServiceButton key={index} style={{ opacity: imagesLoaded ? 1 : 0.7 }}>
+                <ServiceIconImportsOnly>
+                  <service.icon size='25' color="#363737" />
+                </ServiceIconImportsOnly>
+                <ButtonText>{service.text}</ButtonText>
+                <Chevron style={{ marginLeft: 'auto' }}>
+                  <FaExternalLinkAlt size={14} color="#363737" style={{ opacity: '0.5' }} />
+                </Chevron>
+              </ServiceButton>
+            ))}
+          </ServicesContainer>
 
-                <ServiceButton>
-                  <ServiceIconImportsOnly>
-                    <MdOutlineAttachMoney size='30' color="#363737"/>
-                    </ServiceIconImportsOnly>
-                  <ButtonText>Renew registration</ButtonText>
-                  <Chevron><FaExternalLinkAlt size='15' color="#363737" style={{ opacity: '0.5'}}/></Chevron>
-                </ServiceButton>
+          {/* Learn more section with progressive loading */}
+          <LearnMoreAbout>
+            <SectionLabel>Learn more about</SectionLabel>
+            <HorizontalScrollingContainer>
+              {[
+                { img: imgLM1, title: `Security & \nPrivacy of\nyour\ninformation` },
+                { img: imgLM2, title: `The Digital\nLicense app` },
+                { img: imgLM3, title: `The\nQueensland\nDigital\nIdentity` },
+                { img: imgLM4, title: `Plan for\nsevere\nweather` },
+                { img: imgLM5, title: `Travelling\nwith my\ndigital license` },
+                { img: imgLM6, title: `TMR online\nservices` }
+              ].map((item, index) => (
+                <InformationButton key={index}>
+                  <ServiceImg 
+                    src={item.img} 
+                    alt={item.title}
+                    loading="lazy" 
+                    decoding="async"
+                    style={{ 
+                      opacity: imagesLoaded ? 1 : 0.3,
+                      transition: 'opacity 0.5s ease',
+                      backgroundColor: '#f0f0f0' // Placeholder background
+                    }}
+                  />
+                  <ButtonText>{item.title}</ButtonText>
+                  <ChevronBtmCorner>
+                    <FaExternalLinkAlt size={12} color="#363737" />
+                  </ChevronBtmCorner>
+                </InformationButton>
+              ))}
+            </HorizontalScrollingContainer>
+            <ViewAllButton>
+              <CredText style={{ fontWeight: 500, textAlign: 'center', marginTop: '6px', color: {COLOR_MAROON} }}>VIEW ALL</CredText>
+              <Chevron style={{ marginLeft: 'auto' }}>&#8250;</Chevron>
+            </ViewAllButton>
+          </LearnMoreAbout>
 
-                <ServiceButton>
-                  <ServiceIconImportsOnly>
-                    <FaGavel size='22' color="#363737" /> 
-                  </ServiceIconImportsOnly>
-                  <ButtonText>Pay a fine</ButtonText>
-                  <Chevron><FaExternalLinkAlt size='15' color="#363737" style={{ opacity: '0.5'}}/></Chevron>
-                </ServiceButton>
+          {/* Hyperlink buttons section */}
+          <HyperlinkGroup>
+            {/* StreetSmarts - Dark background with yellow/lime text */}
+            <HyperlinkButton style={{ opacity: imagesLoaded ? 1 : 0.7, marginBottom: '12px' }}>
+              <HyperlinkImg 
+                src={streetSmarts} 
+                alt="Street Smarts"
+                loading="lazy"
+                style={{ 
+                  opacity: imagesLoaded ? 1 : 0.3,
+                  transition: 'opacity 0.5s ease'
+                }}
+              />
+              <ChevronBtmCorner>
+                <FaExternalLinkAlt size={14} color="#ffffff" />
+              </ChevronBtmCorner>
+            </HyperlinkButton>
 
-                <ServiceButton>
-                  <ServiceIconImportsOnly>
-                    <IoLocationSharp size='25' color="#363737"/>
-                  </ServiceIconImportsOnly>
-                  <ButtonText>Find a Customer Service {`\n`}Centre</ButtonText>
-                  <Chevron><FaExternalLinkAlt size='15' color="#363737" style={{ opacity: '0.5'}} /></Chevron>
-                </ServiceButton>
-              </ServicesContainer>
-
-              <LearnMoreAbout>
-                <SectionLabel>Learn more about</SectionLabel>
-                <HorizontalScrollingContainer>
-                  <InformationButton>
-                    <ServiceImg src={imgLM1} alt="Security & Privacy" loading="lazy" decoding="async" />
-                    <ButtonText>Security <br></br> Privacy of your information</ButtonText>
-                    <ChevronBtmCorner><FaExternalLinkAlt size={12} color="#363737" /></ChevronBtmCorner>
-                  </InformationButton>
-
-                  <InformationButton>
-                    <ServiceImg src={imgLM2} alt="Digital License App" loading="lazy" decoding="async" />
-                    <ButtonText>The Digital <br></br>License app</ButtonText>
-                    <ChevronBtmCorner><FaExternalLinkAlt size='10' /></ChevronBtmCorner>
-                  </InformationButton>
-
-                  <InformationButton>
-                    <ServiceImg src={imgLM3} alt="Queensland Digital Identity" loading="lazy" decoding="async" />
-                    <ButtonText>The <br></br>Queensland<br></br>Digital<br></br>Identity</ButtonText>
-                    <ChevronBtmCorner><FaExternalLinkAlt size='10' /></ChevronBtmCorner>
-                  </InformationButton>
-
-                  <InformationButton>
-                    <ServiceImg src={imgLM4} alt="Severe Weather" loading="lazy" decoding="async" />
-                    <ButtonText>Plan for <br></br> severe <br></br>weather</ButtonText>
-                    <ChevronBtmCorner><FaExternalLinkAlt size='10' /></ChevronBtmCorner>
-                  </InformationButton>
-
-                  <InformationButton>
-                    <ServiceImg src={imgLM5} alt="Travelling with Digital License" loading="lazy" decoding="async" />
-                    <ButtonText>Travelling <br></br>with my <br></br>digital license</ButtonText>
-                    <ChevronBtmCorner><FaExternalLinkAlt size='10' /></ChevronBtmCorner>
-                  </InformationButton>
-
-                  <InformationButton>
-                    <ServiceImg src={imgLM6} alt="TMR Online Services" loading="lazy" decoding="async" />
-                    <ButtonText>TMR online <br></br>services</ButtonText>
-                    <ChevronBtmCorner><FaExternalLinkAlt size='10' /></ChevronBtmCorner>
-                  </InformationButton>
-                </HorizontalScrollingContainer>
-
-                <ContentsButton style={{marginTop: 6, height: 40, width: 300, textAlign: 'center', justifyContent: 'center'}}>
-                  <Chevron style={{fontSize: 16}}>&#8249;</Chevron>
-                  <ButtonText style={{fontSize: 15, fontWeight: 600, color: COLOR_HEADING, opacity: 0.7}}>VIEW ALL</ButtonText>
-                </ContentsButton>
-
-              </LearnMoreAbout>
+            {/* Translink - Dark navy background with white text and pink logo */}
+            <HyperlinkButton style={{ marginBottom: '12px'}}>
+              <HyperlinkImg 
+                src={translink} 
+                alt="Translink"
+                loading="lazy"
+                style={{ 
+                  opacity: imagesLoaded ? 1 : 0.3,
+                  transition: 'opacity 0.5s ease'
+                }}
+              />
+              <ChevronBtmCorner>
+                <FaExternalLinkAlt size={14} color="#ffffff" />
+              </ChevronBtmCorner>
+            </HyperlinkButton>
 
 
-          </OverlapCard>
-        </SafeArea>
+            {/* Road Rules Refresher Quiz - Blue background with white text */}
+            <HyperlinkButton style={{ opacity: imagesLoaded ? 1 : 0.7 }}>
+              <HyperlinkImg 
+                src={roadRules} 
+                alt="Road Rules Refresher Quiz"
+                loading="lazy"
+                style={{ 
+                  opacity: imagesLoaded ? 1 : 0.3,
+                  transition: 'opacity 0.5s ease'
+                }}
+              />
+              <ChevronBtmCorner>
+                <FaExternalLinkAlt size={14} color="#ffffff" />
+              </ChevronBtmCorner>
+            </HyperlinkButton>
+          </HyperlinkGroup>
+        </OverlapCard>
+      </SafeArea>
     </>
   );
 });
 
-function goToId() {
-  window.location.href = "/id"; // Navigate to the /id route
-}
+// ----------- MAIN PAGE COMPONENT -----------
 
 
+
+// Update the main HomePage component
 export default function HomePage() {
-   const [currentPage, setCurrentPage] = useState("Home");
-   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState("Home");
+  const navigate = useNavigate();
 
-  // Do NOT use hooks conditionally!
-  // Always call the same hooks, always in the same order.
-
+  // Preload GovID component when it's likely to be needed
   useEffect(() => {
+    const preloadTimer = setTimeout(() => {
+      import("./GovID").catch(() => {});
+    }, 2000); // Preload after 2 seconds
 
-    // Checks for page reload
-    if(currentPage === "GovID") {
-      navigate("/id", { replace: true });
-    }
-  }, [currentPage, navigate]);
-
+    return () => clearTimeout(preloadTimer);
+  }, []);
 
   const renderPage = () => {
     switch (currentPage) {
@@ -786,11 +921,7 @@ export default function HomePage() {
           </Suspense>
         );
       case "GovID":
-        return (
-          <Suspense fallback={<LoadingScreen><Spinner/></LoadingScreen>}>
-            <DigitalLicense navigateTo={setCurrentPage} />
-          </Suspense>
-        );
+        return <DigitalLicense navigateTo={setCurrentPage} />; // Removed Suspense for faster loading
       case "ShowQR":
         return (
           <Suspense fallback={<LoadingScreen><Spinner/></LoadingScreen>}>
@@ -805,12 +936,13 @@ export default function HomePage() {
   return (
     <div style={{ width: "100vw", maxWidth: "100vw", boxSizing: "border-box" }}>
       {renderPage()}
-      {currentPage !== "GovID" && (
-        <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
-      )}
+      <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
     </div>
   );
 }
+
+// Remove the separate goToId function and update the onClick to use navigateTo directly
+// This avoids route navigation and uses component state instead
 
 /* --- Add minimal UI pieces to resolve undefined-symbol errors --- */
 /* These are lightweight, safe defaults — keep or replace with your full implementations. */
@@ -830,28 +962,23 @@ const CarIcon = styled.img`
 `;
 
 const CredText = styled.span`
-  font-size: 15px;
+  font-size: 21px;
   color: ${COLOR_TEXT};
-  margin-left: 8px;
   flex: 1;
   text-align: left;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-weight: 500;
-  margin-left: 17px;
+  font-weight: 400;
+  margin-left: 12px;
   letter-spacing: 0.01em;
-  line-height: 1.2;
   white-space: normal;
   overflow-wrap: break-word;
 `;
 
 const Chevron = styled.span`
-  position: absolute;  
   font-size: 32px;
   color: ${COLOR_TEXT};
   margin-left: 8px;
-  display: inline-flex;
   align-items: center;
-  right: 30px;
 `;
 
 /* simple spinner used in multiple places */

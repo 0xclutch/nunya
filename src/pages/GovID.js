@@ -210,8 +210,8 @@ import React, { useEffect, useState } from "react";
         }}
       >
         <div className="govid-container" style={{
-          minHeight: '100vh',
-          paddingBottom: 'calc(env(safe-area-inset-bottom) + 80px)',
+          minHeight: 'auto',
+          paddingBottom: 'calc(env(safe-area-inset-bottom) + 100px)',
           background: 'none',
           WebkitOverflowScrolling: 'touch'
         }}>
@@ -227,7 +227,7 @@ import React, { useEffect, useState } from "react";
                   justifyContent: "space-between",
               }}
             >
-              <span className="govid-back-arrow" onClick={() => navigate("/dashboard", { replace: true })}>
+              <span className="govid-back-arrow" onClick={redirectBack}>
                   <IoIosArrowBack /> <span className="backBtn">Back</span>
               </span>
               <img src={qldLogo} alt="Queensland Government" className="govid-banner-qld-logo" style={{ pointerEvents: 'none' }} />

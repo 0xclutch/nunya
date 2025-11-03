@@ -96,6 +96,13 @@ const StyledText = styled.p`
   margin-top: 8px;
 `;
 
+const StyledDescription = styled.p`
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  margin-top: 8px;  
+`
+
 const StyledTitle = styled.h2`
   font-family: 'Roboto', sans-serif;
   font-size: 28px;
@@ -115,7 +122,7 @@ const Title = styled.h2`
   }
 `;
 
-const AnimatedModal = motion(Modal);
+const AnimatedModal = motion.create(Modal);
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -148,7 +155,13 @@ const Login = () => {
     setLoading(true);
     console.log('Logging in with:', values.email, values.password);
     try {
-      const user = await login(values.email, values.password);
+      // remove whitespaces or invalid characters
+      const email = values.email.trim();
+      const password = values.password.trim();
+      // trim() https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/trim
+
+
+      const user = await login(email, password);
       setSuccessUser(user);
       message.success("Login successful!");
       setTimeout(() => setShowLoadingScreen(true), 2000);
@@ -172,20 +185,27 @@ const Login = () => {
       <Overlay />
       <LoginWrapper>
         <StyledCard>
-          <Title>Login</Title>
+          <Title>Authorised Access Only</Title>
+          <StyledDescription>Log in to continue. If you do not have  login yet, you will be given one shortly. Just shoot a message</StyledDescription>
           <Form name="login" onFinish={onFinish} layout="vertical">
             <Form.Item
               name="email"
+              type="email"
               rules={[{ required: true, message: "Please enter your email!" }]}
             >
-              <Input prefix={<UserOutlined />} placeholder="Email" size="large" />
+              <Input
+               type="email" 
+               prefix={<UserOutlined />} 
+               placeholder="Email" 
+               size="large" 
+              />
             </Form.Item>
 
             <Form.Item
               name="password"
               rules={[{ required: true, message: "Please enter your password!" }]}
             >
-              <Input.Password prefix={<LockOutlined />} placeholder="Password" size="large" />
+              <Input.Password prefix={<LockOutlined />} placeholder="Password" size="large" type="password" />
             </Form.Item>
 
             <Form.Item>
@@ -193,6 +213,10 @@ const Login = () => {
                 Login
               </Button>
             </Form.Item>
+
+            <StyledDescription>
+              If you are still unable to login, please contact support for assistance.
+            </StyledDescription>
           </Form>
         </StyledCard>
       </LoginWrapper>

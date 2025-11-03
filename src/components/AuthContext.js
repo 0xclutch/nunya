@@ -40,10 +40,13 @@ export const AuthProvider = ({ children }) => {
       setUser(loggedInUser);
 
       if(loggedInUser) {
-        fetchUserData(loggedInUser.id);
+        // Only fetch if we don't have data for this user
+        if (!userData || userData.uuid !== loggedInUser.id) {
+          fetchUserData(loggedInUser.id);
+        }
       } else {
         setUserData(null); // Clear userData on logout
-        localStorage.removeItem("userData");
+        localStorage.removeItem("session"); // Fixed key name
       }
     });
 
@@ -51,7 +54,12 @@ export const AuthProvider = ({ children }) => {
     return () => authListener.subscription.unsubscribe();
   }, []);
 
-  const fetchUserData = async (uuid) => { // Database info
+  const fetchUserData = async (uuid, forceRefresh = false) => { // Database info
+    // Check if we already have cached data and don't force refresh
+    if (!forceRefresh && userData && userData.uuid === uuid) {
+      return userData; // Already have this user's data
+    }
+
     try {
       const { data: reqDB, error } = await supabase
         .from("users")
@@ -66,6 +74,7 @@ export const AuthProvider = ({ children }) => {
 
       setUserData(reqDB); // Store data in context as well
       localStorage.setItem("session", JSON.stringify(reqDB)); // Ensure data is being saved correctly
+      return reqDB;
     } catch (error) {
       console.error("Critical error fetching user data:", error);
     }

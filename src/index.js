@@ -8,7 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
-import DashboardWOP from './pages/developDashboard.js'
+import HomePage from './pages/developDashboard.js'
 import PinScreen from "./pages/Pin";
 import ScanQR from "./pages/ScanQR";
 import MainLayout from "./components/MainLayout";
@@ -33,18 +33,20 @@ root.render(
             {/* Public Routes */}
             <Route path="/" element={<Login />} />
 
-            <Route path="/" element={<MainLayout />}> {/* Navbar global attachment hahaa */}
+            {/* HomePage routes - manages its own Navbar */}
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <HomePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path='/secret' element={<HomePage />} />
+
+            <Route path="/" element={<MainLayout />}> {/* Navbar global attachment for other routes */}
               <Route path="/scan" element={<ScanQR />} />
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <DashboardWOP />
-                  </ProtectedRoute>
-                }
-              />
               <Route path="/settings" element={<Settings />} />
-              <Route path='/secret' element={<DashboardWOP />} />
             </Route> 
 
             {/* Protected Routes */}

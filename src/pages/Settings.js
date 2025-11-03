@@ -71,9 +71,10 @@ const Settings = () => {
   return (
     <div className="container">
       <div className="scrollViewContent">
-        <div className="button" onClick={() => navigate('/settings/manage')}>
+        {/* <div className="button" onClick={() => navigate('/settings/manage')}> */}
+        <div className="button">
           <IoKeyOutline size={20} color="#000" />
-          <span className="buttonText">Manage my Digital License</span>
+          <span className="buttonText">Sorry this option is currently unavaliable</span>
           <IoChevronForwardOutline size={20} color="#000" />
         </div>
         <div className="button">
