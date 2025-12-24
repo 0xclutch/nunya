@@ -10,9 +10,16 @@ html.plt-ios.plt-pwa {
 }
 
 body {
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-top: env(safe-area-inset-top);
   background-color: #ffffff;
+}
+
+/* Ensure the area behind the status bar is painted (prevents black inset on some PWAs) */
+html, body, #root {
+  background-color: #ffffff;
+}
+/* Prevent any horizontal overflow across the app */
+#root {
+  overflow-x: hidden;
 }
 body, input, button, textarea {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;

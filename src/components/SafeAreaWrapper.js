@@ -4,7 +4,7 @@ import { useEffect } from "react";
 const SafeAreaView = styled.div`
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   height: calc(var(--vh, 1vh) * 100); /* <- THIS IS THE MAGIC */
-  width: 100vw;
+  width: 100%;
   position: relative;
   overflow-y: auto;
   overflow-x: hidden;

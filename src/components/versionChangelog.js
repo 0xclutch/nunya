@@ -14,27 +14,22 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
 
-const changelogVersion = "2.0.0"; //    Bump me when making changes, add the neccessary comment
+const changelogVersion = "2.0.1"; //    Bump me when making changes, add the neccessary comment
 const FORCE_SHOW_CHANGELOG = false; // Set to true to always show the changelog popup (for testing)
-const updateTitle = `In version 2.0.0 there are a few changes made, \nSuch as the update of the Homepage and added additional scenes for ScanQR/ShareQR.\n`
+const updateTitle = `In version 2.0.1 There are a few small changes`
 const updateNotes = {
     "Main Updates": [
-        "I want to start with an apology for the temporary downtime, we had experienced some technical difficulties with the hosting management and had to migrate to a better suited platform.",
-        "New Features: 🔥💯💯",
-        "Added a new homepage/dashboard for users to see their information at a glance.",
-        "Updated the Scan QR page to include better error handling and user feedback.",
-        "Introduced a new Share QR page for users to share their digital ID.",
-        "Entirely changed icon library to mimic a more authentic look",
-        "New page in settings allowing for account configuration!",
-        "Added new developer anayltics to monitor app performance and add future improvements.",
-        "All analytic reports are anonymous and stay that way - if you wish to opt out please message me",
-        "Improved overall app performance and fixed minor bugs such as scrolling."
+        "Replaced colour pallete used for background on ID page",
+        "Improved stability of the app with various bug fixes and optimizations.",
+        "Improved image rendering for newer devices.",
+        "iOS users can now enable Face ID scanning for quicker access to the app.",
+        "Android biometric authentication is still working in progress.",
     ],
-    "Other Improvements": [
-        "Improved the overall user interface for a more modern and sleek look.",
-        "Enhanced security measures to protect user data and privacy.",
-        "Optimized the app for better performance and faster load times.",
-    ]
+    // "Other Improvements": [
+    //     "Improved the overall user interface for a more modern and sleek look.",
+    //     "Enhanced security measures to protect user data and privacy.",
+    //     "Optimized the app for better performance and faster load times.",
+    // ]
 };
 
 
@@ -42,11 +37,18 @@ const updateNotes = {
 export default function ChangelogPopup() {
     const [open, setOpen] = useState(false);
     const { userData, isAuthenticated } = useAuth();
+    const hasChecked = useRef(false); // Prevent multiple checks
 
     useEffect(() => {
+        // Prevent running multiple times
+        if (hasChecked.current) {
+            return;
+        }
+
         // Force show if manual flag is true
         if (FORCE_SHOW_CHANGELOG) {
             setOpen(true);
+            hasChecked.current = true;
             return;
         }
         
@@ -56,12 +58,15 @@ export default function ChangelogPopup() {
         const twelveHours = 12 * 60 * 60 * 1000;
         
         if (lastCheck && (now - parseInt(lastCheck)) < twelveHours) {
+            hasChecked.current = true;
             return; // Skip if checked recently
         }
         
         if (!userData?.uuid || !isAuthenticated) {
             return; // Skip if user not loaded
         }
+
+        hasChecked.current = true; // Mark as checked
 
         try {
             const checkChangelog = async () => {
@@ -107,7 +112,7 @@ export default function ChangelogPopup() {
         } catch (error) {
             console.error("Error checking changelog:", error);
         }
-    }, [userData?.uuid, isAuthenticated]); // Add proper dependency array
+    }, [userData?.uuid, isAuthenticated]); // Keep dependencies but use ref to prevent re-runs
 
 
     const acknowledgedChangelog = () => {
@@ -144,7 +149,7 @@ export default function ChangelogPopup() {
                     textAlign: 'center', // Center the title
                     mb: 2, // Add spacing below the title
                 }}>
-                    Thank you for your support! 💙 VER2.0.0 ✨
+                    Thank you for your support! 💙 VER{changelogVersion} ✨
                 </Typography>
                 <Typography id="changelog-description" sx={{
                     mt: 2,

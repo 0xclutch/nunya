@@ -288,8 +288,14 @@ import React, { useEffect, useState } from "react";
             <div className="govid-row">
               <span className="govid-label">Age</span>
               <span className="govid-age-badge">
-                <FontAwesomeIcon icon={faCircleCheck} size={120} className="govid-age-icon" alt="Tick" style={{ color: "#2e9170" }} />
-                <span className="govid-age-text govid-value-left">Over 18</span>
+                {userData?.age >= 18 ? (
+                  <span className="govid-age-icon-text-wrapper">
+                    <FontAwesomeIcon icon={faCircleCheck} size={120} className="govid-age-icon" alt="Tick" style={{ color: "#2e9170" }} />
+                  <span className="govid-age-text govid-value-left">Over 18</span>
+                  </span>
+                ) : (
+                  <><FontAwesomeIcon icon={faCircleCheck} size={120} className="govid-age-icon" alt="Tick" style={{ color: "#2e9170" }} /><span className="govid-age-value govid-value-left">Under 18</span></>
+                )}
               </span>
             </div>
             <div className="govid-divider" />
