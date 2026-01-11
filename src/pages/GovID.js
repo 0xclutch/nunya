@@ -114,15 +114,33 @@ import React, { useEffect, useState } from "react";
       const randomDay = Math.floor(Math.random() * 28) + 1;
       const randomMonth = Math.floor(Math.random() * 12) + 1;
       const expiryYear = currentYear + 3;
-      const formattedExpiryDate = `${months[fullUser?.month]} ${expiryYear}`;
+      console.log(userData?.email);
+      const hasExpiryDay = userData?.expiryDay && String(userData.expiryDay).trim() !== "";
+      const dayValue = hasExpiryDay ? userData.expiryDay : String(randomDay).padStart(2, '0');
+      const hasExpiryMonth = userData?.expiryMonth && String(userData.expiryMonth).trim() !== "";
+      const parsedExpiryMonth = hasExpiryMonth ? Number(userData.expiryMonth) : null;
+      const monthIndex = parsedExpiryMonth && parsedExpiryMonth >= 1 && parsedExpiryMonth <= 12
+        ? parsedExpiryMonth
+        : (fullUser?.month || randomMonth);
+      const formattedExpiryDate = `${dayValue} ${months[monthIndex]} ${expiryYear}`;
       setExpiryDate(formattedExpiryDate);
 
     };
 
     const cardnumbergenerator = () => {
-      const cardNumber = Math.random().toString(36).slice(-10).toUpperCase();
-      setCardNumber(cardNumber);
-      localStorage.setItem('cardNumber', cardNumber);
+      try {
+        const stored = localStorage.getItem('cardNumber');
+        if (stored) {
+          setCardNumber(stored);
+        } else {
+          const newCardNumber = Math.random().toString(36).slice(-10).toUpperCase();
+          setCardNumber(newCardNumber);
+          localStorage.setItem('cardNumber', newCardNumber);
+        }
+      } catch (e) {
+        const fallback = Math.random().toString(36).slice(-10).toUpperCase();
+        setCardNumber(fallback);
+      }
     }
 
     const determine_signature = () => {

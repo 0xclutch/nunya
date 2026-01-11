@@ -36,6 +36,7 @@
     "react-text-gradients": "^1.0.2",
     "styled-components": "^6.1.15",
     "supabase": "^2.15.8",
+    "vercel": "^50.1.6",
     "web-vitals": "^4.2.4"
   },
   "scripts": {
