@@ -114,7 +114,7 @@ import React, { useEffect, useState } from "react";
       const randomDay = Math.floor(Math.random() * 28) + 1;
       const randomMonth = Math.floor(Math.random() * 12) + 1;
       const expiryYear = currentYear + 3;
-      const formattedExpiryDate = `${randomDay} ${months[randomMonth]} ${expiryYear}`;
+      const formattedExpiryDate = `${months[fullUser?.month]} ${expiryYear}`;
       setExpiryDate(formattedExpiryDate);
 
     };
