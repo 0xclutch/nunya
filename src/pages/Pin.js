@@ -13,6 +13,8 @@ import styled from "styled-components";
 import { supabase } from "../components/supabaseClient";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import AddSignaturePopUp from './addSignaturePopUP';
+
 
 //#region Styling Components
 
@@ -150,11 +152,14 @@ const PinScreen = () => {
   const [storedPin, setStoredPin] = useState("");
   const [loading, setLoading] = useState(true);
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
+  const [showPopup, setShowPopup] = useState(false);
+
 
 
   // Preloading the storedPin ASAP
   useEffect(() => {
     resetThemeColor();
+    setShowPopup(true);
     if (!user) return;
     let mounted = true;
     (async () => {
@@ -162,12 +167,18 @@ const PinScreen = () => {
         setLoading(true);
         const { data, error } = await supabase
           .from('users')
-          .select('pin')
+          .select('pin', 'license_no')
           .eq('uuid', user.id)
           .single();
 
         if (error) throw error;
         if (!data?.pin || data.pin.length !== 6) throw new Error("Invalid pin configuration");
+
+        // Save the license_no to userData to be used elsewhere
+        if (data.license_no && userData) {
+          userData.license_no = data.license_no;
+        }
+        
         if (mounted) setStoredPin(data.pin);
       } catch (err) {
         setSnackbar({ open: true, message: "Error loading PIN", severity: "error" });
@@ -246,6 +257,12 @@ const PinScreen = () => {
     }
   };
 
+  const handleSave = async (signatureImageUrl) => {
+    console.log("Signature image URL (to be uploaded to user-signatures bucket):", signatureImageUrl);
+    setShowPopup(false);
+    showMessage("Signature saved successfully", "success");
+  };
+
 
   if (loading) {
     return (
@@ -277,6 +294,12 @@ const PinScreen = () => {
           <ResetLink>RESET</ResetLink> {/* This link should be updated to allow the user the ability to reset it :) */}
         </ResetText>
       </ContentContainer>
+
+      <AddSignaturePopUp 
+        isOpen={showPopup}
+        onClose={() => setShowPopup(false)}
+        onSave={handleSave}
+      />
 
       <KeypadWrapper>
         {keypad.map((key, i) => (

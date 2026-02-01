@@ -129,6 +129,8 @@ import React, { useEffect, useState } from "react";
 
     const cardnumbergenerator = () => {
       try {
+
+
         const stored = localStorage.getItem('cardNumber');
         if (stored) {
           setCardNumber(stored);
@@ -149,6 +151,7 @@ import React, { useEffect, useState } from "react";
       localStorage.setItem('signature', signature);
     }
 
+    // DEPRICATED - Please assign custom license number in DB
     const generateLicenseNum = async () => {
       const storedLicenseNum = localStorage.getItem('licenseNum');
       if (storedLicenseNum) {
@@ -281,8 +284,15 @@ import React, { useEffect, useState } from "react";
                 </div>
                 <div className="govid-licence-row">
                   <span className="govid-info-label"><u>Licence No.</u> <CopyOutlined className="govid-copy-icon govid-value-left" /></span>
-                  
-                </div>
+                  {userData?.license_no ? (
+                    <div className="govid-bold govid-value-left" style={{ letterSpacing: "1px", fontWeight: '600'}}>
+                      {userData.license_no}
+                    </div>
+                    ) : (
+                      {licenseNum}
+                    )
+                  }
+              </div>
                 <div className="govid-bold govid-value-left" style={{ letterSpacing: "1px", fontWeight: '600'}}>{licenseNum}</div>
               </div>
             </div>

@@ -40,10 +40,7 @@ export const AuthProvider = ({ children }) => {
       setUser(loggedInUser);
 
       if(loggedInUser) {
-        // Only fetch if we don't have data for this user
-        if (!userData || userData.uuid !== loggedInUser.id) {
-          fetchUserData(loggedInUser.id);
-        }
+        fetchUserData(loggedInUser.id);
       } else {
         setUserData(null); // Clear userData on logout
         localStorage.removeItem("session"); // Fixed key name
@@ -53,6 +50,46 @@ export const AuthProvider = ({ children }) => {
 
     return () => authListener.subscription.unsubscribe();
   }, []);
+
+  const saveCachedSignature = async (file) => {
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+    try {
+      // Get current session to ensure we have a valid token
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}.${fileExt}`;
+      
+      if (sessionError || !session) {
+        throw new Error('Not authenticated - please log in again');
+      }
+
+      const filePath = `public/${session.user.id}.png`;
+      
+      console.log('Uploading signature for user:', session.user.id);
+      
+      // Upload with upsert to replace existing file
+      const { data, error } = await supabase.storage
+        .from('user-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: 'image/png'
+        });
+                
+      if (error) {
+        console.error('Error uploading signature:', error);
+        throw error;
+      }
+      
+      console.log('Signature uploaded successfully:', data);
+      return data;
+    } catch (err) {
+      console.error('saveCachedSignature failed:', err);
+      throw err;
+    }
+  }
 
   const fetchUserData = async (uuid, forceRefresh = false) => { // Database info
     // Check if we already have cached data and don't force refresh
@@ -111,7 +148,7 @@ export const AuthProvider = ({ children }) => {
 
 
   return (
-    <AuthContext.Provider value={{ user, userData, login, logout, loading, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, userData, login, logout, loading, isAuthenticated, saveCachedSignature }}>
       {children}
     </AuthContext.Provider>
   );

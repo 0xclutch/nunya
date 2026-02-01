@@ -1,0 +1,188 @@
+.signature-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.signature-popup-container {
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 10px 15px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.signature-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.signature-popup-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.close-button:hover {
+  background-color: #f3f4f6;
+  color: #1f2937;
+}
+
+.signature-canvas-wrapper {
+  position: relative;
+  flex: 1;
+  margin: 20px;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  background-color: #fafafa;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.signature-canvas {
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  touch-action: none; /* Prevent default touch behaviors */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.signature-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.signature-placeholder p {
+  color: #9ca3af;
+  font-size: 18px;
+  font-style: italic;
+  margin: 0;
+}
+
+.signature-popup-actions {
+  display: flex;
+  gap: 12px;
+  padding: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.reset-button,
+.confirm-button {
+  flex: 1;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reset-button {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.reset-button:hover {
+  background-color: #e5e7eb;
+}
+
+.reset-button:active {
+  transform: scale(0.98);
+}
+
+.confirm-button {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.confirm-button:hover {
+  background-color: #2563eb;
+}
+
+.confirm-button:active {
+  transform: scale(0.98);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .signature-popup-overlay {
+    padding: 10px;
+  }
+
+  .signature-popup-container {
+    max-height: 95vh;
+  }
+
+  .signature-canvas-wrapper {
+    min-height: 250px;
+    margin: 15px;
+  }
+
+  .signature-popup-header h2 {
+    font-size: 18px;
+  }
+
+  .signature-popup-actions {
+    padding: 15px;
+  }
+
+  .reset-button,
+  .confirm-button {
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .signature-canvas {
+    cursor: default;
+  }
+
+  .reset-button,
+  .confirm-button {
+    min-height: 44px; /* Apple's recommended touch target size */
+  }
+}
