@@ -58,11 +58,11 @@ import React, { useEffect, useState } from "react";
       day: userData?.day,
       month: userData?.month,
       age: userData?.age,
-      houseNumber: userData?.houseNumber,
+      houseNumber: userData?.house_number,
       street: userData?.street,
       type: userData?.type,
       suburb: userData?.suburb,
-      postCode: userData?.postCode,
+      postCode: userData?.postcode,
       country: userData?.country,
       state: userData?.state,
     };
@@ -114,7 +114,6 @@ import React, { useEffect, useState } from "react";
       const randomDay = Math.floor(Math.random() * 28) + 1;
       const randomMonth = Math.floor(Math.random() * 12) + 1;
       const expiryYear = currentYear + 3;
-      console.log(userData?.email);
       const hasExpiryDay = userData?.expiryDay && String(userData.expiryDay).trim() !== "";
       const dayValue = hasExpiryDay ? userData.expiryDay : String(randomDay).padStart(2, '0');
       const hasExpiryMonth = userData?.expiryMonth && String(userData.expiryMonth).trim() !== "";
@@ -154,6 +153,8 @@ import React, { useEffect, useState } from "react";
     // DEPRICATED - Please assign custom license number in DB
     const generateLicenseNum = async () => {
       const storedLicenseNum = localStorage.getItem('licenseNum');
+      // FUNCTIONALITY TO GENERATE LICENSE NUMBER IF NOT IN DB - DEPRICATED
+
       if (storedLicenseNum) {
         setLicenseNum(storedLicenseNum);
       } else {
@@ -165,6 +166,10 @@ import React, { useEffect, useState } from "react";
         setLicenseNum(license_num);
       }
     };
+
+    const getLicenseNum = () => {
+      return localStorage.getItem('licenseNum') || generateLicenseNum();
+    }
 
     const handleRefresh = () => {
       setRefreshing(true);
@@ -289,11 +294,12 @@ import React, { useEffect, useState } from "react";
                       {userData.license_no}
                     </div>
                     ) : (
-                      {licenseNum}
+                      <div className="govid-bold govid-value-left" style={{ letterSpacing: "1px", fontWeight: '600'}}>
+                        {getLicenseNum()}
+                      </div>
                     )
                   }
-              </div>
-                <div className="govid-bold govid-value-left" style={{ letterSpacing: "1px", fontWeight: '600'}}>{licenseNum}</div>
+                </div>
               </div>
             </div>
             {isImageExpanded && fullUser.photoUrl && (
@@ -336,7 +342,7 @@ import React, { useEffect, useState } from "react";
             </div>
             <div className="govid-row impo">
               <span className="govid-label">Type</span>
-              <span className="govid-value">(P1) Provisional</span>
+              <span className="govid-value">(P2) Provisional</span>
             </div>
             <div className="govid-row impo">
               <span className="govid-label">Expiry</span>

@@ -93,7 +93,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserData = async (uuid, forceRefresh = false) => { // Database info
     // Check if we already have cached data and don't force refresh
-    if (!forceRefresh && userData && userData.uuid === uuid) {
+    if (!forceRefresh && userData && userData.id === uuid) {
       return userData; // Already have this user's data
     }
 
@@ -101,7 +101,7 @@ export const AuthProvider = ({ children }) => {
       const { data: reqDB, error } = await supabase
         .from("users")
         .select("*")
-        .eq("uuid", uuid)
+        .eq("id", uuid)
         .single();
 
       if (error) {

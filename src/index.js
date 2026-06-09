@@ -7,8 +7,7 @@ import { AuthProvider } from "./components/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
-import Dashboard from "./pages/Dashboard";
-import HomePage from './pages/developDashboard.js'
+import HomePage from './pages/Dashboard';
 import PinScreen from "./pages/Pin";
 import ScanQR from "./pages/ScanQR";
 import MainLayout from "./components/MainLayout";
@@ -20,12 +19,10 @@ import GovID from "./pages/GovID";
 import ShareID from "./pages/ShareID";
 import QRVerification from "./pages/QRVerification";
 import ShowUserQR from "./pages/2.0/ShowUserQR.js";
-import { SpeedInsights } from "@vercel/speed-insights/react"
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <SpeedInsights/>
     <Router>
       <AuthProvider>
         <SafeAreaWrapper>

@@ -2,18 +2,22 @@ import React, { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import { setThemeColor, resetThemeColor } from "../components/themeColor";
 import { useNavigate } from "react-router-dom";
+import "../styles/Dashboard.css";
 import Navbar from "../components/Navbar";
 // import { FaHome, FaQrcode, FaCog } from "react-icons/fa";
 
 
 // ICONSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
 import carIcon from "./assets/icon.png";
-import headerIcon from './assets/NewQueenslandGovernmentBanner.png';
+import headerIcon from './assets/White_NewQLDGovBanner.png';
 import { MdOutlineAttachMoney } from "react-icons/md";
 import { FaGavel, FaAngleLeft } from "react-icons/fa6";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { VscCreditCard } from "react-icons/vsc";
 import { IoLocationSharp } from "react-icons/io5";
+import { IoSettingsOutline } from "react-icons/io5";
+import { IoChevronForward } from "react-icons/io5";
+
 
 
 // Ewie images
@@ -25,10 +29,8 @@ import imgLM5 from './2.0/images-learnmore/5.jpg';
 import imgLM6 from './2.0/images-learnmore/6.jpg';
 
 // Random hyperlinks
-import streetSmarts from './2.0/images-learnmore/StreetSmarts.jpg';
-import translink from './2.0/images-learnmore/Translink.jpg';
 import roadRules from './2.0/images-learnmore/RoadRulesQuiz.jpg';
-
+import deliveringForQLD from './2.0/images-learnmore/DeliveringForQLD.jpg';
 import banner from './2.0/images-learnmore/banner.jpg'
 
 
@@ -40,6 +42,8 @@ import banner from './2.0/images-learnmore/banner.jpg'
 // import ShowUserQR from "./2.0/ShowUserQR";
 import ChangelogPopup from "../components/versionChangelog";
 import { useAuth } from "../components/AuthContext";
+import PullToRefresh from "../components/PullToRefresh";
+import Messages from "./Messages";
 // import PullToRefresh from "../components/PullToRefresh";
 
 // lazyload all elements that wont be needed straight away!
@@ -63,72 +67,9 @@ const COLOR_BORDER = "#ccc";
 
 // #region css
 // Prevent scroll and set baseline
-const NoScrollStyle = createGlobalStyle`
-  html, body {
-    overflow: hidden !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: ${COLOR_BG};
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    box-sizing: border-box !important;
-    overscroll-behavior: none !important;
-    -moz-osx-font-smoothing: grayscale;
-    color: ${COLOR_TEXT};
-    font-size: 16px;
-    line-height: 1.5; 
-    -webkit-text-size-adjust: 100%;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    
-  }
+const NoScrollStyle = createGlobalStyle``
 
-  #root {
-    height: 100vh;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-  }
-`;
 
-const Banner = styled.div`
-  position: relative;
-  height: 160px;
-  background: linear-gradient(120deg, ${COLOR_MAROON} 87%, #a32c4d 100%);
-  border-bottom-right-radius: 36px;
-  overflow: hidden;
-  display: flex;
-`;
-
-// keep banner image but ensure it covers and is subtle
-const BannerImg = styled.img`
-  position: absolute;
-  top: -10px;
-  height: 110px;
-  width: auto + 1px;
-  pointer-events: none;
-  user-select: none;
-`
-
-const BannerContent = styled.div`
-  position: absolute;
-  right: 20px;
-  bottom: 18px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-`;
-
-const Crest = styled.img`
-  width: 90px;
-  height: auto;
-  transform: scale(1.5);
-  margin-bottom: 15px;
-  padding: 0 23px 35px 0;
-`;
 
 /* Overlap card returned to previous layout so page spacing is unchanged */
 const OverlapCard = styled.div`
@@ -196,6 +137,34 @@ const CredIconSquare = styled.div`
   flex-shrink: 0;
   border-radius: 15px 0 0 15px;
   margin-left: -12px;
+`;
+
+const SettingsButton = styled.button`
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.18s ease, transform 0.18s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: scale(1.04);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
 `;
 
 /* Services container and items reverted to previous form */
@@ -358,9 +327,8 @@ const ServiceButton = styled.button`
   background: #fff;
   border: none;
   border-radius: 15px;
-  box-shadow: 0 1.5px 8px rgba(20, 10, 35, 0.07);
-  width: 85%;
-  height: 54px;
+  width: 80%;
+  height: 5vh;
   margin-right: 12px;
   display: flex; /* Ensure children are displayed inline */
   align-items: center; /* Center content vertically */
@@ -370,10 +338,10 @@ const ServiceButton = styled.button`
 
   // Removal of bottom radius
   &:nth-child(2) {
-    border-radius: 12px 12px 0 0;/* Top corners rounded, bottom corners square */
+    border-radius: 6px 6px 0 0;/* Top corners rounded, bottom corners square */
   }
   &:nth-child(5) {
-    border-radius: 0 0 12px 12px; /* Bottom corners rounded, top corners square */
+    border-radius: 0 0 6px 6px; /* Bottom corners rounded, top corners square */
   }
 
   /* This creates seemless effect between Buttons 1, 2, 3 on Services */
@@ -638,9 +606,7 @@ const DashboardWOP = React.memo(function DashboardWOP({ navigateTo }) {
           banner, 
           imgLM1, imgLM2, imgLM3, imgLM4, imgLM5, imgLM6, 
           carIcon, 
-          headerIcon,
-          streetSmarts,
-          translink,
+          deliveringForQLD,
           roadRules
         ].filter(Boolean);
         
@@ -732,159 +698,126 @@ const DashboardWOP = React.memo(function DashboardWOP({ navigateTo }) {
     <>
       <NoScrollStyle />
       <ChangelogPopup />
-      <Banner>
-        <BannerImg 
-          src={banner} 
-          alt="banner"
-          style={{ 
-            opacity: imagesLoaded ? 1 : 0.5,
-            transition: 'opacity 0.3s ease'
-          }}
-        />
-      </Banner>
+      <PullToRefresh onRefresh={() => window.location.reload()}>
+        <div className="top-header">
+          <div className='gov-banner'>
+            <img src={headerIcon} alt="Queensland Government" className="gov-banner-img" />
+            
+            <div className="settings-icon">
+              <button className="settings-btn" onClick={() => navigate("/settings")}>
+                <IoSettingsOutline enableBackground={false} size={22} />
+              </button>
+            </div>
 
-      <SafeArea>
-        <OverlapCard>
-          <ProfileRow>
-            <NameBlock>
-              <Greeting>
-                Good {new Date().getHours() < 12 ? "morning" : "evening"}
-                {userData?.firstName && `, ${userData.firstName}`}
-              </Greeting>
-            </NameBlock>
-          </ProfileRow>
+          </div>
+        </div>
 
-          <CredButton onClick={() => navigate("/id")}>
-            <CredIconSquare>
-              <CarIcon 
-                src={carIcon} 
-                alt=""
-                style={{ 
-                  opacity: imagesLoaded ? 1 : 0.5,
-                  transition: 'opacity 0.3s ease'
-                }}
-              />
-            </CredIconSquare>
-            <ContentsButton>
-              <CredText>Driver Licence</CredText>
-              <Chevron style={{ marginLeft: 'auto' }}>&#8250;</Chevron>
-            </ContentsButton>
-          </CredButton>
+        <div className="overlap-card">
+          <div className="greeting-row">
+            <h1 className="greeting-text">
+              Good {new Date().getHours() < 12 ? "morning" : "afternoon"}
+              {/*{userData?.firstName && `, ${userData.firstName}`} <-- This would be if this is reintroduced.*/} 
+            </h1>
+          </div>
 
-          {/* Services section with loading states */}
-          <ServicesContainer>
-            <SectionLabel>Services</SectionLabel>
-            {[
-              { icon: VscCreditCard, text: "Check registration status" },
-              { icon: MdOutlineAttachMoney, text: "Renew registration" },
-              { icon: FaGavel, text: "Pay a fine" },
-              { icon: IoLocationSharp, text: "Find a Customer Service Centre" }
-            ].map((service, index) => (
-              <ServiceButton key={index} style={{ opacity: imagesLoaded ? 1 : 0.7 }}>
-                <ServiceIconImportsOnly>
-                  <service.icon size='25' color="#363737" />
-                </ServiceIconImportsOnly>
-                <ButtonText>{service.text}</ButtonText>
-                <Chevron style={{ marginLeft: 'auto' }}>
-                  <FaExternalLinkAlt size={14} color="#363737" style={{ opacity: '0.5' }} />
-                </Chevron>
-              </ServiceButton>
-            ))}
-          </ServicesContainer>
+          <div className="drivers-licence-container">
+            <button className='cred-btn' onClick={() => navigate("/id")}>
+              <div className='cred-icon-square'>
+                <img 
+                  src={carIcon}
+                  alt="Car"
+                  className="car-icon"
+                />
+              </div>
+              <div className='cred-contents-btn'>
+                <span className='cred-text'>Driver Licence</span>
+                <span className='cred-chevron'>&#8250;</span>
+              </div>
+            </button> 
 
-          {/* Learn more section with progressive loading */}
-          <LearnMoreAbout>
-            <SectionLabel>Learn more about</SectionLabel>
-            <HorizontalScrollingContainer>
+            {/* Hey, so, the plan is to add a little "Updating O" (o being a loading bar) on page load */}   
+          </div>
+
+
+          <div className="services-actions">
+            <h1 className="services-label">Services</h1>
+            <div className='service-container'>
               {[
-                { img: imgLM1, title: `Security & \nPrivacy of\nyour\ninformation` },
-                { img: imgLM2, title: `The Digital\nLicense app` },
-                { img: imgLM3, title: `The\nQueensland\nDigital\nIdentity` },
-                { img: imgLM4, title: `Plan for\nsevere\nweather` },
-                { img: imgLM5, title: `Travelling\nwith my\ndigital license` },
-                { img: imgLM6, title: `TMR online\nservices` }
-              ].map((item, index) => (
-                <InformationButton key={index}>
-                  <ServiceImg 
-                    src={item.img} 
-                    alt={item.title}
-                    loading="lazy" 
-                    decoding="async"
-                    style={{ 
-                      opacity: imagesLoaded ? 1 : 0.3,
-                      transition: 'opacity 0.5s ease',
-                      backgroundColor: '#f0f0f0' // Placeholder background
-                    }}
-                  />
-                  <ButtonText>{item.title}</ButtonText>
-                  <ChevronBtmCorner>
-                    <FaExternalLinkAlt size={12} color="#363737" />
-                  </ChevronBtmCorner>
-                </InformationButton>
+                { icon: VscCreditCard, text: "Check registration status" },
+                { icon: MdOutlineAttachMoney, text: "Renew registration" },
+                { icon: FaGavel, text: "Pay a fine" },
+                { icon: IoLocationSharp, text: "Find a Customer Service \nCentre" }
+              ].map((service, index) => (
+                <button className='service-btn' key={index} style={{ opacity: imagesLoaded ? 1 : 0.7 }}>
+                  <div className='service-icon'>
+                    <service.icon size='25' color="#363737" />
+                  </div>
+
+                  <span className='service-btn-text'>
+                    {service.text}
+                  </span>
+                  <span className='service-chevron'>
+                    <FaExternalLinkAlt size={15} color="#363737" style={{ opacity: '0.5' }} />
+                  </span>
+                </button>
               ))}
-            </HorizontalScrollingContainer>
-            <ViewAllButton>
-              <CredText style={{ fontWeight: 500, textAlign: 'center', marginTop: '6px', color: {COLOR_MAROON} }}>VIEW ALL</CredText>
-              <Chevron style={{ marginLeft: 'auto' }}>&#8250;</Chevron>
-            </ViewAllButton>
-          </LearnMoreAbout>
+              </div>
 
-          {/* Hyperlink buttons section */}
-          <HyperlinkGroup>
-            {/* StreetSmarts - Dark background with yellow/lime text */}
-            <HyperlinkButton style={{ opacity: imagesLoaded ? 1 : 0.7, marginBottom: '12px' }}>
-              <HyperlinkImg 
-                src={streetSmarts} 
-                alt="Street Smarts"
-                loading="lazy"
-                style={{ 
-                  opacity: imagesLoaded ? 1 : 0.3,
-                  transition: 'opacity 0.5s ease'
-                }}
-              />
-              <ChevronBtmCorner>
-                <FaExternalLinkAlt size={14} color="#ffffff" />
-              </ChevronBtmCorner>
-            </HyperlinkButton>
-
-            {/* Translink - Dark navy background with white text and pink logo */}
-            <HyperlinkButton style={{ marginBottom: '12px'}}>
-              <HyperlinkImg 
-                src={translink} 
-                alt="Translink"
-                loading="lazy"
-                style={{ 
-                  opacity: imagesLoaded ? 1 : 0.3,
-                  transition: 'opacity 0.5s ease'
-                }}
-              />
-              <ChevronBtmCorner>
-                <FaExternalLinkAlt size={14} color="#ffffff" />
-              </ChevronBtmCorner>
-            </HyperlinkButton>
+          </div>
 
 
-            {/* Road Rules Refresher Quiz - Blue background with white text */}
-            <HyperlinkButton style={{ opacity: imagesLoaded ? 1 : 0.7 }}>
-              <HyperlinkImg 
-                src={roadRules} 
-                alt="Road Rules Refresher Quiz"
-                loading="lazy"
-                style={{ 
-                  opacity: imagesLoaded ? 1 : 0.3,
-                  transition: 'opacity 0.5s ease'
-                }}
-              />
-              <ChevronBtmCorner>
-                <FaExternalLinkAlt size={14} color="#ffffff" />
-              </ChevronBtmCorner>
-            </HyperlinkButton>
-          </HyperlinkGroup>
-        </OverlapCard>
-      </SafeArea>
-    </>
-  );
-});
+          <div className="learn-more-container">
+            <h1 className="services-label">Learn more about</h1> {/* Could make a new class, but thats more work lol */}
+            
+            <div className='learn-more-btn-container'>
+              {/* Scrollable Container */}
+              {[
+                { img: imgLM1, title: `Disaster recovery support`, url: `https://www.qld.gov.au/community/disasters-emergencies/disasters` },
+                { img: imgLM2, title: `Making Qld safer`, url: `https://www.qld.gov.au/makingqldsafer` },
+                { img: imgLM3, title: `Play on sports vouchers`, url: `https://www.qld.gov.au/recreation/sports/funding/playon` },
+                { img: imgLM4, title: `A place to call home`, url: `https://aplacetocallhome.initiatives.qld.gov.au/` },
+                { img: imgLM5, title: `Get walking and start talking to help end DFV`, url: `https://www.qld.gov.au/community/getting-support-health-social-issue/support-victims-abuse/need-to-know` },
+                { img: imgLM6, title: `The Digital Licence App`, url: `https://www.qld.gov.au/digital-licence?utm_source=DL_Home` },
+              ].map((info, index) => (
+                <button className='info-btn' key={index} style={{ opacity: imagesLoaded ? 1 : 0.7 }} onClick={() => window.open(info.url, '_blank')}>
+                  <img src={info.img}
+                    alt={info.title}
+                    className='info-btn-img'
+                  />
+                  <span className='info-btn-text'>
+                    {info.title}
+                  </span>
+                  <span className='info-chevron'>
+                    <FaExternalLinkAlt size={15} color="#363737" style={{ opacity: '0.5' }} />
+                  </span>
+                </button>
+              ))}
+              </div>
+              <div className="viewmore-btn">
+                <button className='viewmore-btn-inner'>
+                  <span className='viewmore-text'>VIEW ALL</span>
+                  <span className='viewmore-chevron'>
+                    <IoChevronForward size={24} />
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div className="hyperlink-group">
+              <button className='hyperlink-btn' onClick={() => window.open('https://www.service.transport.qld.gov.au/practiceroadrulestest/public/Welcome.xhtml?utm_medium=tmr-app&utm_source=DLA&utm_campaign=DLA-app-road-rules-refresher&dswid=5240', '_blank')}>
+                <img src={roadRules} alt="Road Rules Quiz" className='hyperlink-img' />
+              </button>
+              <button className='hyperlink-btn' onClick={() => window.open('https://www.delivering.initiatives.qld.gov.au/', '_blank')}>
+                <img src={deliveringForQLD} alt="Delivering for Queensland" className='hyperlink-img' />
+              </button>
+            </div>
+        
+          </div> {/* Main */}
+        </PullToRefresh> {/* aaaaaand then theres this fucking thing.. */}
+      </>
+    );
+  });
+
 
 // ----------- MAIN PAGE COMPONENT -----------
 
@@ -926,6 +859,12 @@ export default function HomePage() {
         return (
           <Suspense fallback={<LoadingScreen><Spinner/></LoadingScreen>}>
             <ShowUserQR navigateTo={setCurrentPage} />
+          </Suspense>
+        );
+      case "Messages":
+        return (
+          <Suspense fallback={<LoadingScreen><Spinner/></LoadingScreen>}>
+              <Messages navigateTo={setCurrentPage} />
           </Suspense>
         );
       default:

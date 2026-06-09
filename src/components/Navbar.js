@@ -1,22 +1,25 @@
 import React from "react";
 import styled from "styled-components";
-import { AiFillHome } from "react-icons/ai";
+import { GrHomeRounded } from "react-icons/gr";
 import { HiOutlineQrCode } from "react-icons/hi2";
 import { RiQrScan2Line } from "react-icons/ri";
-import { IoSettingsOutline } from "react-icons/io5";
+import { IoWalletOutline } from "react-icons/io5";
+import { CiMail } from "react-icons/ci";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const NavBar = styled.nav`
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 92px;
+  height: 85px;
   background: #fff;
-  border-top: 1.5px solid #ccc;
   display: flex;
   align-items: center;
   justify-content: space-around;
   z-index: 20;
+  border-top: 2px solid #00000015;
+    box-shadow: 0 -2px 8px #0002;
 `;
 
 const NavButton = styled.button`
@@ -31,6 +34,7 @@ const NavButton = styled.button`
   flex: 1;
   cursor: pointer;
   outline: none;
+  gap: 2px;
 `;
 
 const NavLabel = styled.span`
@@ -40,36 +44,84 @@ const NavLabel = styled.span`
   padding: 5px;
 `;
 
-export default function Navbar({ currentPage, setCurrentPage }) {
+const ActiveMarker = styled.div`
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background-color: #ffffff;
+  margin-bottom: 6px;
+  opacity: ${({ $active }) => ($active ? 0 : 0)};
+  transition: opacity 0.2s ease;
+`;
+
+const ShowQRWrapper = styled.div`
+  position: absolute;
+  top: -15px;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const MiddleNavLabel = styled.span`
+  font-size: 14px;
+  padding-top: 2.4vh;
+  color: ${({ $active }) => ($active ? "#972541" : "#888")};
+  font-weight: 400;
+  line-height: 1;
+`;
+
+export default function Navbar() {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const path = location.pathname;
+
     return (
         <NavBar>
             <NavButton
-                $active={currentPage === "Home"}
-                onClick={() => setCurrentPage("Home")}
+                $active={path === "/dashboard" || path === "/"}
+                onClick={() => navigate("/dashboard")}
             >
-                <AiFillHome size='27' />
-                <NavLabel $active={currentPage === "Home"}>Home</NavLabel>
+                <ActiveMarker $active={path === "/dashboard" || path === "/"} />
+                <GrHomeRounded size='25' />
+                <NavLabel $active={path === "/dashboard" || path === "/"}>Home</NavLabel>
             </NavButton>
             <NavButton 
-                $active={currentPage === "ShowQR"}
-                onClick={() => setCurrentPage("ShowQR")}
+                $active={path === "/wallet"}
+                onClick={() => navigate("/wallet")}
             >
-                <HiOutlineQrCode size='27' />
-                <NavLabel $active={currentPage === "ShowQR"}>Show QR</NavLabel>
+                <ActiveMarker $active={path === "/id/wallet"} />
+                <IoWalletOutline size='27' />
+                <NavLabel $active={path === "/id/wallet"}>Wallet</NavLabel>
+            </NavButton>
+            <NavButton 
+                $active={path === "/id/scanqr" || path === "/id/share/qr"}
+                onClick={() => navigate("/id/share/qr")}
+            >
+                <ShowQRWrapper>
+                    <HiOutlineQrCode size='40' color='#888' />
+                    <MiddleNavLabel $active={path === "/id/scanqr" || path === "/id/share/qr"}>Show QR</MiddleNavLabel>
+                </ShowQRWrapper>
             </NavButton>
             <NavButton
-                $active={currentPage === "Scan QR"}
-                onClick={() => setCurrentPage("Scan QR")}
+                $active={path === "/scan" || path === "/scan-qr"}
+                onClick={() => navigate("/scan")}
             >
+                <ActiveMarker $active={path === "/scan" || path === "/scan-qr"} />
                 <RiQrScan2Line size='27' />
-                <NavLabel $active={currentPage === "Scan QR"}>Scan QR</NavLabel>
+                <NavLabel $active={path === "/scan" || path === "/scan-qr"} style={{ width: "100%"}}>Scan QR</NavLabel>
             </NavButton>
             <NavButton
-                $active={currentPage === "Settings"}
-                onClick={() => setCurrentPage("Settings")}
+                $active={path === "/messages" || path === "/settings/manage"}
+                onClick={() => navigate("/messages")}
             >
-                <IoSettingsOutline size='27' style={{ padding: '1px'}}/>
-                <NavLabel $active={currentPage === "Settings"}>Settings</NavLabel>
+                <ActiveMarker $active={path === "/messages" || path === "/settings/manage"} />
+                <CiMail size='27' />
+                <NavLabel $active={path === "/messages" || path === "/settings/manage"}>Messages</NavLabel>
             </NavButton>
         </NavBar>
     );

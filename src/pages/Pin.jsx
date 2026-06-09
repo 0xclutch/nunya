@@ -167,9 +167,9 @@ const PinScreen = () => {
         setLoading(true);
         const { data, error } = await supabase
           .from('users')
-          .select('pin', 'license_no')
-          .eq('uuid', user.id)
-          .single();
+          .select('pin', { count: 'exact' })
+          .eq('id', user.id)
+          .single(); // Get the PIN matching local.id = cloud.id
 
         if (error) throw error;
         if (!data?.pin || data.pin.length !== 6) throw new Error("Invalid pin configuration");
@@ -294,12 +294,12 @@ const PinScreen = () => {
           <ResetLink>RESET</ResetLink> {/* This link should be updated to allow the user the ability to reset it :) */}
         </ResetText>
       </ContentContainer>
-
+{/* 
       <AddSignaturePopUp 
         isOpen={showPopup}
         onClose={() => setShowPopup(false)}
         onSave={handleSave}
-      />
+      /> */}
 
       <KeypadWrapper>
         {keypad.map((key, i) => (
