@@ -405,25 +405,17 @@ import React, { useEffect, useState } from "react";
                 <span className="govid-value">Queensland Government<br/>Department of Transport<br/>and Main Roads</span>
               </div>
             </div>
+
+            {/* SHARE PDF BUTTON */}
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '50px 0' }}>
+              <button className="govid-share-btn" onClick={() => navigate('/id/share')}>SHARE PDF COPY</button>
+            </div>
           </div>
         </div>
           {/* Sticky share button at bottom */}
+
       </PullToRefresh>
-      <div className="govid-share-btn-sticky-wrapper" style={{
-        position: 'fixed',
-        left: 0,
-        right: 0,
-        bottom: 'env(safe-area-inset-bottom, 0px)',
-        width: '100%',
-        zIndex: 9999,
-        margin: 0,
-        padding: '10px 5px',
-        display: 'flex',
-        justifyContent: 'center',
-       
-      }}>
-        <button className="govid-share-btn" onClick={() => navigate('/id/share')}>SHARE DRIVERS LICENSE</button>
-      </div>        
+      
       </>
     );
   };
