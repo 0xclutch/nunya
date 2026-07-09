@@ -14,6 +14,7 @@ import ScanQR from "./pages/ScanQR";
 import MainLayout from "./components/MainLayout";
 import Settings from "./pages/Settings";
 import ManageApp from "./pages/ManageApp";
+import { Analytics } from '@vercel/analytics/react';
 
 import { SafeAreaWrapper } from "./components/SafeAreaWrapper";
 import GovID from "./pages/GovID";
@@ -33,6 +34,7 @@ root.render(
     <Router>
       <AuthProvider>
         <SafeAreaWrapper>
+          <Analytics />
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Login />} />
